@@ -1,0 +1,402 @@
+{
+  "info": {
+    "name": "Share Notes API",
+    "_postman_id": "share-notes-collection-v1",
+    "description": "Colección completa de endpoints para la API de Share Notes. Incluye autenticación JWT via Cookies HTTP-only, CRUD de notas y categorías.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:4000/api",
+      "type": "string"
+    },
+    {
+      "key": "categoryId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "noteId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 - Registro exitoso', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Respuesta tiene usuario', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('user');",
+                  "  pm.expect(body.user).to.not.have.property('password');",
+                  "});",
+                  "pm.test('Cookie token seteada', () => {",
+                  "  pm.expect(pm.cookies.has('token')).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ana García\",\n  \"email\": \"ana@sharenotes.com\",\n  \"password\": \"secret123\"\n}"
+            },
+            "url": { "raw": "{{BASE_URL}}/auth/register", "host": ["{{BASE_URL}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 - Login exitoso', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Cookie de sesión presente', () => {",
+                  "  pm.expect(pm.cookies.has('token')).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ana@sharenotes.com\",\n  \"password\": \"secret123\"\n}"
+            },
+            "url": { "raw": "{{BASE_URL}}/auth/login", "host": ["{{BASE_URL}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Me (Perfil)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Tiene datos de usuario', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.user).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{BASE_URL}}/auth/me", "host": ["{{BASE_URL}}"], "path": ["auth", "me"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 - Logout exitoso', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{BASE_URL}}/auth/logout", "host": ["{{BASE_URL}}"], "path": ["auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📁 Categories",
+      "item": [
+        {
+          "name": "Crear Categoría",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 - Categoría creada', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "if (body.category && body.category._id) {",
+                  "  pm.collectionVariables.set('categoryId', body.category._id);",
+                  "  console.log('categoryId guardado:', body.category._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Matemáticas\",\n  \"color\": \"#6366f1\"\n}"
+            },
+            "url": { "raw": "{{BASE_URL}}/categories", "host": ["{{BASE_URL}}"], "path": ["categories"] }
+          }
+        },
+        {
+          "name": "Listar Categorías",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta tiene array de categorías', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.categories).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{BASE_URL}}/categories", "host": ["{{BASE_URL}}"], "path": ["categories"] }
+          }
+        },
+        {
+          "name": "Actualizar Categoría",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 - Actualización exitosa', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Matemáticas Avanzadas\",\n  \"color\": \"#f59e0b\"\n}"
+            },
+            "url": { "raw": "{{BASE_URL}}/categories/{{categoryId}}", "host": ["{{BASE_URL}}"], "path": ["categories", "{{categoryId}}"] }
+          }
+        },
+        {
+          "name": "Eliminar Categoría",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 o 400 (tiene notas)', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{BASE_URL}}/categories/{{categoryId}}", "host": ["{{BASE_URL}}"], "path": ["categories", "{{categoryId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📝 Notes",
+      "item": [
+        {
+          "name": "Crear Nota",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 - Nota creada', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "if (body.note && body.note._id) {",
+                  "  pm.collectionVariables.set('noteId', body.note._id);",
+                  "  console.log('noteId guardado:', body.note._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Derivadas e Integrales\",\n  \"content\": \"La derivada de x^2 es 2x. La integral de 2x es x^2 + C.\",\n  \"category\": \"{{categoryId}}\",\n  \"isPinned\": false\n}"
+            },
+            "url": { "raw": "{{BASE_URL}}/notes", "host": ["{{BASE_URL}}"], "path": ["notes"] }
+          }
+        },
+        {
+          "name": "Listar Notas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta tiene array de notas', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.notes).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{BASE_URL}}/notes", "host": ["{{BASE_URL}}"], "path": ["notes"] }
+          }
+        },
+        {
+          "name": "Listar Notas (con filtro búsqueda)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/notes?search=derivadas",
+              "host": ["{{BASE_URL}}"],
+              "path": ["notes"],
+              "query": [{ "key": "search", "value": "derivadas" }]
+            }
+          }
+        },
+        {
+          "name": "Obtener Nota por ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Nota tiene categoría populada', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.note.category).to.be.an('object');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{BASE_URL}}/notes/{{noteId}}", "host": ["{{BASE_URL}}"], "path": ["notes", "{{noteId}}"] }
+          }
+        },
+        {
+          "name": "Actualizar Nota",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 - Actualización exitosa', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Derivadas, Integrales y Límites\",\n  \"content\": \"Contenido actualizado con más detalle sobre límites.\",\n  \"category\": \"{{categoryId}}\"\n}"
+            },
+            "url": { "raw": "{{BASE_URL}}/notes/{{noteId}}", "host": ["{{BASE_URL}}"], "path": ["notes", "{{noteId}}"] }
+          }
+        },
+        {
+          "name": "Fijar / Desfijar Nota",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 - Pin toggleado', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "url": { "raw": "{{BASE_URL}}/notes/{{noteId}}/pin", "host": ["{{BASE_URL}}"], "path": ["notes", "{{noteId}}", "pin"] }
+          }
+        },
+        {
+          "name": "Eliminar Nota",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 - Nota eliminada', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{BASE_URL}}/notes/{{noteId}}", "host": ["{{BASE_URL}}"], "path": ["notes", "{{noteId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏥 Health Check",
+      "item": [
+        {
+          "name": "API Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('API está corriendo', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{BASE_URL}}/health", "host": ["{{BASE_URL}}"], "path": ["health"] }
+          }
+        }
+      ]
+    }
+  ]
+}
