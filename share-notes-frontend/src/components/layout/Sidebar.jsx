@@ -37,13 +37,13 @@ const Sidebar = ({ isOpen, onClose }) => {
       <aside
         className={`
           fixed md:static inset-y-0 left-0 z-40 md:z-auto
-          w-60 bg-slate-50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800
+          w-60 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800
           flex flex-col transition-transform duration-200
           ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         `}
       >
         {/* Logo branding */}
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/25">
               <BookOpen className="w-5 h-5 text-white" />
