@@ -3,6 +3,7 @@ import { Search, Star, TrendingUp, Clock, Filter } from "lucide-react";
 import useNoteStore from "../stores/useNoteStore.js";
 import NoteCard from "../components/notes/NoteCard.jsx";
 import Button from "../components/ui/Button.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
 
 const Explore = () => {
   const { publicNotes, fetchPublicNotes, categories, fetchCategories, toggleFavorite, downloadNote, rateNote, isLoading } = useNoteStore();
@@ -70,9 +71,11 @@ const Explore = () => {
       )}
 
       {!isLoading && publicNotes.length === 0 && (
-        <div className="text-center py-20">
-          <p className="text-gray-500">No se encontraron notas públicas</p>
-        </div>
+        <EmptyState 
+          type="explore" 
+          title={search ? `No encontramos "${search}"` : "No hay notas públicas"}
+          subtitle={search ? "Intenta con otras palabras clave" : "Sé el primero en compartir tus apuntes"}
+        />
       )}
 
       {!isLoading && (

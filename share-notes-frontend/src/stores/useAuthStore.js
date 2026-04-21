@@ -1,48 +1,59 @@
 import { create } from "zustand";
+import { toast } from "react-hot-toast";
 import api from "../api/axios";
 
-const useAuthStore = create((set) => ({
+const useAuthStore = create((set, get) => ({
   user: null,
   isAuthenticated: false,
   isLoading: false,
-  isCheckingAuth: true, // true al inicio para evitar flicker
+  isCheckingAuth: true,
 
-  // ── Registro ────────────────────────────────────────────────────
   register: async (data) => {
     set({ isLoading: true });
     try {
       const res = await api.post("/auth/register", data);
       set({ user: res.data.user, isAuthenticated: true, isLoading: false });
-      return { ok: true };
+      toast.success(`¡Cuenta creada! Bienvenido, ${res.data.user.name.split(" ")[0]}! 🎉`, {
+        duration: 5000,
+      });
+      return { ok: true, user: res.data.user };
     } catch (err) {
       set({ isLoading: false });
-      return { ok: false, message: err.response?.data?.message || "Error al registrarse" };
+      const msg = err.response?.data?.message || "No se pudo crear la cuenta";
+      toast.error(msg);
+      return { ok: false, message: msg };
     }
   },
 
-  // ── Login ───────────────────────────────────────────────────────
   login: async (data) => {
     set({ isLoading: true });
     try {
       const res = await api.post("/auth/login", data);
       set({ user: res.data.user, isAuthenticated: true, isLoading: false });
+      toast.success(`¡Bienvenido de nuevo, ${res.data.user.name.split(" ")[0]}! 👋`, {
+        duration: 4000,
+      });
       return { ok: true, user: res.data.user };
     } catch (err) {
       set({ isLoading: false });
-      return { ok: false, message: err.response?.data?.message || "Credenciales inválidas" };
+      const msg = err.response?.data?.message || "Credenciales incorrectas";
+      toast.error(msg);
+      return { ok: false, message: msg };
     }
   },
 
-  // ── Logout ──────────────────────────────────────────────────────
   logout: async () => {
+    const userName = get().user?.name?.split(" ")[0] || "Usuario";
     try {
       await api.post("/auth/logout");
-    } finally {
       set({ user: null, isAuthenticated: false });
+      toast.success(`¡Hasta luego, ${userName}! 👋`, { duration: 3000 });
+    } catch (err) {
+      set({ user: null, isAuthenticated: false });
+      toast.success(`Sesión cerrada`, { duration: 3000 });
     }
   },
 
-  // ── checkAuth: se llama al montar la app para restaurar sesión ──
   checkAuth: async () => {
     set({ isCheckingAuth: true });
     try {

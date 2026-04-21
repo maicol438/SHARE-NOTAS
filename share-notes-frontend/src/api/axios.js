@@ -2,17 +2,19 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "/api",
-  withCredentials: true, // Envía la cookie HTTP-only en cada petición
+  withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
 
-// Interceptor de respuesta: redirigir al login si el token expiró
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (!error.response) {
+      console.error("Error de red:", error.message);
+      return Promise.reject(new Error("No se pudo conectar al servidor. Verifica tu conexión."));
+    }
     if (error.response?.status === 401) {
-      // Limpiar estado y redirigir solo si no estamos ya en auth pages
-      const isAuthPage = ["/login", "/register", "/"].includes(window.location.pathname);
+      const isAuthPage = ["/login", "/register", "/"].some(p => window.location.pathname.startsWith(p));
       if (!isAuthPage) {
         window.location.href = "/login";
       }

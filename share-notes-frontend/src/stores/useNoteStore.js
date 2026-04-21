@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { toast } from "react-hot-toast";
 import api from "../api/axios";
 
 const useNoteStore = create((set, get) => ({
@@ -91,8 +92,10 @@ const useNoteStore = create((set, get) => ({
     try {
       const res = await api.post("/notes", data);
       set((s) => ({ notes: [res.data.note, ...s.notes] }));
+      toast.success("¡Nota creada! ✨", { duration: 3000 });
       return { ok: true };
     } catch (err) {
+      toast.error("No se pudo crear la nota");
       return { ok: false, message: err.response?.data?.message || "Error al crear la nota" };
     } finally {
       set({ isLoading: false });
@@ -106,8 +109,10 @@ const useNoteStore = create((set, get) => ({
       set((s) => ({
         notes: s.notes.map((n) => (n._id === id ? res.data.note : n)),
       }));
+      toast.success("Cambios guardados 💾", { duration: 2500 });
       return { ok: true };
     } catch (err) {
+      toast.error("No se pudieron guardar los cambios");
       return { ok: false, message: err.response?.data?.message || "Error al actualizar" };
     } finally {
       set({ isLoading: false });
@@ -120,8 +125,10 @@ const useNoteStore = create((set, get) => ({
       set((s) => ({
         notes: s.notes.filter((n) => n._id !== id),
       }));
+      toast.success("Nota enviada a la papelera 📦", { duration: 2500 });
       return { ok: true };
     } catch (err) {
+      toast.error("No se pudo eliminar la nota");
       return { ok: false, message: err.response?.data?.message || "Error al mover a papelera" };
     }
   },
@@ -133,8 +140,10 @@ const useNoteStore = create((set, get) => ({
         notes: [...s.notes, res.data.note],
         trashNotes: s.trashNotes.filter((n) => n._id !== id),
       }));
+      toast.success("¡Nota restaurada! ✅", { duration: 2500 });
       return { ok: true };
     } catch (err) {
+      toast.error("No se pudo restaurar la nota");
       return { ok: false, message: err.response?.data?.message || "Error al restaurar" };
     }
   },
@@ -145,32 +154,42 @@ const useNoteStore = create((set, get) => ({
       set((s) => ({
         trashNotes: s.trashNotes.filter((n) => n._id !== id),
       }));
+      toast.success("Nota eliminada permanentemente 🗑️", { duration: 2500 });
       return { ok: true };
     } catch (err) {
+      toast.error("No se pudo eliminar la nota");
       return { ok: false, message: err.response?.data?.message || "Error al eliminar" };
     }
   },
 
   togglePin: async (id) => {
+    const note = get().notes.find(n => n._id === id);
+    const isPinned = !note?.isPinned;
     try {
       const res = await api.patch(`/notes/${id}/pin`);
       set((s) => ({
         notes: s.notes.map((n) => (n._id === id ? res.data.note : n)),
       }));
+      toast.success(isPinned ? "Nota fijada 📌" : "Nota desfija", { duration: 2000 });
       return { ok: true };
     } catch {
+      toast.error("No se pudo fijar la nota");
       return { ok: false };
     }
   },
 
   toggleFavorite: async (id) => {
+    const note = get().notes.find(n => n._id === id);
+    const isFav = !note?.isFavorite;
     try {
       const res = await api.patch(`/notes/${id}/favorite`);
       set((s) => ({
         notes: s.notes.map((n) => (n._id === id ? res.data.note : n)),
       }));
+      toast.success(isFav ? "Añadida a favoritos ⭐" : "Quitada de favoritos", { duration: 2000 });
       return { ok: true };
     } catch {
+      toast.error("No se pudo actualizar favorito");
       return { ok: false };
     }
   },
@@ -178,8 +197,10 @@ const useNoteStore = create((set, get) => ({
   downloadNote: async (id) => {
     try {
       const res = await api.post(`/notes/${id}/download`);
+      toast.success("¡Descarga iniciada! 📥", { duration: 3000 });
       return { ok: true, downloadUrl: res.data.downloadUrl };
     } catch (err) {
+      toast.error("No se pudo descargar la nota");
       return { ok: false, message: err.response?.data?.message || "Error al descargar" };
     }
   },
@@ -187,8 +208,10 @@ const useNoteStore = create((set, get) => ({
   rateNote: async (id, rating) => {
     try {
       const res = await api.post(`/notes/${id}/rate`, { rating });
+      toast.success(`Calificación guardada: ${"⭐".repeat(rating)}`, { duration: 2500 });
       return { ok: true, rating: res.data.rating };
     } catch (err) {
+      toast.error("No se pudo calificar");
       return { ok: false, message: err.response?.data?.message || "Error al calificar" };
     }
   },
@@ -207,19 +230,24 @@ const useNoteStore = create((set, get) => ({
     try {
       const res = await api.post("/categories", data);
       set((s) => ({ categories: [...s.categories, res.data.category] }));
+      toast.success(`Categoría "${data.name}" creada 🏷️`, { duration: 3000 });
       return { ok: true, category: res.data.category };
     } catch (err) {
+      toast.error("No se pudo crear la categoría");
       return { ok: false, message: err.response?.data?.message || "Error al crear categoría" };
     }
   },
 
   deleteCategory: async (id) => {
+    const cat = get().categories.find(c => c._id === id);
     try {
       await api.delete(`/categories/${id}`);
       set((s) => ({ categories: s.categories.filter((c) => c._id !== id) }));
       if (get().activeCategory === id) set({ activeCategory: null });
+      toast.success(`Categoría "${cat?.name}" eliminada`, { duration: 2500 });
       return { ok: true };
     } catch (err) {
+      toast.error("No se pudo eliminar la categoría");
       return { ok: false, message: err.response?.data?.message || "Error al eliminar categoría" };
     }
   },

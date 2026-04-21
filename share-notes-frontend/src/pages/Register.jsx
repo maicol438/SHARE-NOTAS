@@ -34,15 +34,7 @@ const Register = () => {
     if (!validate()) return;
     const result = await register(form);
     if (result.ok) {
-      toast.success(`🎉 ¡Cuenta creada! Bienvenido, ${form.name.split(" ")[0]}!`, {
-        icon: "🎊",
-        style: { background: "linear-gradient(135deg, #6366f1, #8b5cf6)", borderRadius: "12px", color: "white" },
-      });
       navigate("/dashboard");
-    } else {
-      toast.error(`❌ ${result.message || "No se pudo crear la cuenta. Intenta de nuevo."}`, {
-        style: { background: "#ef4444", borderRadius: "12px", color: "white" },
-      });
     }
   };
 

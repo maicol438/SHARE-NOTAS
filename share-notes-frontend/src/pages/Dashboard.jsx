@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Plus, Search, StickyNote, Star, Trash2, RotateCcw, Sparkles, ArrowRight, X, FileQuestion } from "lucide-react";
+import { Plus, Search, StickyNote, Star, Trash2, RotateCcw, Sparkles, ArrowRight, X } from "lucide-react";
 import useNoteStore from "../stores/useNoteStore.js";
 import NoteCard from "../components/notes/NoteCard.jsx";
 import NoteForm from "../components/notes/NoteForm.jsx";
 import Modal from "../components/ui/Modal.jsx";
 import Button from "../components/ui/Button.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
 import toast from "react-hot-toast";
 
 const SkeletonCard = () => (
@@ -89,15 +90,7 @@ const Dashboard = () => {
   const pinnedNotes = filteredNotes.filter((n) => n.isPinned);
   const regularNotes = filteredNotes.filter((n) => !n.isPinned);
 
-  const getEmptyMessage = () => {
-    if (showTrash) return { icon: <Trash2 />, title: "La papelera está vacía", subtitle: "Las notas eliminadas aparecerán aquí" };
-    if (search) return { icon: <Search />, title: "Sin resultados", subtitle: `No encontramos "${search}"` };
-    if (favoriteFilter) return { icon: <Star />, title: "Sin favoritos", subtitle: "Marca notas como favoritas" };
-    if (activeCategory) return { icon: <StickyNote />, title: `Sin notas en ${activeCatName}`, subtitle: "¡Crea tu primera nota!" };
-    return { icon: <Sparkles />, title: "¡Bienvenido!", subtitle: "Crea tu primera nota" };
-  };
-
-  const emptyMsg = getEmptyMessage();
+  
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -185,20 +178,12 @@ const Dashboard = () => {
 
       {/* Empty state - Premium */}
       {!isLoading && filteredNotes.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-24 gap-6 text-center animate-fade-in">
-          <div className="w-24 h-24 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 rounded-full flex items-center justify-center border border-indigo-100 dark:border-indigo-900/30">
-            <FileQuestion className="w-10 h-10 text-indigo-400" />
-          </div>
-          <div>
-            <p className="font-semibold text-xl text-gray-900 dark:text-gray-100">Tu espacio está vacío</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-sm">Empieza a crear tus primeras notasorganizadas por categorías</p>
-          </div>
-          {!showTrash && !search && !favoriteFilter && (
-            <Button icon={Plus} onClick={() => setShowModal(true)} className="mt-2 bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40">
-              Crear primera nota
-            </Button>
-          )}
-        </div>
+        <EmptyState 
+          type={showTrash ? "trash" : search ? "search" : favoriteFilter ? "favorites" : activeCategory ? "category" : "notes"}
+          title={search ? `No encontramos "${search}"` : undefined}
+          subtitle={search ? "Intenta con otras palabras" : undefined}
+          onAction={!showTrash && !search && !favoriteFilter ? () => setShowModal(true) : undefined}
+        />
       )}
 
       {/* Trash - Premium Grid */}

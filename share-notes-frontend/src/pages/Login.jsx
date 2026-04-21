@@ -34,15 +34,7 @@ const Login = () => {
     if (!validate()) return;
     const result = await login(form);
     if (result.ok) {
-      toast.success(`✨ ¡Bienvenido de nuevo, ${result.user?.name?.split(" ")[0] || "estudiante"}! 🎉`, {
-        icon: "👋",
-        style: { background: "linear-gradient(135deg, #6366f1, #8b5cf6)", borderRadius: "12px", color: "white" },
-      });
       navigate("/dashboard");
-    } else {
-      toast.error("❌ Credenciales incorrectas. Verifica tu email y contraseña.", {
-        style: { background: "#ef4444", borderRadius: "12px", color: "white" },
-      });
     }
   };
 
