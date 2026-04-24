@@ -16,7 +16,14 @@ export const createCategory = async (req, res, next) => {
   try {
     const { name, color } = req.body;
 
-    const category = await Category.create({ name, color, user: req.userId });
+    if (!name || name.trim().length < 2) {
+      return res.status(400).json({ message: "El nombre debe tener al menos 2 caracteres" });
+    }
+    if (name.trim().length > 50) {
+      return res.status(400).json({ message: "El nombre no puede superar 50 caracteres" });
+    }
+
+    const category = await Category.create({ name: name.trim(), color, user: req.userId });
     res.status(201).json({ message: "Categoría creada correctamente", category });
   } catch (error) {
     // Error de índice único (nombre duplicado para el mismo usuario)

@@ -6,7 +6,7 @@ import Button from "../components/ui/Button.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
 
 const Explore = () => {
-  const { publicNotes, fetchPublicNotes, categories, fetchCategories, toggleFavorite, downloadNote, rateNote, isLoading } = useNoteStore();
+  const { publicNotes = [], fetchPublicNotes, categories = [], fetchCategories, toggleFavorite, downloadNote, rateNote, isLoading } = useNoteStore();
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -48,7 +48,7 @@ const Explore = () => {
 
         <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="input-field">
           <option value="">Todas las categorías</option>
-          {categories.map((cat) => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
+          {(categories || []).map((cat) => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
         </select>
 
         <div className="flex gap-2">

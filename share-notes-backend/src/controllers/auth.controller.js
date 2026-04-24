@@ -71,8 +71,13 @@ export const login = async (req, res, next) => {
 };
 
 // ── POST /api/auth/logout ─────────────────────────────────────────
-export const logout = (_req, res) => {
-  res.clearCookie("token");
+export const logout = (req, res) => {
+  // Forzar expiración inmediata de la cookie
+  res.cookie("token", "", {
+    httpOnly: true,
+    expires: new Date(0),
+    sameSite: "lax",
+  });
   res.json({ message: "Sesión cerrada correctamente" });
 };
 
@@ -81,7 +86,7 @@ export const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.userId);
     if (!user) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
+      return res.status(404).json({ message: "Usuario no encontrado o eliminado" });
     }
     res.json({ user });
   } catch (error) {

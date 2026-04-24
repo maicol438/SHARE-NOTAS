@@ -9,6 +9,9 @@ import authRoutes from "./routes/auth.routes.js";
 import noteRoutes from "./routes/note.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import commentRoutes from "./routes/comment.routes.js";
+import searchRoutes from "./routes/search.routes.js";
+import profileRoutes from "./routes/profile.routes.js";
+import notebookRoutes from "./routes/notebook.routes.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 
 initializeGoogleAuth();
@@ -19,7 +22,7 @@ const app = express();
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "http://localhost:5173",
-    credentials: true, // Permite envío de cookies entre dominios
+    credentials: true,
   })
 );
 app.use(express.json());
@@ -35,6 +38,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api", commentRoutes);
+app.use("/api", searchRoutes);
+app.use("/api/users", profileRoutes);
+app.use("/api/notebooks", notebookRoutes);
 
 // ── Health Check ──────────────────────────────────────────────────
 app.get("/api/health", (_req, res) => {

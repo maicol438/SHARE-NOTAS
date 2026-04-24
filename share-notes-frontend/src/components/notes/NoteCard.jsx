@@ -15,6 +15,12 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
     year: "numeric",
   });
 
+  const createdDate = note.createdAt ? new Date(note.createdAt).toLocaleDateString("es-CO", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }) : date;
+
   const renderStars = () => {
     const stars = [];
     const rating = note.rating || 0;
@@ -168,7 +174,10 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
               <div className="flex items-center gap-1"><Download className="w-3 h-3" />{note.downloads}</div>
             </>
           )}
-          <span className="text-gray-400">{date}</span>
+          <span className="text-gray-400" title={`Creado: ${createdDate}`}>{date}</span>
+          {createdDate !== date && (
+            <span className="text-xs text-gray-300 dark:text-gray-500" title={`Creado: ${createdDate}`}> 📝 {createdDate}</span>
+          )}
         </div>
       </div>
 

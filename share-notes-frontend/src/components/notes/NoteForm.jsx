@@ -20,9 +20,15 @@ const NoteForm = ({ note, onClose }) => {
   const [showNewCategory, setShowNewCategory] = useState(false);
 
   useEffect(() => {
-    if (categories.length === 0) {
-      createCategory({ name: "General", color: "#6366f1" }).then(() => {});
-    }
+    const loadCategories = async () => {
+      const { fetchCategories, createCategory, categories } = useNoteStore.getState();
+      await fetchCategories();
+      const catList = useNoteStore.getState().categories;
+      if (!catList || catList.length === 0) {
+        await createCategory({ name: "General", color: "#6366f1" });
+      }
+    };
+    loadCategories();
   }, []);
 
   const handleChange = (e) => {
@@ -89,7 +95,7 @@ const NoteForm = ({ note, onClose }) => {
           <div className="flex gap-2">
             <select name="category" value={form.category} onChange={handleChange} className="input-field flex-1">
               <option value="">Selecciona una categoría</option>
-              {categories.map((cat) => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
+              {(categories || []).map((cat) => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
             </select>
             <Button type="button" variant="secondary" onClick={() => setShowNewCategory(true)}>+ Nueva</Button>
           </div>

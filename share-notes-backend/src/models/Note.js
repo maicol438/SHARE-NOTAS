@@ -10,8 +10,11 @@ const noteSchema = new mongoose.Schema(
     },
     content: {
       type: String,
-      required: [true, "El contenido es obligatorio"],
-      trim: true,
+      default: "",
+    },
+    contentHTML: {
+      type: String,
+      default: "",
     },
     description: {
       type: String,
@@ -54,16 +57,72 @@ const noteSchema = new mongoose.Schema(
       ref: "Category",
       required: [true, "La categoría es obligatoria"],
     },
+    notebook: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Notebook",
+      default: null,
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
+    tags: [{
+      type: String,
+      trim: true,
+      lowercase: true,
+    }],
+    images: [{
+      type: String,
+    }],
+    reminder: {
+      date: Date,
+      note: { type: String, default: "" },
+      isActive: { type: Boolean, default: true },
+    },
+    sharedWith: [{
+      user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      permission: { type: String, enum: ["read", "edit"], default: "read" },
+      sharedAt: { type: Date, default: Date.now },
+    }],
+    sharedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    isPublic: {
+      type: Boolean,
+      default: false,
+    },
+    dueDate: {
+      type: Date,
+      default: null,
+    },
+    priority: {
+      type: String,
+      enum: ["low", "medium", "high", "urgent"],
+      default: "medium",
+    },
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    isCompleted: {
+      type: Boolean,
+      default: false,
+    },
+    type: {
+      type: String,
+      enum: ["note", "task"],
+      default: "note",
+    },
   },
   { timestamps: true }
 );
 
-// Índice de texto para búsqueda full-text en título y contenido
-noteSchema.index({ title: "text", content: "text" });
+noteSchema.index({ title: "text", content: "text", contentHTML: "text" });
+noteSchema.index({ tags: 1 });
+noteSchema.index({ "reminder.date": 1 });
 
 export default mongoose.model("Note", noteSchema);

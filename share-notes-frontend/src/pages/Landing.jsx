@@ -167,7 +167,7 @@ const Landing = () => {
       {/* Footer */}
       <footer className="relative z-10 border-t border-gray-200 dark:border-gray-800 py-8">
         <div className="max-w-6xl mx-auto px-6 text-center text-gray-500 text-sm">
-          <p>© 2026 ShareNotes. Hecho con ❤️ para estudiantes.</p>
+          <p>ShareNotes By Maicol438. Hecho con ❤️ para estudiantes.</p>
         </div>
       </footer>
     </div>

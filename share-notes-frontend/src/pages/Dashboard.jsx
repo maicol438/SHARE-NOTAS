@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Plus, Search, StickyNote, Star, Trash2, RotateCcw, Sparkles, ArrowRight, X } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { Plus, Search, Star, Trash2, RotateCcw, X } from "lucide-react";
 import useNoteStore from "../stores/useNoteStore.js";
 import NoteCard from "../components/notes/NoteCard.jsx";
 import NoteForm from "../components/notes/NoteForm.jsx";
@@ -24,53 +25,51 @@ const SkeletonCard = () => (
 );
 
 const Dashboard = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get("tab");
+  const category = searchParams.get("category");
+  const notebook = searchParams.get("notebook");
+
   const {
-    notes, isLoading, fetchNotes, fetchCategories,
+    notes = [], isLoading, fetchNotes, fetchCategories, categories = [],
     moveToTrash, togglePin, toggleFavorite,
-    activeCategory, setSearchQuery,
-    favoriteFilter, setFavoriteFilter,
-    categories, localSearchNotes, getFilteredNotes,
+    localSearchNotes, getFilteredNotes,
   } = useNoteStore();
 
   const [showModal, setShowModal] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
-  const [showTrash, setShowTrash] = useState(false);
   const [search, setSearch] = useState("");
-  const { trashNotes, restoreNote, permanentDelete, fetchTrash } = useNoteStore();
+  const { trashNotes = [], restoreNote, permanentDelete, fetchTrash } = useNoteStore();
 
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [showWelcome, setShowWelcome] = useState(true);
 
-  const activeCatName = categories.find(c => c._id === activeCategory)?.name || "";
-  const filteredNotes = getFilteredNotes();
+  const isFavoritesTab = tab === "favorites";
+  const isTrashTab = tab === "trash";
+
+  const activeCatName = (categories || [])?.find(c => c._id === category)?.name || "";
+  const filteredNotes = getFilteredNotes?.() || [];
 
   useEffect(() => { 
-    fetchCategories(); 
-    fetchNotes({});
-  }, []);
+    if (isTrashTab) fetchTrash();
+    else fetchNotes({});
+  }, [isTrashTab]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(timer);
   }, [search]);
 
-  useEffect(() => {
-    if (showTrash) fetchTrash();
-  }, [showTrash]);
+  useEffect(() => { 
+    fetchCategories(); 
+  }, []);
 
-  const handleSearch = (e) => {
-    const value = e.target.value;
-    setSearch(value);
-    localSearchNotes(value);
-  };
-
-  const handleEdit = (note) => { setEditingNote(note); setShowModal(true); };
   const handleCloseModal = () => { setShowModal(false); setEditingNote(null); };
   
   const handleDelete = async (id) => {
-    if (!confirm("¿Eliminar esta nota?\nSe enviará a la papelera.")) return;
+    if (!confirm("¿Eliminar esta nota?")) return;
     const result = await moveToTrash(id);
-    if (result.ok) toast.success("📦 Nota movida a la papelera"); else toast.error(result.message);
+    if (result.ok) toast.success("Nota en papelera");
   };
   
   const handleTogglePin = async (id) => { await togglePin(id); };
@@ -78,19 +77,20 @@ const Dashboard = () => {
   
   const handleRestore = async (id) => {
     const result = await restoreNote(id);
-    if (result.ok) toast.success("✅ Nota restaurada");
+    if (result.ok) toast.success("Nota restaurada");
   };
   
   const handlePermanentDelete = async (id) => {
-    if (!confirm("¿Eliminar permanentemente?\nEsta acción no se puede deshacer.")) return;
+    if (!confirm("¿Eliminar permanentemente?")) return;
     const result = await permanentDelete(id);
-    if (result.ok) toast.success("🗑️ Nota eliminada permanentemente");
+    if (result.ok) toast.success("Nota eliminada");
   };
 
-  const pinnedNotes = filteredNotes.filter((n) => n.isPinned);
-  const regularNotes = filteredNotes.filter((n) => !n.isPinned);
-
-  
+  const title = isTrashTab ? "🗑️ Papelera" : isFavoritesTab ? "⭐ Favoritos" : activeCatName || search ? "🔍 Resultados" : "📚 Mis Notas";
+  const pinFilter = isFavoritesTab ? (n) => n.isFavorite : (_n) => true;
+  const pinnedNotes = filteredNotes.filter(n => n.isPinned && pinFilter(n));
+  const regularNotes = filteredNotes.filter(n => !n.isPinned && pinFilter(n));
+  const displayedNotes = isTrashTab ? trashNotes : regularNotes;
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -115,56 +115,32 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
         <div className="flex-1">
-          <h2 className="text-2xl font-bold gradient-text">
-            {showTrash ? "🗑️ Papelera" : activeCategory ? activeCatName : search ? "🔍 Resultados" : favoriteFilter ? "⭐ Favoritos" : "📚 Mis Notas"}
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {showTrash ? trashNotes.length : filteredNotes.length} {showTrash ? "notas" : "notas"}{!showTrash && search && ` (filtrados)`}
+          <h2 className="text-2xl font-bold gradient-text">{title}</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            {isTrashTab ? trashNotes.length : displayedNotes.length} notas
           </p>
         </div>
 
-        {/* Search - Premium */}
         <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input 
             type="text" 
             value={search} 
-            onChange={handleSearch} 
-            placeholder={showTrash ? "Buscar en papelera..." : "Buscar notas..."} 
-            className="w-full pl-12 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all shadow-sm" 
+            onChange={(e) => { setSearch(e.target.value); localSearchNotes(e.target.value); }} 
+            placeholder={isTrashTab ? "Buscar en papelera..." : "Buscar notas..."} 
+            className="w-full pl-12 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all" 
           />
         </div>
 
-        {/* Actions */}
-        {!showTrash && (
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={() => setFavoriteFilter(!favoriteFilter)} 
-              className={`p-2.5 rounded-xl transition-all duration-300 hover:scale-110 ${favoriteFilter ? "text-yellow-500 bg-yellow-50" : "hover:bg-gray-100 text-gray-500"}`}
-            >
-              <Star className={`w-5 h-5 ${favoriteFilter ? "fill-current" : ""}`} />
-            </button>
-            <button 
-              onClick={() => setShowTrash(true)} 
-              className="p-2.5 rounded-xl hover:bg-gray-100 text-gray-500 transition-all duration-300 hover:scale-110"
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>
-          </div>
-        )}
-
-        {showTrash && (
-          <button 
-            onClick={() => setShowTrash(false)} 
-            className="p-2.5 rounded-xl hover:bg-gray-100 text-gray-500 transition-all duration-300 hover:scale-110"
-          >
-            <RotateCcw className="w-5 h-5" />
-          </button>
-        )}
-
-        {!showTrash && (
-          <Button icon={Plus} onClick={() => setShowModal(true)} className="bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 text-white">
+        {!isTrashTab && (
+          <Button icon={Plus} onClick={() => setShowModal(true)} className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
             Nueva nota
+          </Button>
+        )}
+
+        {isTrashTab && (
+          <Button icon={RotateCcw} onClick={() => setSearchParams({})} className="btn-secondary">
+            Volver
           </Button>
         )}
       </div>
@@ -176,50 +152,46 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Empty state - Premium */}
-      {!isLoading && filteredNotes.length === 0 && (
+      {/* Empty state */}
+      {!isLoading && displayedNotes.length === 0 && (
         <EmptyState 
-          type={showTrash ? "trash" : search ? "search" : favoriteFilter ? "favorites" : activeCategory ? "category" : "notes"}
-          title={search ? `No encontramos "${search}"` : undefined}
-          subtitle={search ? "Intenta con otras palabras" : undefined}
-          onAction={!showTrash && !search && !favoriteFilter ? () => setShowModal(true) : undefined}
+          type={isTrashTab ? "trash" : isFavoritesTab ? "favorites" : "notes"}
+          onAction={!isTrashTab ? () => setShowModal(true) : undefined}
         />
       )}
 
-      {/* Trash - Premium Grid */}
-      {!isLoading && showTrash && (
+      {/* Trash Grid */}
+      {!isLoading && isTrashTab && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {trashNotes.map((note, i) => (
-            <NoteCard key={note._id} note={note} index={i} external onEdit={() => {}} onDelete={() => handlePermanentDelete(note._id)} onTogglePin={() => handleRestore(note._id)} />
+            <NoteCard key={note._id} note={note} index={i} onEdit={() => {}} onDelete={() => handlePermanentDelete(note._id)} onTogglePin={() => handleRestore(note._id)} />
           ))}
         </div>
       )}
 
-      {/* Pinned notes - Premium */}
-      {!isLoading && !showTrash && pinnedNotes.length > 0 && (
+      {/* Pinned Notes */}
+      {!isLoading && !isTrashTab && pinnedNotes.length > 0 && (
         <div className="mb-8">
-          <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-            <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" /> Fijadas <span className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-2.5 py-0.5 rounded-full text-xs font-medium">{pinnedNotes.length}</span>
+          <h3 className="text-xs font-semibold text-gray-500 uppercase mb-4 flex items-center gap-2">
+            <span className="w-2 h-2 bg-indigo-500 rounded-full" /> Fijadas ({pinnedNotes.length})
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {pinnedNotes.map((note, i) => (
-              <NoteCard key={note._id} note={note} index={i} onEdit={handleEdit} onDelete={handleDelete} onTogglePin={handleTogglePin} onToggleFavorite={handleToggleFavorite} />
+              <NoteCard key={note._id} note={note} index={i} onEdit={() => { setEditingNote(note); setShowModal(true); }} onDelete={() => handleDelete(note._id)} onTogglePin={() => handleTogglePin(note._id)} onToggleFavorite={() => handleToggleFavorite(note._id)} />
             ))}
           </div>
         </div>
       )}
 
-      {/* Regular notes - Premium */}
-      {!isLoading && !showTrash && regularNotes.length > 0 && (
+      {/* Regular Notes */}
+      {!isLoading && !isTrashTab && regularNotes.length > 0 && (
         <div>
           {pinnedNotes.length > 0 && (
-            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <span className="w-2 h-2 bg-purple-500 rounded-full" /> Notas <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2.5 py-0.5 rounded-full text-xs font-medium">{regularNotes.length}</span>
-            </h3>
+            <h3 className="text-xs font-semibold text-gray-500 uppercase mb-4">Notas ({regularNotes.length})</h3>
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {regularNotes.map((note, i) => (
-              <NoteCard key={note._id} note={note} index={i} onEdit={handleEdit} onDelete={handleDelete} onTogglePin={handleTogglePin} onToggleFavorite={handleToggleFavorite} />
+              <NoteCard key={note._id} note={note} index={i} onEdit={() => { setEditingNote(note); setShowModal(true); }} onDelete={() => handleDelete(note._id)} onTogglePin={() => handleTogglePin(note._id)} onToggleFavorite={() => handleToggleFavorite(note._id)} />
             ))}
           </div>
         </div>

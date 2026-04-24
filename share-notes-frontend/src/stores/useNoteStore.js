@@ -7,6 +7,8 @@ const useNoteStore = create((set, get) => ({
   publicNotes: [],
   trashNotes: [],
   categories: [],
+  notebooks: [],
+  tags: [],
   isLoading: false,
   activeCategory: null,
   searchQuery: "",
@@ -18,7 +20,9 @@ const useNoteStore = create((set, get) => ({
   },
 
   getFilteredNotes: () => {
-    const { notes, localSearch, activeCategory, favoriteFilter } = get();
+    const state = get();
+    const notes = state?.notes || [];
+    const { localSearch, activeCategory, favoriteFilter } = state;
     let filtered = [...notes];
 
     if (localSearch) {
@@ -249,6 +253,50 @@ const useNoteStore = create((set, get) => ({
     } catch (err) {
       toast.error("No se pudo eliminar la categoría");
       return { ok: false, message: err.response?.data?.message || "Error al eliminar categoría" };
+    }
+  },
+
+  fetchNotebooks: async () => {
+    try {
+      const res = await api.get("/notebooks");
+      set({ notebooks: res.data.notebooks });
+      return { ok: true };
+    } catch {
+      return { ok: false };
+    }
+  },
+
+  createNotebook: async (data) => {
+    try {
+      const res = await api.post("/notebooks", data);
+      set((s) => ({ notebooks: [...s.notebooks, res.data.notebook] }));
+      toast.success(`Cuaderno "${data.name}" creado 📓`, { duration: 3000 });
+      return { ok: true, notebook: res.data.notebook };
+    } catch (err) {
+      toast.error("No se pudo crear el cuaderno");
+      return { ok: false };
+    }
+  },
+
+  deleteNotebook: async (id) => {
+    try {
+      await api.delete(`/notebooks/${id}`);
+      set((s) => ({ notebooks: s.notebooks.filter((n) => n._id !== id) }));
+      toast.success("Cuaderno eliminado", { duration: 2500 });
+      return { ok: true };
+    } catch (err) {
+      toast.error("No se pudo eliminar el cuaderno");
+      return { ok: false };
+    }
+  },
+
+  fetchTags: async () => {
+    try {
+      const res = await api.get("/tags");
+      set({ tags: res.data.tags });
+      return { ok: true };
+    } catch {
+      return { ok: false };
     }
   },
 
