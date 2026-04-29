@@ -8,10 +8,11 @@ const sendTokenCookie = (res, user) => {
   });
 
   res.cookie("token", token, {
-    httpOnly: true,           // Inaccesible desde JS del navegador (mitiga XSS)
-    secure: process.env.NODE_ENV === "production", // Solo HTTPS en producción
-    sameSite: "lax",          // Protección básica contra CSRF
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días en ms
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
   return token;
@@ -72,11 +73,10 @@ export const login = async (req, res, next) => {
 
 // ── POST /api/auth/logout ─────────────────────────────────────────
 export const logout = (req, res) => {
-  // Forzar expiración inmediata de la cookie
-  res.cookie("token", "", {
+  res.clearCookie("token", {
     httpOnly: true,
-    expires: new Date(0),
     sameSite: "lax",
+    path: "/",
   });
   res.json({ message: "Sesión cerrada correctamente" });
 };

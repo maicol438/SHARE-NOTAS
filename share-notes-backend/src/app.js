@@ -12,6 +12,7 @@ import commentRoutes from "./routes/comment.routes.js";
 import searchRoutes from "./routes/search.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
 import notebookRoutes from "./routes/notebook.routes.js";
+import fileRoutes from "./routes/file.routes.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 
 initializeGoogleAuth();
@@ -41,6 +42,7 @@ app.use("/api", commentRoutes);
 app.use("/api", searchRoutes);
 app.use("/api/users", profileRoutes);
 app.use("/api/notebooks", notebookRoutes);
+app.use("/api/files", fileRoutes);
 
 // ── Health Check ──────────────────────────────────────────────────
 app.get("/api/health", (_req, res) => {

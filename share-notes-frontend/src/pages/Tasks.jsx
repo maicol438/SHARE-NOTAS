@@ -8,12 +8,21 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 
 export default function Tasks() {
-  const { fetchNotes, notes, isLoading, toggleTaskComplete, createNote, updateNote, moveToTrash } = useNoteStore();
+  const { fetchNotes, notes, categories, fetchCategories, isLoading, toggleTaskComplete, createNote, updateNote, moveToTrash } = useNoteStore();
   const [showModal, setShowModal] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
-  const [form, setForm] = useState({ title: "", description: "", dueDate: "", priority: "medium" });
+  const [form, setForm] = useState({ title: "", description: "", dueDate: "", priority: "medium", category: "" });
 
-  useEffect(() => { fetchNotes({}); }, []);
+  useEffect(() => { 
+    fetchNotes({ type: "task" }); 
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (categories.length > 0 && !form.category) {
+      setForm(prev => ({ ...prev, category: categories[0]._id }));
+    }
+  }, [categories]);
 
   const tasks = (notes || []).filter(n => n.type === "task");
   const pending = tasks.filter(t => !t.isCompleted);
@@ -29,6 +38,10 @@ export default function Tasks() {
       toast.error("El título es requerido");
       return;
     }
+    if (!form.category) {
+      toast.error("Selecciona una categoría");
+      return;
+    }
     const data = { ...form, type: "task" };
     if (editingTask) {
       await updateNote(editingTask._id, data);
@@ -36,7 +49,7 @@ export default function Tasks() {
       await createNote(data);
     }
     setShowModal(false);
-    setForm({ title: "", description: "", dueDate: "", priority: "medium" });
+    setForm({ title: "", description: "", dueDate: "", priority: "medium", category: categories[0]?._id || "" });
     setEditingTask(null);
   };
 
@@ -149,6 +162,15 @@ export default function Tasks() {
                 <option value="urgent">Urgente</option>
               </select>
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Categoría *</label>
+            <select value={form.category} onChange={e => setForm({...form, category: e.target.value})} className="input-field" required>
+              <option value="">Selecciona una categoría</option>
+              {(categories || []).map((cat) => (
+                <option key={cat._id} value={cat._id}>{cat.name}</option>
+              ))}
+            </select>
           </div>
           <Button type="submit" className="w-full">
             {editingTask ? "Guardar cambios" : "Crear tarea"}

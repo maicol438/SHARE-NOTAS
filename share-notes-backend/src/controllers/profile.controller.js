@@ -76,17 +76,25 @@ export const updateProfile = async (req, res, next) => {
 
 export const updateAvatar = async (req, res, next) => {
   try {
-    const { avatar } = req.body;
-
-    if (!avatar) {
-      return res.status(400).json({ message: "URL de avatar requerida" });
+    if (!req.file) {
+      return res.status(400).json({ message: "Archivo de imagen requerido" });
     }
+
+    if (!req.userId) {
+      return res.status(401).json({ message: "Usuario no autenticado" });
+    }
+
+    const avatarUrl = `/api/files/uploads/avatars/${req.file.filename}`;
 
     const user = await User.findByIdAndUpdate(
       req.userId,
-      { avatar },
+      { avatar: avatarUrl },
       { new: true }
     );
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
 
     res.json({ message: "Avatar actualizado", user: { avatar: user.avatar } });
   } catch (error) {

@@ -1,9 +1,17 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:4000/api",
+  baseURL: "/api",
   withCredentials: true,
-  headers: { "Content-Type": "application/json" },
+});
+
+api.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  } else {
+    config.headers["Content-Type"] = "application/json";
+  }
+  return config;
 });
 
 api.interceptors.response.use(

@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { BookOpen, Shield, Zap, Tag, Star, ArrowRight, Check, Sparkles } from "lucide-react";
 import { useDarkMode } from "../hooks/useDarkMode.js";
-import { Moon, Sun, GraduationCap, Users, FileText, Lock } from "lucide-react";
+import { Moon, Sun, GraduationCap, Users, FileText, Lock, LogOut } from "lucide-react";
+import useAuthStore from "../stores/useAuthStore";
 
 const features = [
   { icon: GraduationCap, title: "Organiza tus estudios", desc: "Crea notas por materia con categorías de color", color: "bg-purple-500" },
@@ -19,9 +20,14 @@ const steps = [
 const Landing = () => {
   const { isDark, toggle } = useDarkMode();
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const logout = useAuthStore((s) => s.logout);
   
-  const handleRegister = () => navigate("/register");
-  const handleLogin = () => navigate("/login");
+  const handleLogout = async () => {
+    await logout();
+    window.location.href = "/";
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 overflow-hidden">
@@ -44,12 +50,27 @@ const Landing = () => {
           <button onClick={toggle} className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all duration-300 hover:rotate-12">
             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
-          <button onClick={handleLogin} className="btn-secondary px-5 py-2.5 rounded-xl font-medium cursor-pointer">
-            Ingresar
-          </button>
-          <button onClick={handleRegister} className="btn-primary px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-primary-500/30 cursor-pointer">
-            Regístrate gratis
-          </button>
+          {isAuthenticated ? (
+            <>
+              <span className="text-sm text-gray-600 dark:text-gray-400">Hola, {user?.name}</span>
+              <button onClick={() => navigate("/dashboard")} className="btn-primary px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-primary-500/30 cursor-pointer">
+                Ir a mi cuenta
+              </button>
+              <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl font-medium transition-colors cursor-pointer">
+                <LogOut className="w-4 h-4" />
+                Cerrar sesión
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => navigate("/login")} className="btn-secondary px-5 py-2.5 rounded-xl font-medium cursor-pointer">
+                Ingresar
+              </button>
+              <button onClick={() => navigate("/register")} className="btn-primary px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-primary-500/30 cursor-pointer">
+                Regístrate gratis
+              </button>
+            </>
+          )}
         </div>
       </nav>
 
@@ -72,13 +93,22 @@ const Landing = () => {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up delay-300">
-          <button onClick={handleRegister} className="group btn-primary px-8 py-4 text-lg rounded-2xl shadow-xl shadow-primary-500/25 hover:shadow-2xl hover:shadow-primary-500/40 cursor-pointer">
-            <span>Empezar gratis</span>
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
-          <button onClick={handleLogin} className="btn-secondary px-8 py-4 text-lg rounded-2xl cursor-pointer">
-            Ya tengo cuenta
-          </button>
+          {isAuthenticated ? (
+            <button onClick={() => navigate("/dashboard")} className="group btn-primary px-8 py-4 text-lg rounded-2xl shadow-xl shadow-primary-500/25 hover:shadow-2xl hover:shadow-primary-500/40 cursor-pointer">
+              <span>Continuar a mi cuenta</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </button>
+          ) : (
+            <>
+              <button onClick={() => navigate("/register")} className="group btn-primary px-8 py-4 text-lg rounded-2xl shadow-xl shadow-primary-500/25 hover:shadow-2xl hover:shadow-primary-500/40 cursor-pointer">
+                <span>Empezar gratis</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </button>
+              <button onClick={() => navigate("/login")} className="btn-secondary px-8 py-4 text-lg rounded-2xl cursor-pointer">
+                Ya tengo cuenta
+              </button>
+            </>
+          )}
         </div>
 
         {/* Stats */}

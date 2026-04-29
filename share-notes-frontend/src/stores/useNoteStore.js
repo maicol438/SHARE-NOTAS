@@ -66,13 +66,14 @@ const useNoteStore = create((set, get) => ({
       const params = new URLSearchParams();
       if (filters.search) params.set("search", filters.search);
       if (filters.category) params.set("category", filters.category);
-      if (filters.sort) params.set("sort", filters.sort);
+      if (filters.pinned !== undefined) params.set("pinned", filters.pinned);
+      if (filters.tags) params.set("tags", filters.tags);
 
-      const res = await api.get(`/notes/public?${params}`);
+      const res = await api.get(`/notes?${params}`);
       set({ publicNotes: res.data.notes });
       return { ok: true };
     } catch (err) {
-      return { ok: false, message: err.response?.data?.message || "Error al cargar notas" };
+      return { ok: false, message: err.response?.data?.message || "Error al buscar" };
     } finally {
       set({ isLoading: false });
     }
@@ -194,6 +195,20 @@ const useNoteStore = create((set, get) => ({
       return { ok: true };
     } catch {
       toast.error("No se pudo actualizar favorito");
+      return { ok: false };
+    }
+  },
+
+  toggleTaskComplete: async (id) => {
+    try {
+      const res = await api.patch(`/notes/tasks/${id}/complete`);
+      set((s) => ({
+        notes: s.notes.map((n) => (n._id === id ? res.data.note : n)),
+      }));
+      toast.success("Tarea actualizada", { duration: 2000 });
+      return { ok: true };
+    } catch {
+      toast.error("No se pudo actualizar la tarea");
       return { ok: false };
     }
   },

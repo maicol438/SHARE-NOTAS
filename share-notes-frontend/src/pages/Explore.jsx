@@ -19,7 +19,7 @@ const Explore = () => {
     return () => clearTimeout(timer);
   }, [search]);
   useEffect(() => {
-    fetchPublicNotes({ search: debouncedSearch, category: selectedCategory, sort });
+    fetchPublicNotes({ q: debouncedSearch, category: selectedCategory, sort });
   }, [debouncedSearch, selectedCategory, sort]);
 
   const handleDownload = async (id) => {

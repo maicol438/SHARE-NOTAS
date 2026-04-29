@@ -52,8 +52,13 @@ const Dashboard = () => {
 
   useEffect(() => { 
     if (isTrashTab) fetchTrash();
-    else fetchNotes({});
-  }, [isTrashTab]);
+    else fetchNotes({ q: search });
+  }, [isTrashTab, search]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 300);

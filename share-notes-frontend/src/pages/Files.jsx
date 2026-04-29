@@ -18,27 +18,33 @@ export default function Files() {
     }
 
     setUploading(true);
+    const formData = new FormData();
+    uploadedFiles.forEach((file) => {
+      formData.append("files", file); // "files" (plural) debe coincidir con el backend
+    });
+
     try {
-      for (const file of uploadedFiles) {
-        const formData = new FormData();
-        formData.append("file", file);
-        
-        const res = await api.post("/files/upload", formData, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
-        
-        setFiles(prev => [...prev, res.data.file]);
+      const res = await api.post("/files/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      
+      // El backend devuelve: { message, files: [...] }
+      if (res.data.files && res.data.files.length > 0) {
+        setFiles(prev => [...prev, ...res.data.files]);
+        toast.success(`${res.data.files.length} archivo(s) subido(s)`);
       }
-      toast.success(`${uploadedFiles.length} archivo(s) subido(s)`);
     } catch (err) {
-      toast.error("Error al subir archivos");
+      console.error(err);
+      toast.error("Error al subir archivos: " + (err.response?.data?.message || err.message));
     } finally {
       setUploading(false);
+      // Limpiar el input para permitir subir los mismos archivos otra vez
+      e.target.value = '';
     }
   };
 
   const getIcon = (type) => {
-    if (type.startsWith("image/")) return Image;
+    if (type?.startsWith("image/")) return Image;
     return FileText;
   };
 
@@ -52,8 +58,15 @@ export default function Files() {
         <div className="flex items-center gap-2">
           <label className="cursor-pointer btn-primary flex items-center gap-2">
             <Upload className="w-4 h-4" />
-            Subir archivos
-            <input type="file" multiple onChange={handleUpload} className="hidden" accept="image/*,.pdf,.doc,.docx,.txt" />
+            {uploading ? "Subiendo..." : "Subir archivos"}
+            <input 
+              type="file" 
+              multiple 
+              onChange={handleUpload} 
+              className="hidden" 
+              accept="image/*,.pdf,.doc,.docx,.txt,.zip,.rar"
+              disabled={uploading}
+            />
           </label>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { TrendingUp, FileText, CheckSquare, Tag, Calendar } from "lucide-react";
 import api from "../api/axios";
 
@@ -30,7 +30,7 @@ const BarChart = ({ data }) => {
             {item.name}
           </div>
           <div className="flex-1 h-8 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
-            <div
+          <div
               className="h-full bg-gradient-to-r from-primary-500 to-purple-600 rounded-lg transition-all duration-500"
               style={{
                 width: `${max > 0 ? (item.count / max) * 100 : 0}%`,
@@ -117,6 +117,14 @@ const LineChart = ({ data }) => {
   const max = Math.max(...data.map((d) => d.count));
   const height = 120;
 
+  const pathD = `M 0 ${height} ${data
+    .map((d, i) => `L ${i * 50 + 25} ${height - (d.count / max) * height}`)
+    .join(" ")} L ${(data.length - 1) * 50 + 25} ${height} Z`;
+
+  const lineD = `M ${data
+    .map((d, i) => `${i === 0 ? "" : "L "}${i * 50 + 25} ${height - (d.count / max) * height}`)
+    .join("")}`;
+
   return (
     <div className="relative h-40">
       <svg viewBox={`0 0 ${data.length * 50} ${height}`} className="w-full h-full">
@@ -142,30 +150,13 @@ const LineChart = ({ data }) => {
 
         {/* Area */}
         <path
-          d={`
-            M 0 ${height}
-            ${data
-              .map(
-                (d, i) =>
-                  `L ${i * 50 + 25} ${height - (d.count / max) * height}`
-              )
-              .join(" ")}
-            L ${(data.length - 1) * 50 + 25} ${height}
-            Z
-          `}
+          d={pathD}
           fill="url(#lineGradient)"
         />
 
         {/* Line */}
         <path
-          d={`
-            M ${data
-              .map(
-                (d, i) =>
-                  `${i === 0 ? "" : " L "}${i * 50 + 25} ${height - (d.count / max) * height}`
-              )
-              .join("")}
-          `}
+          d={lineD}
           fill="none"
           stroke="#6366f1"
           strokeWidth="3"
@@ -190,7 +181,7 @@ const LineChart = ({ data }) => {
       <div className="flex justify-between mt-2 text-xs text-gray-500">
         {data.map((d, i) => (
           <span key={i} className="truncate">
-            {d._id?.split("-W")[0]}
+            {typeof d._id === 'string' ? d._id.split("-W")[0] : `Sem ${i+1}`}
           </span>
         ))}
       </div>
@@ -226,18 +217,18 @@ export default function Stats() {
 
   if (!stats) return null;
 
-  const categoryData = stats.byCategory
-    ?.filter((s) => s.category)
+  const categoryData = (stats?.byCategory || [])
+    .filter((s) => s?.category)
     .map((s) => ({
-      name: s.category.name,
-      count: s.count,
+      name: s.category?.name || "Sin nombre",
+      count: s.count || 0,
     })) || [];
 
-  const notebookData = stats.byNotebook
-    ?.filter((s) => s.notebook)
+  const notebookData = (stats?.byNotebook || [])
+    .filter((s) => s?.notebook)
     .map((s) => ({
-      name: s.notebook.name,
-      count: s.count,
+      name: s.notebook?.name || "Sin nombre",
+      count: s.count || 0,
     })) || [];
 
   const tagData = stats.topTags?.map((t) => ({
@@ -249,7 +240,7 @@ export default function Stats() {
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold gradient-text mb-2">Estadísticas</h1>
+        <h1 className="text-2xl font-bold gradient-text mb-2">EstadÃ­sticas</h1>
         <p className="text-gray-500">Tu actividad en ShareNotes</p>
       </div>
 
@@ -294,7 +285,7 @@ export default function Stats() {
 
         {/* Activity */}
         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6">
-          <h3 className="font-semibold text-lg mb-6">Actividad (últimas 8 semanas)</h3>
+          <h3 className="font-semibold text-lg mb-6">Actividad (Ãºltimas 8 semanas)</h3>
           <LineChart data={stats.byWeek || []} />
         </div>
       </div>
@@ -303,7 +294,7 @@ export default function Stats() {
         {/* Categories */}
         {categoryData.length > 0 && (
           <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6">
-            <h3 className="font-semibold text-lg mb-6">Notas por categoría</h3>
+            <h3 className="font-semibold text-lg mb-6">Notas por categorÃ­a</h3>
             <BarChart data={categoryData} />
           </div>
         )}
@@ -319,7 +310,7 @@ export default function Stats() {
         {/* Tags */}
         {tagData.length > 0 && (
           <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 lg:col-span-2">
-            <h3 className="font-semibold text-lg mb-6">Etiquetas más usadas</h3>
+            <h3 className="font-semibold text-lg mb-6">Etiquetas mÃ¡s usadas</h3>
             <div className="flex flex-wrap gap-2">
               {tagData.map((tag, i) => (
                 <span

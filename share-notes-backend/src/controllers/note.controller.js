@@ -3,6 +3,12 @@ import Category from "../models/Category.js";
 import Notebook from "../models/Notebook.js";
 import User from "../models/User.js";
 
+const normalizeTags = (tags) => {
+  if (!tags) return [];
+  const tagArray = Array.isArray(tags) ? tags : tags.split(",");
+  return tagArray.map((t) => t.toLowerCase().trim()).filter(Boolean);
+};
+
 export const getNotes = async (req, res, next) => {
   try {
     const { search, category, notebook, tags, pinned, type } = req.query;
@@ -161,7 +167,7 @@ export const createNote = async (req, res, next) => {
       notebook: notebook || null,
       isPinned: isPinned || false,
       user: req.userId,
-      tags: tags || [],
+      tags: normalizeTags(tags),
       images: images || [],
       reminder: reminder || null,
       type: type || "note",
@@ -206,7 +212,7 @@ export const updateNote = async (req, res, next) => {
       }
     }
 
-    const updateData = { title, content, contentHTML, description, category, isPinned, tags, images, reminder, isPublic, dueDate, priority, isCompleted, type };
+    const updateData = { title, content, contentHTML, description, category, isPinned, tags: normalizeTags(tags), images, reminder, isPublic, dueDate, priority, isCompleted, type };
     if (notebook !== undefined) updateData.notebook = notebook;
     delete updateData.category;
 
@@ -447,11 +453,15 @@ export const getReminders = async (req, res, next) => {
 
 export const getTasks = async (req, res, next) => {
   try {
-    const { completed } = req.query;
+    const { completed, tags } = req.query;
     const filter = { user: req.userId, deletedAt: null, type: "task" };
 
     if (completed !== undefined) {
       filter.isCompleted = completed === "true";
+    }
+    if (tags) {
+      const tagList = tags.split(",").map(t => t.trim().toLowerCase());
+      filter.tags = { $in: tagList };
     }
 
     const tasks = await Note.find(filter)

@@ -102,9 +102,7 @@ export default function Profile() {
     formData.append("file", file);
 
     try {
-      const res = await api.post("/users/me/avatar", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await api.post("/users/me/avatar", formData);
       setUser({ ...user, avatar: res.data.user.avatar });
       toast.success("Avatar actualizado ✅");
     } catch (err) {
