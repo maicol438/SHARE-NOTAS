@@ -35,10 +35,15 @@ export const getProfile = async (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
   try {
+    console.log("🔵 updateProfile called with:", { name: req.body.name, email: req.body.email, hasNewPassword: !!req.body.newPassword });
+    
     const { name, email, currentPassword, newPassword } = req.body;
 
     const user = await User.findById(req.userId).select("+password");
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    if (!user) {
+      console.log("❌ User not found:", req.userId);
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
 
     if (newPassword) {
       if (!currentPassword) {
@@ -64,18 +69,25 @@ export const updateProfile = async (req, res, next) => {
     if (name) user.name = name;
 
     await user.save();
+    console.log("✅ Profile saved successfully for user:", user.email);
 
-    res.json({
+    const responseData = {
       message: "Perfil actualizado",
       user: { name: user.name, email: user.email, avatar: user.avatar },
-    });
+    };
+    console.log("📤 Sending response:", responseData);
+    
+    res.json(responseData);
   } catch (error) {
+    console.error("💥 Update profile error:", error);
     next(error);
   }
 };
 
 export const updateAvatar = async (req, res, next) => {
   try {
+    console.log("🔵 updateAvatar called, file:", req.file?.filename);
+    
     if (!req.file) {
       return res.status(400).json({ message: "Archivo de imagen requerido" });
     }
@@ -85,6 +97,7 @@ export const updateAvatar = async (req, res, next) => {
     }
 
     const avatarUrl = `/api/files/uploads/avatars/${req.file.filename}`;
+    console.log("📸 Avatar URL:", avatarUrl);
 
     const user = await User.findByIdAndUpdate(
       req.userId,
@@ -96,8 +109,19 @@ export const updateAvatar = async (req, res, next) => {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
-    res.json({ message: "Avatar actualizado", user: { avatar: user.avatar } });
+    const responseData = { 
+      message: "Avatar actualizado", 
+      user: { 
+        name: user.name, 
+        email: user.email, 
+        avatar: user.avatar 
+      } 
+    };
+    console.log("📤 Sending avatar response:", responseData);
+    
+    res.json(responseData);
   } catch (error) {
+    console.error("💥 Avatar update error:", error);
     next(error);
   }
 };

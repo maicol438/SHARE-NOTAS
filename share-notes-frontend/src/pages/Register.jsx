@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, User, BookOpen, Eye, EyeOff, ArrowLeft, Sparkles } from "lucide-react";
 import useAuthStore from "../stores/useAuthStore.js";
 import Button from "../components/ui/Button.jsx";
-import Input from "../components/ui/Input.jsx";
 import toast from "react-hot-toast";
 
 const Register = () => {
@@ -34,7 +33,10 @@ const Register = () => {
     if (!validate()) return;
     const result = await register(form);
     if (result.ok) {
+      toast.success("¡Cuenta creada exitosamente! 🎉");
       navigate("/dashboard");
+    } else {
+      toast.error(result.message || "Error al registrar");
     }
   };
 

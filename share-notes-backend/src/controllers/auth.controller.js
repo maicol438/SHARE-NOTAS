@@ -1,21 +1,11 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-// ── Helper: generar token y setear cookie ─────────────────────────
-const sendTokenCookie = (res, user) => {
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+// ── Helper: generar token ──────────────────────────────────────
+const generateToken = (user) => {
+  return jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   });
-
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
-
-  return token;
 };
 
 // ── POST /api/auth/register ───────────────────────────────────────
@@ -29,11 +19,12 @@ export const register = async (req, res, next) => {
     }
 
     const user = await User.create({ name, email, password });
-    sendTokenCookie(res, user);
+    const token = generateToken(user);
 
     res.status(201).json({
       message: "Usuario registrado correctamente",
       user,
+      token,
     });
   } catch (error) {
     next(error);
@@ -49,7 +40,6 @@ export const login = async (req, res, next) => {
       return res.status(400).json({ message: "Email y contraseña son requeridos" });
     }
 
-    // Traemos la contraseña explícitamente (select: false en el modelo)
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.status(401).json({ message: "Credenciales inválidas" });
@@ -60,11 +50,12 @@ export const login = async (req, res, next) => {
       return res.status(401).json({ message: "Credenciales inválidas" });
     }
 
-    sendTokenCookie(res, user);
+    const token = generateToken(user);
 
     res.json({
       message: "Sesión iniciada correctamente",
       user,
+      token,
     });
   } catch (error) {
     next(error);
@@ -73,11 +64,6 @@ export const login = async (req, res, next) => {
 
 // ── POST /api/auth/logout ─────────────────────────────────────────
 export const logout = (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-  });
   res.json({ message: "Sesión cerrada correctamente" });
 };
 
@@ -97,8 +83,8 @@ export const getMe = async (req, res, next) => {
 // ── GET /api/auth/google/callback ────────────────────────────────
 export const googleAuthCallback = async (req, res, next) => {
   try {
-    sendTokenCookie(res, req.user);
-    res.redirect(process.env.CLIENT_URL || "http://localhost:5173/dashboard");
+    const token = generateToken(req.user);
+    res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/dashboard?token=${token}`);
   } catch (error) {
     next(error);
   }

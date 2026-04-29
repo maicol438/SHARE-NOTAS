@@ -75,8 +75,18 @@ export default function Profile() {
         data.newPassword = form.newPassword;
       }
 
+      console.log("Enviando petición a /users/me", data);
       const res = await api.put("/users/me", data);
-      setUser({ ...user, ...res.data.user });
+      console.log("Respuesta recibida:", res.status, res.data);
+
+      if (!res.data) {
+        throw new Error("No response data");
+      }
+
+      const userData = res.data.user || res.data;
+      console.log("Actualizando usuario con:", userData);
+      
+      setUser(userData);
       toast.success("Perfil actualizado ✅");
 
       if (form.newPassword) {
@@ -88,7 +98,15 @@ export default function Profile() {
         }));
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Error al actualizar");
+      console.error("Error completo:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+        stack: err.stack
+      });
+      
+      const errorMsg = err.response?.data?.message || err.message || "Error al actualizar";
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }
@@ -102,11 +120,35 @@ export default function Profile() {
     formData.append("file", file);
 
     try {
+      console.log("Subiendo avatar...", file.name);
       const res = await api.post("/users/me/avatar", formData);
-      setUser({ ...user, avatar: res.data.user.avatar });
-      toast.success("Avatar actualizado ✅");
+      console.log("Respuesta avatar:", res.status, res.data);
+
+      if (!res.data) {
+        throw new Error("No response data");
+      }
+
+      const avatarUrl = res.data.user?.avatar || res.data.avatar;
+      console.log("URL del avatar:", avatarUrl);
+      
+      if (avatarUrl) {
+        setUser({ ...user, avatar: avatarUrl });
+        toast.success("Avatar actualizado ✅");
+        
+        // Limpiar el input para permitir subir el mismo archivo otra vez
+        e.target.value = "";
+      } else {
+        throw new Error("No se recibió URL del avatar");
+      }
     } catch (err) {
-      toast.error("Error al subir imagen");
+      console.error("Error avatar:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status
+      });
+      
+      const errorMsg = err.response?.data?.message || err.message || "Error al subir imagen";
+      toast.error(errorMsg);
     }
   };
 

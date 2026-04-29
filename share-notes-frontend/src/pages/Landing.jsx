@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import { BookOpen, Shield, Zap, Tag, Star, ArrowRight, Check, Sparkles } from "lucide-react";
+import { BookOpen, Shield, Zap, Tag, Star, ArrowRight, Check, Sparkles, Moon, Sun, GraduationCap, Users, FileText, Lock, LogOut } from "lucide-react";
 import { useDarkMode } from "../hooks/useDarkMode.js";
-import { Moon, Sun, GraduationCap, Users, FileText, Lock, LogOut } from "lucide-react";
 import useAuthStore from "../stores/useAuthStore";
 
 const features = [

@@ -71,7 +71,8 @@ userSchema.pre("save", async function (next) {
 
 // ── Método para comparar contraseñas ─────────────────────────────
 userSchema.methods.comparePassword = async function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+  if (!this.password) return false;
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
 // ── Eliminar __v y password del JSON de respuesta ────────────────

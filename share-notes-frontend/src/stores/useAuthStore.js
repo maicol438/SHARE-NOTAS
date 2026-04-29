@@ -7,18 +7,21 @@ const useAuthStore = create((set, get) => ({
   isLoading: false,
   isCheckingAuth: true,
 
-  setUser: (user) => set({ user, isAuthenticated: !!user }),
+  setUser: (userData) => {
+    set({ user: userData, isAuthenticated: !!userData });
+  },
 
   register: async (data) => {
     set({ isLoading: true });
     try {
       const res = await api.post("/auth/register", data);
-      set({ user: res.data.user, isAuthenticated: true, isLoading: false });
-      return { ok: true, user: res.data.user };
+      const { token, user } = res.data;
+      if (token) localStorage.setItem("token", token);
+      set({ user, isAuthenticated: true, isLoading: false });
+      return { ok: true, user };
     } catch (err) {
       set({ isLoading: false });
-      const msg = err.response?.data?.message || "No se pudo crear la cuenta";
-      return { ok: false, message: msg };
+      return { ok: false, message: err.response?.data?.message || "Error al registrar" };
     }
   },
 
@@ -26,38 +29,35 @@ const useAuthStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       const res = await api.post("/auth/login", data);
-      set({ user: res.data.user, isAuthenticated: true, isLoading: false });
-      return { ok: true, user: res.data.user };
+      const { token, user } = res.data;
+      if (token) localStorage.setItem("token", token);
+      set({ user, isAuthenticated: true, isLoading: false });
+      return { ok: true, user };
     } catch (err) {
       set({ isLoading: false });
-      const msg = err.response?.data?.message || "Credenciales incorrectas";
-      return { ok: false, message: msg };
+      return { ok: false, message: err.response?.data?.message || "Credenciales incorrectas" };
     }
   },
 
   logout: async () => {
-    try {
-      await api.post("/auth/logout");
-    } catch {
-    } finally {
-      // Limpiar cookie manualmente
-      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname;
-      // Limpiar todo el state
-      set({ user: null, isAuthenticated: false, isCheckingAuth: false });
-    }
+    try { await api.post("/auth/logout"); } catch {}
+    localStorage.removeItem("token");
+    set({ user: null, isAuthenticated: false, isCheckingAuth: false });
   },
 
   checkAuth: async () => {
     set({ isCheckingAuth: true });
+    const token = localStorage.getItem("token");
+    if (!token) {
+      set({ user: null, isAuthenticated: false, isCheckingAuth: false });
+      return;
+    }
     try {
       const res = await api.get("/auth/me");
-      set({ user: res.data.user, isAuthenticated: true });
-    } catch (err) {
-      // Si el token es inválido o expirado, forzar limpieza
-      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
-      set({ user: null, isAuthenticated: false });
-    } finally {
-      set({ isCheckingAuth: false });
+      set({ user: res.data.user, isAuthenticated: true, isCheckingAuth: false });
+    } catch {
+      localStorage.removeItem("token");
+      set({ user: null, isAuthenticated: false, isCheckingAuth: false });
     }
   },
 }));

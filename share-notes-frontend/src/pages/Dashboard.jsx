@@ -60,11 +60,6 @@ const Dashboard = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 300);
-    return () => clearTimeout(timer);
-  }, [search]);
-
   useEffect(() => { 
     fetchCategories(); 
   }, []);

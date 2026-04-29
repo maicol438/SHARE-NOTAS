@@ -143,7 +143,7 @@ const RichTextEditor = forwardRef(({ content = "", onChange, placeholder, classN
         editorRef.current.innerHTML = "";
       }
     },
-  }));
+  }), []);
 
   useEffect(() => {
     if (editorRef.current && content && editorRef.current.innerHTML !== content) {

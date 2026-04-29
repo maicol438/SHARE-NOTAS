@@ -17,10 +17,7 @@ import {
   Star,
   Trash2,
   Users,
-  Book,
-  LayoutGrid,
   Trash,
-  Edit3,
 } from "lucide-react";
 import useNoteStore from "../../stores/useNoteStore";
 import useAuthStore from "../../stores/useAuthStore";

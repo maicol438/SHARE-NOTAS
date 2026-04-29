@@ -1,6 +1,7 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import File from "../models/File.js";
 
 // Crear directorio de subidas si no existe
 const uploadDir = path.resolve("uploads");
@@ -16,7 +17,7 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname);
-    cb(null, file.fieldname + "-" + uniqueSuffix + ext);
+    cb(null, "file-" + uniqueSuffix + ext);
   },
 });
 
@@ -35,7 +36,7 @@ const upload = multer({
 }).array("files", 3);
 
 export const uploadFiles = (req, res, next) => {
-  upload(req, res, (err) => {
+  upload(req, res, async (err) => {
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ message: `Error al subir: ${err.message}` });
     } else if (err) {
@@ -47,15 +48,29 @@ export const uploadFiles = (req, res, next) => {
     }
 
     try {
-      const files = req.files.map((file) => ({
-        name: file.originalname,
-        filename: file.filename,
-        url: `${req.protocol}://${req.get("host")}/api/files/uploads/${file.filename}`,
-        type: file.mimetype,
-        size: file.size,
-      }));
+      const savedFiles = await Promise.all(
+        req.files.map(async (file) => {
+          const fileDoc = await File.create({
+            user: req.userId,
+            originalName: file.originalname,
+            filename: file.filename,
+            url: `/api/files/uploads/${file.filename}`,
+            type: file.mimetype,
+            size: file.size,
+          });
+          return {
+            _id: fileDoc._id,
+            name: fileDoc.originalName,
+            filename: fileDoc.filename,
+            url: fileDoc.url,
+            type: fileDoc.type,
+            size: fileDoc.size,
+            createdAt: fileDoc.createdAt,
+          };
+        })
+      );
 
-      res.status(201).json({ message: "Archivos subidos", files });
+      res.status(201).json({ message: "Archivos subidos", files: savedFiles });
     } catch (error) {
       next(error);
     }
@@ -68,4 +83,30 @@ export const getFile = (req, res) => {
     return res.status(404).json({ message: "Archivo no encontrado" });
   }
   res.sendFile(filePath);
+};
+
+export const getFiles = async (req, res, next) => {
+  try {
+    const files = await File.find({ user: req.userId }).sort({ createdAt: -1 });
+    res.json({ files });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteFile = async (req, res, next) => {
+  try {
+    const { filename } = req.params;
+    const file = await File.findOneAndDelete({ filename, user: req.userId });
+    if (!file) {
+      return res.status(404).json({ message: "Archivo no encontrado" });
+    }
+    const filePath = path.resolve(uploadDir, filename);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    res.json({ message: "Archivo eliminado" });
+  } catch (error) {
+    next(error);
+  }
 };

@@ -1,14 +1,17 @@
-import { useState } from "react";
-import { FolderOpen, Upload, Image, FileText, Grid, List, X, Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { FolderOpen, Upload, Image, FileText, X } from "lucide-react";
 import { toast } from "react-hot-toast";
+import useNoteStore from "../stores/useNoteStore";
 import api from "../api/axios";
 import EmptyState from "../components/ui/EmptyState";
-import Button from "../components/ui/Button";
 
 export default function Files() {
-  const [files, setFiles] = useState([]);
+  const { files, fetchFiles, deleteFile, isLoading } = useNoteStore();
   const [uploading, setUploading] = useState(false);
-  const [view, setView] = useState("grid");
+
+  useEffect(() => {
+    fetchFiles();
+  }, []);
 
   const handleUpload = async (e) => {
     const uploadedFiles = Array.from(e.target.files);
@@ -20,26 +23,30 @@ export default function Files() {
     setUploading(true);
     const formData = new FormData();
     uploadedFiles.forEach((file) => {
-      formData.append("files", file); // "files" (plural) debe coincidir con el backend
+      formData.append("files", file);
     });
 
     try {
-      const res = await api.post("/files/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      const res = await api.post("/files/upload", formData);
       
-      // El backend devuelve: { message, files: [...] }
       if (res.data.files && res.data.files.length > 0) {
-        setFiles(prev => [...prev, ...res.data.files]);
+        await fetchFiles();
         toast.success(`${res.data.files.length} archivo(s) subido(s)`);
       }
     } catch (err) {
-      console.error(err);
       toast.error("Error al subir archivos: " + (err.response?.data?.message || err.message));
     } finally {
       setUploading(false);
-      // Limpiar el input para permitir subir los mismos archivos otra vez
       e.target.value = '';
+    }
+  };
+
+  const handleDelete = async (filename) => {
+    try {
+      await deleteFile(filename);
+      toast.success("Archivo eliminado");
+    } catch {
+      toast.error("Error al eliminar");
     }
   };
 
@@ -53,17 +60,17 @@ export default function Files() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold gradient-text mb-1">📁 Archivos</h1>
-          <p className="text-gray-500">{files.length} archivos</p>
+          <p className="text-gray-500">{files?.length || 0} archivos</p>
         </div>
         <div className="flex items-center gap-2">
           <label className="cursor-pointer btn-primary flex items-center gap-2">
             <Upload className="w-4 h-4" />
             {uploading ? "Subiendo..." : "Subir archivos"}
-            <input 
-              type="file" 
-              multiple 
-              onChange={handleUpload} 
-              className="hidden" 
+            <input
+              type="file"
+              multiple
+              onChange={handleUpload}
+              className="hidden"
               accept="image/*,.pdf,.doc,.docx,.txt,.zip,.rar"
               disabled={uploading}
             />
@@ -71,7 +78,7 @@ export default function Files() {
         </div>
       </div>
 
-      {files.length === 0 ? (
+      {(!files || files.length === 0) ? (
         <EmptyState
           type="notes"
           title="No hay archivos"
@@ -80,11 +87,17 @@ export default function Files() {
           onAction={() => document.querySelector('input[type="file"]').click()}
         />
       ) : (
-        <div className={view === "grid" ? "grid grid-cols-2 md:grid-cols-4 gap-4" : "space-y-3"}>
-          {files.map((file, i) => {
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {files.map((file) => {
             const Icon = getIcon(file.type);
             return (
-              <div key={i} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 hover:shadow-lg transition-all">
+              <div key={file._id || file.filename} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 hover:shadow-lg transition-all relative group">
+                <button
+                  onClick={() => handleDelete(file.filename)}
+                  className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <X className="w-3 h-3" />
+                </button>
                 {file.type?.startsWith("image/") ? (
                   <img src={file.url} alt={file.name} className="w-full h-32 object-cover rounded-xl mb-3" />
                 ) : (

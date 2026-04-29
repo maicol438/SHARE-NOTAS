@@ -6,6 +6,7 @@ const useNoteStore = create((set, get) => ({
   notes: [],
   publicNotes: [],
   trashNotes: [],
+  files: [],
   categories: [],
   notebooks: [],
   tags: [],
@@ -309,6 +310,26 @@ const useNoteStore = create((set, get) => ({
     try {
       const res = await api.get("/tags");
       set({ tags: res.data.tags });
+      return { ok: true };
+    } catch {
+      return { ok: false };
+    }
+  },
+
+  fetchFiles: async () => {
+    try {
+      const res = await api.get("/files");
+      set({ files: res.data.files });
+      return { ok: true };
+    } catch {
+      return { ok: false };
+    }
+  },
+
+  deleteFile: async (filename) => {
+    try {
+      await api.delete(`/files/uploads/${filename}`);
+      set((s) => ({ files: s.files.filter((f) => f.filename !== filename) }));
       return { ok: true };
     } catch {
       return { ok: false };
