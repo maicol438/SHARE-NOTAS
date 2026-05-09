@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "test": "jest --detectOpenHandles --forceExit",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
     "test:watch": "npm test -- --watch"
   },
   "dependencies": {
@@ -32,15 +32,9 @@
     "supertest": "^7.0.0"
   },
   "jest": {
-    "extensionsToTreatAsEsm": [
-      ".js"
-    ],
     "testEnvironment": "node",
-    "testMatch": [
-      "**/tests/**/*.test.js"
-    ],
-    "setupFiles": [
-      "dotenv/config"
-    ]
+    "testMatch": ["**/tests/**/*.test.js"],
+    "setupFiles": ["dotenv/config"],
+    "transform": {}
   }
 }

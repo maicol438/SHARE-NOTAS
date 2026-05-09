@@ -1,7 +1,20 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const Tooltip = ({ children, text, position = "top" }) => {
   const [visible, setVisible] = useState(false);
+  const [actualPosition, setActualPosition] = useState(position);
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    if (visible && wrapperRef.current) {
+      const rect = wrapperRef.current.getBoundingClientRect();
+      if (rect.top < 60 && position === "top") {
+        setActualPosition("bottom");
+      } else {
+        setActualPosition(position);
+      }
+    }
+  }, [visible, position]);
 
   const positions = {
     top: "bottom-full left-1/2 -translate-x-1/2 mb-2",
@@ -12,6 +25,7 @@ const Tooltip = ({ children, text, position = "top" }) => {
 
   return (
     <div
+      ref={wrapperRef}
       className="relative inline-flex"
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
@@ -19,7 +33,7 @@ const Tooltip = ({ children, text, position = "top" }) => {
       {children}
       {visible && (
         <div
-          className={`absolute z-50 px-2 py-1 text-xs text-white bg-gray-800 dark:bg-gray-700 rounded whitespace-nowrap pointer-events-none ${positions[position]}`}
+          className={`absolute z-50 px-2 py-1 text-xs text-white bg-gray-800 dark:bg-gray-700 rounded whitespace-nowrap pointer-events-none ${positions[actualPosition]}`}
         >
           {text}
         </div>

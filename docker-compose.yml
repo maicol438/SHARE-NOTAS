@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: share-notes-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: share_notes
+    volumes:
+      - mongodb_data:/data/db
+    command: ["mongod", "--quiet", "--logpath", "/dev/null"]
+
+volumes:
+  mongodb_data:
+    driver: local

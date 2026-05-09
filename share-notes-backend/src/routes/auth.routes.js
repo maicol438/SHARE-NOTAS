@@ -24,9 +24,16 @@ const router = Router();
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/UserRegister'
+ *           examples:
+ *             registro:
+ *               summary: Ejemplo de registro
+ *               value:
+ *                 name: "Ana García"
+ *                 email: "ana@email.com"
+ *                 password: "secret123"
  *     responses:
  *       201:
- *         description: Usuario registrado y cookie seteada
+ *         description: Usuario registrado correctamente
  *         content:
  *           application/json:
  *             schema:
@@ -65,6 +72,12 @@ router.post("/register", register);
  *               password:
  *                 type: string
  *                 example: "secret123"
+ *           examples:
+ *             login:
+ *               summary: Ejemplo de inicio de sesión
+ *               value:
+ *                 email: "ana@email.com"
+ *                 password: "secret123"
  *     responses:
  *       200:
  *         description: Sesión iniciada y cookie HTTP-only seteada
@@ -107,12 +120,16 @@ router.get(
   "/google",
   passport.authenticate("google", {
     scope: ["profile", "email"],
+    session: false,
   })
 );
 
 router.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login" }),
+  passport.authenticate("google", {
+    failureRedirect: "/login",
+    session: false,
+  }),
   googleAuthCallback
 );
 

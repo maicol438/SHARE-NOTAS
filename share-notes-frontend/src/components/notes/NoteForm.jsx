@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Button from "../ui/Button.jsx";
 import Input from "../ui/Input.jsx";
 import useNoteStore from "../../stores/useNoteStore.js";
@@ -31,12 +31,12 @@ const NoteForm = ({ note, onClose }) => {
     loadCategories();
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
-  };
+  }, []);
 
-  const handleCreateCategory = async () => {
+  const handleCreateCategory = useCallback(async () => {
     if (!newCategory.trim()) {
       toast.error("Ingresa un nombre para la categoría");
       return;
@@ -50,9 +50,9 @@ const NoteForm = ({ note, onClose }) => {
     } else {
       toast.error(result.message);
     }
-  };
+  }, [newCategory, createCategory]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (!form.title.trim() || !form.content.trim() || !form.category) {
       toast.error("Completa todos los campos");
@@ -62,12 +62,12 @@ const NoteForm = ({ note, onClose }) => {
     const result = isEdit ? await updateNote(note._id, form) : await createNote(form);
 
     if (result.ok) {
-      toast.success(isEdit ? "✅ Nota actualizada correctamente" : "📝 Nota creada con éxito!");
+      toast.success(isEdit ? "Nota actualizada correctamente" : "Nota creada con éxito!");
       onClose();
     } else {
-      toast.error(`⚠️ ${result.message || "Algo salió mal. Intenta de nuevo."}`);
+      toast.error(`Error: ${result.message || "Algo salió mal. Intenta de nuevo."}`);
     }
-  };
+  }, [form, isEdit, note, createNote, updateNote, onClose]);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">

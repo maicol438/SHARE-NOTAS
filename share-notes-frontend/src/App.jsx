@@ -47,28 +47,34 @@ const App = () => {
   return (
     <BrowserRouter>
       <Toaster
-        position="top-center"
+        position="top-right"
         reverseOrder={false}
         gutter={12}
-        containerClassName="mt-4 pointer-events-none"
-        toastOptions={{ duration: 4000, className: "!rounded-2xl !shadow-2xl" }}
-      >
-        {(t) => {
-          const styles = {
-            success: "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white",
-            error: "bg-gradient-to-r from-red-500 to-pink-500 text-white",
-            loading: "bg-gray-800 text-white",
-          };
-          return (
-            <div className={`flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl ${styles[t.type] || styles.loading}`}>
-              {t.type === "success" && <span>✓</span>}
-              {t.type === "error" && <span>✕</span>}
-              {t.type === "loading" && <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
-              <span className="font-semibold text-sm">{t.message}</span>
-            </div>
-          );
+        toastOptions={{
+          duration: 2500,
+          style: {
+            borderRadius: "16px",
+            padding: "14px 18px",
+            fontSize: "14px",
+            fontWeight: 500,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+          },
+          success: {
+            iconTheme: { primary: "#10b981", secondary: "#fff" },
+            style: {
+              background: "linear-gradient(135deg, #059669, #10b981)",
+              color: "#fff",
+            },
+          },
+          error: {
+            iconTheme: { primary: "#ef4444", secondary: "#fff" },
+            style: {
+              background: "linear-gradient(135deg, #dc2626, #ef4444)",
+              color: "#fff",
+            },
+          },
         }}
-      </Toaster>
+      />
 
       <Routes>
         <Route path="/" element={<Landing />} />

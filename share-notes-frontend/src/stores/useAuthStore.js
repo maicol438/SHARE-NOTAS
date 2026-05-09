@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import api from "../api/axios";
 
-const useAuthStore = create((set, get) => ({
+const useAuthStore = create((set) => ({
   user: null,
   isAuthenticated: false,
   isLoading: false,
@@ -15,8 +15,7 @@ const useAuthStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       const res = await api.post("/auth/register", data);
-      const { token, user } = res.data;
-      if (token) localStorage.setItem("token", token);
+      const { user } = res.data;
       set({ user, isAuthenticated: true, isLoading: false });
       return { ok: true, user };
     } catch (err) {
@@ -29,8 +28,7 @@ const useAuthStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       const res = await api.post("/auth/login", data);
-      const { token, user } = res.data;
-      if (token) localStorage.setItem("token", token);
+      const { user } = res.data;
       set({ user, isAuthenticated: true, isLoading: false });
       return { ok: true, user };
     } catch (err) {
@@ -40,23 +38,18 @@ const useAuthStore = create((set, get) => ({
   },
 
   logout: async () => {
-    try { await api.post("/auth/logout"); } catch {}
-    localStorage.removeItem("token");
+    try {
+      await api.post("/auth/logout");
+    } catch {}
     set({ user: null, isAuthenticated: false, isCheckingAuth: false });
   },
 
   checkAuth: async () => {
     set({ isCheckingAuth: true });
-    const token = localStorage.getItem("token");
-    if (!token) {
-      set({ user: null, isAuthenticated: false, isCheckingAuth: false });
-      return;
-    }
     try {
       const res = await api.get("/auth/me");
       set({ user: res.data.user, isAuthenticated: true, isCheckingAuth: false });
     } catch {
-      localStorage.removeItem("token");
       set({ user: null, isAuthenticated: false, isCheckingAuth: false });
     }
   },

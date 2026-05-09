@@ -135,7 +135,6 @@ const LineChart = ({ data }) => {
           </linearGradient>
         </defs>
 
-        {/* Grid lines */}
         {[0, 25, 50, 75, 100].map((p) => (
           <line
             key={p}
@@ -148,13 +147,11 @@ const LineChart = ({ data }) => {
           />
         ))}
 
-        {/* Area */}
         <path
           d={pathD}
           fill="url(#lineGradient)"
         />
 
-        {/* Line */}
         <path
           d={lineD}
           fill="none"
@@ -164,7 +161,6 @@ const LineChart = ({ data }) => {
           strokeLinejoin="round"
         />
 
-        {/* Dots */}
         {data.map((d, i) => (
           <circle
             key={i}
@@ -238,13 +234,11 @@ export default function Stats() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold gradient-text mb-2">EstadÃ­sticas</h1>
+        <h1 className="text-2xl font-bold gradient-text mb-2">Estadisticas</h1>
         <p className="text-gray-500">Tu actividad en ShareNotes</p>
       </div>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard
           title="Total de notas"
@@ -274,7 +268,6 @@ export default function Stats() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Tasks Progress */}
         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6">
           <h3 className="font-semibold text-lg mb-6">Progreso de tareas</h3>
           <DonutChart
@@ -283,23 +276,20 @@ export default function Stats() {
           />
         </div>
 
-        {/* Activity */}
         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6">
-          <h3 className="font-semibold text-lg mb-6">Actividad (Ãºltimas 8 semanas)</h3>
+          <h3 className="font-semibold text-lg mb-6">Actividad (últimas 8 semanas)</h3>
           <LineChart data={stats.byWeek || []} />
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Categories */}
         {categoryData.length > 0 && (
           <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6">
-            <h3 className="font-semibold text-lg mb-6">Notas por categorÃ­a</h3>
+            <h3 className="font-semibold text-lg mb-6">Notas por categoria</h3>
             <BarChart data={categoryData} />
           </div>
         )}
 
-        {/* Notebooks */}
         {notebookData.length > 0 && (
           <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6">
             <h3 className="font-semibold text-lg mb-6">Notas por cuaderno</h3>
@@ -307,10 +297,9 @@ export default function Stats() {
           </div>
         )}
 
-        {/* Tags */}
         {tagData.length > 0 && (
           <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 lg:col-span-2">
-            <h3 className="font-semibold text-lg mb-6">Etiquetas mÃ¡s usadas</h3>
+            <h3 className="font-semibold text-lg mb-6">Etiquetas mas usadas</h3>
             <div className="flex flex-wrap gap-2">
               {tagData.map((tag, i) => (
                 <span

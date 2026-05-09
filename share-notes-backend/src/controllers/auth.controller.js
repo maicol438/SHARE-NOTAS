@@ -1,14 +1,31 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-// ── Helper: generar token ──────────────────────────────────────
 const generateToken = (user) => {
   return jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   });
 };
 
-// ── POST /api/auth/register ───────────────────────────────────────
+const setTokenCookie = (res, token) => {
+  const isProduction = process.env.NODE_ENV === "production";
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "strict" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    path: "/",
+  });
+};
+
+const clearTokenCookie = (res) => {
+  res.cookie("token", "", {
+    httpOnly: true,
+    expires: new Date(0),
+    path: "/",
+  });
+};
+
 export const register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
@@ -19,19 +36,16 @@ export const register = async (req, res, next) => {
     }
 
     const user = await User.create({ name, email, password });
-    const token = generateToken(user);
 
     res.status(201).json({
       message: "Usuario registrado correctamente",
       user,
-      token,
     });
   } catch (error) {
     next(error);
   }
 };
 
-// ── POST /api/auth/login ──────────────────────────────────────────
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -51,23 +65,22 @@ export const login = async (req, res, next) => {
     }
 
     const token = generateToken(user);
+    setTokenCookie(res, token);
 
     res.json({
       message: "Sesión iniciada correctamente",
       user,
-      token,
     });
   } catch (error) {
     next(error);
   }
 };
 
-// ── POST /api/auth/logout ─────────────────────────────────────────
 export const logout = (req, res) => {
+  clearTokenCookie(res);
   res.json({ message: "Sesión cerrada correctamente" });
 };
 
-// ── GET /api/auth/me ──────────────────────────────────────────────
 export const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.userId);
@@ -80,11 +93,11 @@ export const getMe = async (req, res, next) => {
   }
 };
 
-// ── GET /api/auth/google/callback ────────────────────────────────
 export const googleAuthCallback = async (req, res, next) => {
   try {
     const token = generateToken(req.user);
-    res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/dashboard?token=${token}`);
+    setTokenCookie(res, token);
+    res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/dashboard`);
   } catch (error) {
     next(error);
   }

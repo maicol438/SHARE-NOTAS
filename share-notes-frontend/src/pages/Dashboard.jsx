@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Plus, Search, Star, Trash2, RotateCcw, X } from "lucide-react";
 import useNoteStore from "../stores/useNoteStore.js";
@@ -10,7 +10,7 @@ import EmptyState from "../components/ui/EmptyState.jsx";
 import toast from "react-hot-toast";
 
 const SkeletonCard = () => (
-  <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 flex flex-col gap-4">
+  <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 flex flex-col gap-4 opacity-0 animate-fade-in" style={{ animationDelay: "200ms", animationFillMode: "forwards" }}>
     <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse" />
     <div className="space-y-3">
       <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
@@ -41,65 +41,59 @@ const Dashboard = () => {
   const [search, setSearch] = useState("");
   const { trashNotes = [], restoreNote, permanentDelete, fetchTrash } = useNoteStore();
 
-  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [showWelcome, setShowWelcome] = useState(true);
 
   const isFavoritesTab = tab === "favorites";
   const isTrashTab = tab === "trash";
 
-  const activeCatName = (categories || [])?.find(c => c._id === category)?.name || "";
-  const filteredNotes = getFilteredNotes?.() || [];
-
-  useEffect(() => { 
-    if (isTrashTab) fetchTrash();
-    else fetchNotes({ q: search });
-  }, [isTrashTab, search]);
+  const activeCatName = useMemo(() => (categories || [])?.find(c => c._id === category)?.name || "", [categories, category]);
+  const filteredNotes = useMemo(() => getFilteredNotes?.() || [], [getFilteredNotes]);
+  const searchParam = useMemo(() => searchParams.get("q"), [searchParams]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 300);
-    return () => clearTimeout(timer);
-  }, [search]);
+    if (isTrashTab) fetchTrash();
+    else fetchNotes({ q: search });
+  }, [isTrashTab, search, fetchNotes, fetchTrash]);
 
-  useEffect(() => { 
-    fetchCategories(); 
-  }, []);
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
-  const handleCloseModal = () => { setShowModal(false); setEditingNote(null); };
-  
-  const handleDelete = async (id) => {
+  const handleCloseModal = useCallback(() => { setShowModal(false); setEditingNote(null); }, []);
+
+  const handleDelete = useCallback(async (id) => {
     if (!confirm("¿Eliminar esta nota?")) return;
     const result = await moveToTrash(id);
     if (result.ok) toast.success("Nota en papelera");
-  };
-  
-  const handleTogglePin = async (id) => { await togglePin(id); };
-  const handleToggleFavorite = async (id) => { await toggleFavorite(id); };
-  
-  const handleRestore = async (id) => {
+  }, [moveToTrash]);
+
+  const handleTogglePin = useCallback(async (id) => { await togglePin(id); }, [togglePin]);
+  const handleToggleFavorite = useCallback(async (id) => { await toggleFavorite(id); }, [toggleFavorite]);
+
+  const handleRestore = useCallback(async (id) => {
     const result = await restoreNote(id);
     if (result.ok) toast.success("Nota restaurada");
-  };
-  
-  const handlePermanentDelete = async (id) => {
+  }, [restoreNote]);
+
+  const handlePermanentDelete = useCallback(async (id) => {
     if (!confirm("¿Eliminar permanentemente?")) return;
     const result = await permanentDelete(id);
     if (result.ok) toast.success("Nota eliminada");
-  };
+  }, [permanentDelete]);
 
-  const title = isTrashTab ? "🗑️ Papelera" : isFavoritesTab ? "⭐ Favoritos" : activeCatName || search ? "🔍 Resultados" : "📚 Mis Notas";
+  const title = isTrashTab ? "Papelera" : isFavoritesTab ? "Favoritos" : activeCatName || search ? "Resultados" : "Mis Notas";
   const pinFilter = isFavoritesTab ? (n) => n.isFavorite : (_n) => true;
-  const pinnedNotes = filteredNotes.filter(n => n.isPinned && pinFilter(n));
-  const regularNotes = filteredNotes.filter(n => !n.isPinned && pinFilter(n));
+  const pinnedNotes = useMemo(() => filteredNotes.filter(n => n.isPinned && pinFilter(n)), [filteredNotes, pinFilter]);
+  const regularNotes = useMemo(() => filteredNotes.filter(n => !n.isPinned && pinFilter(n)), [filteredNotes, pinFilter]);
   const displayedNotes = isTrashTab ? trashNotes : regularNotes;
 
   return (
     <div className="max-w-6xl mx-auto">
-      {/* Welcome banner for new users */}
       {showWelcome && notes.length === 0 && !isLoading && (
-        <div className="mb-8 p-6 bg-gradient-to-r from-primary-500 to-purple-600 rounded-2xl text-white animate-slide-up">
+        <div className="mb-8 p-6 bg-gradient-to-r from-primary-500 to-purple-600 rounded-2xl text-white">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-2xl font-bold mb-2">👋 ¡Bienvenido a ShareNotes!</h2>
+              <h2 className="text-2xl font-bold mb-2">Bienvenido a ShareNotes!</h2>
               <p className="text-primary-100">Crea tu primera nota para comenzar a organizar tus estudios.</p>
               <Button icon={Plus} onClick={() => setShowModal(true)} className="mt-4 bg-white text-primary-600 hover:bg-gray-100">
                 Crear primera nota
@@ -112,7 +106,6 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
         <div className="flex-1">
           <h2 className="text-2xl font-bold gradient-text">{title}</h2>
@@ -123,12 +116,12 @@ const Dashboard = () => {
 
         <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input 
-            type="text" 
-            value={search} 
-            onChange={(e) => { setSearch(e.target.value); localSearchNotes(e.target.value); }} 
-            placeholder={isTrashTab ? "Buscar en papelera..." : "Buscar notas..."} 
-            className="w-full pl-12 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all" 
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); localSearchNotes(e.target.value); }}
+            placeholder={isTrashTab ? "Buscar en papelera..." : "Buscar notas..."}
+            className="w-full pl-12 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all"
           />
         </div>
 
@@ -145,22 +138,19 @@ const Dashboard = () => {
         )}
       </div>
 
-      {/* Loading - Premium Grid */}
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
         </div>
       )}
 
-      {/* Empty state */}
       {!isLoading && displayedNotes.length === 0 && (
-        <EmptyState 
+        <EmptyState
           type={isTrashTab ? "trash" : isFavoritesTab ? "favorites" : "notes"}
           onAction={!isTrashTab ? () => setShowModal(true) : undefined}
         />
       )}
 
-      {/* Trash Grid */}
       {!isLoading && isTrashTab && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {trashNotes.map((note, i) => (
@@ -169,7 +159,6 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Pinned Notes */}
       {!isLoading && !isTrashTab && pinnedNotes.length > 0 && (
         <div className="mb-8">
           <h3 className="text-xs font-semibold text-gray-500 uppercase mb-4 flex items-center gap-2">
@@ -183,7 +172,6 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Regular Notes */}
       {!isLoading && !isTrashTab && regularNotes.length > 0 && (
         <div>
           {pinnedNotes.length > 0 && (

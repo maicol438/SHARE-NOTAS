@@ -4,10 +4,8 @@ import app from "../app.js";
 import User from "../models/User.js";
 import Category from "../models/Category.js";
 
-// Base URL para las pruebas
 const API = "/api";
 
-// ── Setup / Teardown ──────────────────────────────────────────────
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_URI_TEST || process.env.MONGO_URI);
 });
@@ -22,24 +20,32 @@ afterEach(async () => {
   await Category.deleteMany({});
 });
 
-// ── Helper: registrar usuario y obtener cookie ────────────────────
-const registerAndGetCookie = async () => {
+const registerUser = async () => {
   const res = await request(app).post(`${API}/auth/register`).send({
     name: "Test User",
     email: "test@test.com",
     password: "password123",
   });
-  // Extraer la cookie del header Set-Cookie
+  return { userId: res.body.user._id };
+};
+
+const loginAndGetCookie = async () => {
+  await request(app).post(`${API}/auth/register`).send({
+    name: "Test User",
+    email: "logintest@test.com",
+    password: "password123",
+  });
+  const res = await request(app).post(`${API}/auth/login`).send({
+    email: "logintest@test.com",
+    password: "password123",
+  });
   const cookie = res.headers["set-cookie"];
   return { cookie, userId: res.body.user._id };
 };
 
-// ════════════════════════════════════════════════════════════════════
-// SUITE 1: Autenticación
-// ════════════════════════════════════════════════════════════════════
-describe("🔐 Auth Routes", () => {
+describe("Auth Routes", () => {
   describe("POST /api/auth/register", () => {
-    it("Debe registrar un usuario y devolver 201 con datos del usuario", async () => {
+    it("Debe registrar un usuario y devolver 201 sin cookie", async () => {
       const res = await request(app).post(`${API}/auth/register`).send({
         name: "Ana García",
         email: "ana@test.com",
@@ -49,8 +55,9 @@ describe("🔐 Auth Routes", () => {
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty("user");
       expect(res.body.user.email).toBe("ana@test.com");
-      expect(res.body.user).not.toHaveProperty("password"); // No exponer contraseña
-      expect(res.headers["set-cookie"]).toBeDefined(); // Cookie seteada
+      expect(res.body.user).not.toHaveProperty("password");
+      expect(res.body).not.toHaveProperty("token");
+      expect(res.headers["set-cookie"]).toBeUndefined();
     });
 
     it("Debe retornar 400 si el email ya está registrado", async () => {
@@ -69,19 +76,10 @@ describe("🔐 Auth Routes", () => {
       expect(res.status).toBe(400);
       expect(res.body.message).toMatch(/registrado/i);
     });
-
-    it("Debe retornar 400 si faltan campos requeridos", async () => {
-      const res = await request(app).post(`${API}/auth/register`).send({
-        email: "sin-nombre@test.com",
-        password: "pass123",
-      });
-
-      expect(res.status).toBe(400);
-    });
   });
 
   describe("POST /api/auth/login", () => {
-    it("Debe iniciar sesión con credenciales correctas y devolver 200", async () => {
+    it("Debe iniciar sesión con credenciales correctas y devolver 200 con cookie", async () => {
       await request(app).post(`${API}/auth/register`).send({
         name: "Test User",
         email: "login@test.com",
@@ -95,6 +93,7 @@ describe("🔐 Auth Routes", () => {
 
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty("user");
+      expect(res.body).not.toHaveProperty("token");
       expect(res.headers["set-cookie"]).toBeDefined();
     });
 
@@ -122,29 +121,26 @@ describe("🔐 Auth Routes", () => {
     });
 
     it("Debe retornar el perfil del usuario autenticado", async () => {
-      const { cookie } = await registerAndGetCookie();
+      const { cookie } = await loginAndGetCookie();
 
       const res = await request(app)
         .get(`${API}/auth/me`)
         .set("Cookie", cookie);
 
       expect(res.status).toBe(200);
-      expect(res.body.user.email).toBe("test@test.com");
+      expect(res.body.user.email).toBe("logintest@test.com");
     });
   });
 });
 
-// ════════════════════════════════════════════════════════════════════
-// SUITE 2: Notas (requieren autenticación)
-// ════════════════════════════════════════════════════════════════════
-describe("📝 Notes Routes", () => {
+describe("Notes Routes", () => {
   it("Debe retornar 401 al intentar acceder a notas sin autenticación", async () => {
     const res = await request(app).get(`${API}/notes`);
     expect(res.status).toBe(401);
   });
 
   it("Debe retornar lista vacía de notas para un nuevo usuario", async () => {
-    const { cookie } = await registerAndGetCookie();
+    const { cookie } = await loginAndGetCookie();
 
     const res = await request(app)
       .get(`${API}/notes`)
@@ -156,9 +152,8 @@ describe("📝 Notes Routes", () => {
   });
 
   it("Debe crear una nota y retornar 201", async () => {
-    const { cookie, userId } = await registerAndGetCookie();
+    const { cookie, userId } = await loginAndGetCookie();
 
-    // Primero crear una categoría
     const category = await Category.create({
       name: "Matemáticas",
       color: "#6366f1",

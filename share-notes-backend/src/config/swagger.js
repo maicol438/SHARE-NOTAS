@@ -35,6 +35,26 @@ const options = {
             createdAt: { type: "string", format: "date-time" },
           },
         },
+        UserRegister: {
+          type: "object",
+          required: ["name", "email", "password"],
+          properties: {
+            name: {
+              type: "string",
+              example: "Ana García",
+            },
+            email: {
+              type: "string",
+              format: "email",
+              example: "ana@email.com",
+            },
+            password: {
+              type: "string",
+              minLength: 6,
+              example: "secret123",
+            },
+          },
+        },
         Category: {
           type: "object",
           properties: {
