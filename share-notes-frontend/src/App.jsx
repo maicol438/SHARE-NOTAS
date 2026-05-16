@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
 import useAuthStore from "./stores/useAuthStore";
+import { onUnauthorized } from "./api/axios";
 
 import Landing from "./pages/Landing.jsx";
 import Login from "./pages/Login.jsx";
@@ -15,6 +16,9 @@ import Tasks from "./pages/Tasks.jsx";
 import Files from "./pages/Files.jsx";
 import CalendarPage from "./pages/Calendar.jsx";
 import Shared from "./pages/Shared.jsx";
+import Admin from "./pages/Admin.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
 
 import DashboardLayout from "./components/layout/DashboardLayout.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
@@ -41,6 +45,12 @@ const App = () => {
   const checkAuth = useAuthStore((s) => s.checkAuth);
 
   useEffect(() => {
+    onUnauthorized(() => {
+      useAuthStore.setState({ user: null, isAuthenticated: false, isCheckingAuth: false });
+    });
+  }, []);
+
+  useEffect(() => {
     checkAuth();
   }, []);
 
@@ -49,27 +59,29 @@ const App = () => {
       <Toaster
         position="top-right"
         reverseOrder={false}
-        gutter={12}
+        gutter={8}
+        containerStyle={{ top: 16, right: 16 }}
         toastOptions={{
-          duration: 2500,
+          duration: 2000,
           style: {
-            borderRadius: "16px",
-            padding: "14px 18px",
-            fontSize: "14px",
-            fontWeight: 500,
-            boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+            borderRadius: "10px",
+            padding: "10px 14px",
+            fontSize: "13px",
+            fontWeight: 600,
+            fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
           },
           success: {
-            iconTheme: { primary: "#10b981", secondary: "#fff" },
+            iconTheme: { primary: "#6366f1", secondary: "#fff" },
             style: {
-              background: "linear-gradient(135deg, #059669, #10b981)",
+              background: "linear-gradient(135deg, #4f46e5, #6366f1)",
               color: "#fff",
             },
           },
           error: {
-            iconTheme: { primary: "#ef4444", secondary: "#fff" },
+            iconTheme: { primary: "#f87171", secondary: "#fff" },
             style: {
-              background: "linear-gradient(135deg, #dc2626, #ef4444)",
+              background: "linear-gradient(135deg, #b91c1c, #dc2626)",
               color: "#fff",
             },
           },
@@ -78,8 +90,10 @@ const App = () => {
 
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-        <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route index element={<Dashboard />} />
@@ -91,6 +105,7 @@ const App = () => {
           <Route path="files" element={<Files />} />
           <Route path="calendar" element={<CalendarPage />} />
           <Route path="shared" element={<Shared />} />
+          <Route path="admin" element={<Admin />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

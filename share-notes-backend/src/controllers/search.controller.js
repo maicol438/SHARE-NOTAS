@@ -39,8 +39,16 @@ export const advancedSearch = async (req, res, next) => {
 
     if (dateFrom || dateTo) {
       filter.createdAt = {};
-      if (dateFrom) filter.createdAt.$gte = new Date(dateFrom);
-      if (dateTo) filter.createdAt.$lte = new Date(dateTo);
+      if (dateFrom) {
+        const d = new Date(dateFrom);
+        if (isNaN(d.getTime())) return res.status(400).json({ message: "Fecha inválida" });
+        filter.createdAt.$gte = d;
+      }
+      if (dateTo) {
+        const d = new Date(dateTo);
+        if (isNaN(d.getTime())) return res.status(400).json({ message: "Fecha inválida" });
+        filter.createdAt.$lte = d;
+      }
     }
 
     if (hasReminder === "true") {

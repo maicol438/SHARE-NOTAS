@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Despliegue y CI/CD - Share Notes</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #4f46e5;
+            --dark: #0f172a;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent: #f43f5e;
+            --success: #10b981;
+            --code-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f1f5f9;
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%);
+        }
+
+        .header h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .header p { opacity: 0.9; max-width: 700px; margin: 0 auto; }
+
+        .container { max-width: 1000px; margin: -50px auto 50px; padding: 0 20px; }
+
+        .concept-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: var(--secondary);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .explanation {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+        }
+
+        .explanation p { margin-bottom: 1rem; color: var(--text-muted); }
+
+        .tech-box {
+            background: var(--code-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .tech-box h4 { margin-bottom: 0.5rem; color: var(--dark); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        .step-pill {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        .logic-card {
+            background: #fff1f2;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #fecdd3;
+            margin-top: 1rem;
+        }
+
+        .logic-card i { color: var(--accent); margin-right: 8px; }
+
+        .flow-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            background: var(--dark);
+            padding: 2rem;
+            border-radius: 12px;
+            color: white;
+            overflow-x: auto;
+            gap: 1rem;
+        }
+
+        .flow-item { text-align: center; flex: 1; min-width: 80px; }
+        .flow-item i { font-size: 1.5rem; margin-bottom: 8px; }
+        .flow-item p { font-size: 0.8rem; margin: 0; }
+        .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+
+        code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: var(--secondary);
+        }
+
+        pre {
+            background: var(--dark);
+            color: #e2e8f0;
+            padding: 1.2rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            border: 1px solid #334155;
+            margin: 1rem 0;
+        }
+
+        footer { text-align: center; padding: 2rem; color: var(--text-muted); border-top: 1px solid #e2e8f0; }
+
+        @media (max-width: 768px) {
+            .concept-grid { grid-template-columns: 1fr; }
+            .header { padding: 3rem 1rem; }
+            .flow-diagram { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <span class="step-pill" style="background: var(--accent);">Share Notes</span>
+        <h1>Despliegue Profesional y Automatización</h1>
+        <p>Del código local a la nube: CI/CD, infraestructura y seguridad.</p>
+    </div>
+
+    <div class="container">
+
+        <!-- 1. INFRAESTRUCTURA -->
+        <section class="concept-section">
+            <h2><i class="fas fa-layer-group"></i> 1. Infraestructura: Local vs Nube</h2>
+            <div class="concept-grid">
+                <div class="explanation">
+                    <p>En <strong>desarrollo local</strong>, usamos <strong>Docker Compose</strong> para MongoDB y la API corre con <code>npm run dev</code> (nodemon).</p>
+                    <p>En <strong>producción (Render)</strong>, la API se despliega como servicio web y MongoDB se conecta a <strong>MongoDB Atlas</strong> (base de datos externa).</p>
+                    <div class="logic-card">
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>¿Por qué separar MongoDB?</strong>
+                        En Render (plan free), los datos se pierden al reiniciar el servicio. Usar MongoDB Atlas garantiza persistencia.
+                    </div>
+                </div>
+                <div class="tech-box">
+                    <h4>Tecnologías</h4>
+                    <ul>
+                        <li><strong>Render:</strong> Hosting de la API (Node.js) y Frontend (Static Site)</li>
+                        <li><strong>MongoDB Atlas:</strong> Base de datos en la nube</li>
+                        <li><strong>Docker:</strong> Entorno de desarrollo reproducible</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. RENDER.YAML -->
+        <section class="concept-section">
+            <h2><i class="fas fa-cloud-upload-alt"></i> 2. Configuración de Render</h2>
+            <div class="concept-grid">
+                <div class="tech-box" style="grid-column: 1 / -1;">
+                    <h4>render.yaml (Infraestructura como Código)</h4>
+                    <pre><code>services:
+  - type: web
+    name: share-notes-api
+    env: node
+    region: oregon
+    plan: free
+    rootDir: share-notes-backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      # ... más variables
+
+  - type: static
+    name: share-notes-frontend
+    buildCommand: npm run build
+    staticPublishPath: ./dist
+    rootDir: share-notes-frontend</code></pre>
+                </div>
+            </div>
+            <div class="concept-grid" style="margin-top: 1.5rem;">
+                <div>
+                    <h4 style="color: var(--secondary);">Servicio Web (API)</h4>
+                    <ul>
+                        <li>Node.js en puerto 4000</li>
+                        <li>Build: <code>npm install</code></li>
+                        <li>Start: <code>npm start</code></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: var(--secondary);">Servicio Static (Frontend)</h4>
+                    <ul>
+                        <li>React + Vite</li>
+                        <li>Build: <code>npm run build</code></li>
+                        <li>Publica la carpeta <code>dist/</code></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SEGURIDAD -->
+        <section class="concept-section">
+            <h2><i class="fas fa-shield-alt"></i> 3. La Bóveda de Seguridad</h2>
+            <div class="concept-grid">
+                <div class="explanation">
+                    <p>Las variables sensibles (<code>JWT_SECRET</code>, <code>MONGO_URI</code>, <code>GOOGLE_CLIENT_SECRET</code>) nunca deben estar escritas en el código.</p>
+                    <p>Usamos <strong>sync: false</strong> en <code>render.yaml</code>: declaramos que la variable existe, pero el valor real se escribe manualmente en el panel de Render.</p>
+                </div>
+                <div class="tech-box">
+                    <h4>Zero-Footprint</h4>
+                    <p>El archivo render.yaml solo reserva el nombre de la variable.<br><br>
+                    <code>sync: false</code> significa: <em>"Humano, tú pones el valor secreto directamente en Render"</em>.</p>
+                    <div class="logic-card" style="margin-top: 1rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Nunca subas el .env a GitHub.</strong>
+                        Usa <code>.env.example</code> como plantilla.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. CORS -->
+        <section class="concept-section">
+            <h2><i class="fas fa-globe"></i> 4. CORS y Cookies en Producción</h2>
+            <div class="concept-grid">
+                <div class="explanation">
+                    <p>El frontend y backend están en dominios distintos. La cookie de autenticación DEBE configurarse correctamente:</p>
+                    <pre><code>// app.js - Configuración de CORS
+app.use(cors({
+  origin: ["http://localhost:5173", process.env.CLIENT_URL],
+  credentials: true,           // Permite enviar cookies
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+  exposedHeaders: ["Set-Cookie"],
+}));
+
+// Cookie de autenticación
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: isProduction,        // true en producción (HTTPS)
+  sameSite: isProduction ? "none" : "lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});</code></pre>
+                </div>
+                <div class="tech-box">
+                    <h4>Conceptos Clave</h4>
+                    <ul>
+                        <li><strong>httpOnly:</strong> No accesible desde JavaScript</li>
+                        <li><strong>secure:</strong> Solo se envía por HTTPS</li>
+                        <li><strong>sameSite: "none":</strong> Permite cross-origin</li>
+                        <li><strong>withCredentials:</strong> Axios debe tenerlo en true</li>
+                    </ul>
+                    <div class="logic-card" style="margin-top: 1rem;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Error común:</strong> Si falta <code>sameSite: 'none'</code> o <code>secure: true</code>, el navegador bloquea la cookie en producción.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. FLUJO CI/CD -->
+        <section class="concept-section">
+            <h2><i class="fas fa-robot"></i> 5. CI/CD: El Ciclo Completo</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Así viaja tu código desde tu PC al mundo entero:</p>
+
+            <div class="flow-diagram">
+                <div class="flow-item">
+                    <i class="fas fa-laptop-code"></i>
+                    <p>Local Dev</p>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+                <div class="flow-item">
+                    <i class="fab fa-git-alt"></i>
+                    <p>Git Push</p>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+                <div class="flow-item">
+                    <i class="fab fa-github"></i>
+                    <p>GitHub</p>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+                <div class="flow-item">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Render Build</p>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+                <div class="flow-item" style="color: var(--success);">
+                    <i class="fas fa-globe"></i>
+                    <p>App Live</p>
+                </div>
+            </div>
+
+            <div class="concept-grid" style="margin-top: 2rem;">
+                <div class="tech-box">
+                    <h4>CI (Continuous Integration)</h4>
+                    <p>GitHub Actions ejecuta tests automáticamente en cada push. Si fallan, se bloquea el deploy.</p>
+                    <p><small><code>npm test</code> → Jest + Supertest</small></p>
+                </div>
+                <div class="tech-box">
+                    <h4>CD (Continuous Deployment)</h4>
+                    <p>Render detecta el push a <code>main</code> y despliega automáticamente la nueva versión.</p>
+                    <p><small>Auto-deploy desde GitHub</small></p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p><strong>Share Notes</strong> - Plataforma de Notas Colaborativas</p>
+        <p>ITP 2026 • Mocoa, Putumayo</p>
+    </footer>
+
+</body>
+</html>

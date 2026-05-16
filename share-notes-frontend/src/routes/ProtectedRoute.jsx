@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { BookOpen, Loader } from "lucide-react";
+import { BookOpen, Loader2 } from "lucide-react";
 import useAuthStore from "../stores/useAuthStore.js";
 
 const ProtectedRoute = ({ children }) => {
@@ -13,7 +13,7 @@ const ProtectedRoute = ({ children }) => {
             <BookOpen className="w-8 h-8 text-white" />
           </div>
           <div className="flex items-center justify-center gap-2 text-gray-500">
-            <Loader className="w-5 h-5 animate-spin" />
+            <Loader2 className="w-5 h-5 animate-spin" />
             <span className="font-medium">Verificando sesión...</span>
           </div>
         </div>

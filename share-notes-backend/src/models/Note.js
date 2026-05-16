@@ -117,6 +117,10 @@ const noteSchema = new mongoose.Schema(
       enum: ["note", "task"],
       default: "note",
     },
+    googleDocId: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

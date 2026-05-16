@@ -1,10 +1,21 @@
 import axios from "axios";
 
+const RAW_URL = import.meta.env.VITE_API_URL;
+const API_BASE = RAW_URL || window.location.origin;
+const API_URL = RAW_URL || "/api";
+
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: API_URL,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
+
+export { API_BASE };
+
+let logoutCallback = null;
+export const onUnauthorized = (cb) => {
+  logoutCallback = cb;
+};
 
 api.interceptors.request.use((config) => {
   if (config.data instanceof FormData) {
@@ -14,34 +25,14 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (response) => {
-    console.log("✅ Response success:", response.status, response.config.url);
-    return response;
-  },
+  (response) => response,
   (error) => {
-    console.error("❌ Response error:", {
-      message: error.message,
-      code: error.code,
-      response: error.response?.data,
-      status: error.response?.status,
-      url: error.config?.url,
-      method: error.config?.method,
-    });
-
-    if (!error.response) {
-      console.error("Network Error Details:", {
-        message: error.message,
-        code: error.code,
-        config: {
-          url: error.config?.url,
-          method: error.config?.method,
-          baseURL: error.config?.baseURL,
-        },
-      });
-      return Promise.reject(new Error("No se pudo conectar al servidor"));
+    if (error.response?.status === 401) {
+      if (logoutCallback) logoutCallback();
+      return Promise.reject(error);
     }
-    if (error.response?.status === 401 && !window.location.pathname.includes("/login")) {
-      window.location.href = "/login";
+    if (!error.response) {
+      return Promise.reject(new Error("No se pudo conectar al servidor"));
     }
     return Promise.reject(error);
   }

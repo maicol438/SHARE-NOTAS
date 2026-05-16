@@ -1,20 +1,26 @@
 import { Link, useNavigate } from "react-router-dom";
-import { BookOpen, Shield, Zap, Tag, Star, ArrowRight, Sparkles, Moon, Sun, GraduationCap, Users, FileText, LogOut } from "lucide-react";
+import { BookOpen, Shield, ArrowRight, Sparkles, Moon, Sun, GraduationCap, Users, FileText, LogOut, Zap, TrendingUp, Smartphone } from "lucide-react";
 import { useDarkMode } from "../hooks/useDarkMode.js";
 import useAuthStore from "../stores/useAuthStore";
 
 const features = [
-  { icon: GraduationCap, title: "Organiza tus estudios", desc: "Crea notas por materia con categorías de color", color: "bg-purple-500" },
-  { icon: FileText, title: "Comparte conocimiento", desc: "Publica tus apuntes para que otros estudiantes puedan verlos", color: "bg-blue-500" },
-  { icon: Users, title: "Comunidad", desc: "Explora notas de otros usuarios y aprende insieme", color: "bg-green-500" },
-  { icon: Shield, title: "Seguro y privado", desc: "Tus notas están protegidas con JWT y cookies seguras", color: "bg-pink-500" },
+  { icon: GraduationCap, title: "Organiza tus estudios", desc: "Crea notas por materia con categorías de color", color: "from-purple-500 to-purple-600", shadow: "shadow-purple-500/25" },
+  { icon: FileText, title: "Comparte conocimiento", desc: "Publica tus apuntes para que otros estudiantes puedan verlos", color: "from-blue-500 to-blue-600", shadow: "shadow-blue-500/25" },
+  { icon: TrendingUp, title: "Seguimiento", desc: "Estadísticas y gráficas de tu progreso académico", color: "from-emerald-500 to-emerald-600", shadow: "shadow-emerald-500/25" },
+  { icon: Smartphone, title: "Acceso multidispositivo", desc: "Tus notas disponibles en cualquier lugar y dispositivo", color: "from-amber-500 to-amber-600", shadow: "shadow-amber-500/25" },
+  { icon: Users, title: "Comunidad", desc: "Explora notas de otros usuarios y aprende en conjunto", color: "from-green-500 to-green-600", shadow: "shadow-green-500/25" },
+  { icon: Shield, title: "Seguro y privado", desc: "Tus notas están protegidas con JWT y cookies seguras", color: "from-pink-500 to-pink-600", shadow: "shadow-pink-500/25" },
 ];
 
 const steps = [
-  { num: "1", title: "Regístrate gratis", desc: "Crea tu cuenta en segundos" },
-  { num: "2", title: "Crea tus notas", desc: "Organízalas por categorías" },
-  { num: "3", title: "Comparte", desc: "Publica y ayuda a otros" },
+  { num: "1", title: "Regístrate gratis", desc: "Crea tu cuenta en segundos", icon: Sparkles },
+  { num: "2", title: "Crea tus notas", desc: "Organízalas por categorías", icon: FileText },
+  { num: "3", title: "Comparte", desc: "Publica y ayuda a otros", icon: Users },
 ];
+
+const FloatingShape = ({ className }) => (
+  <div className={`absolute rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-20 dark:opacity-10 ${className}`} />
+);
 
 const Landing = () => {
   const { isDark, toggle } = useDarkMode();
@@ -30,40 +36,41 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 overflow-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary-500/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-float delay-200" />
-        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-float delay-300" />
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <FloatingShape className="w-[600px] h-[600px] bg-primary-400 -top-48 -left-48 animate-float" />
+        <FloatingShape className="w-[500px] h-[500px] bg-purple-400 top-1/2 -right-48 animate-float delay-200" />
+        <FloatingShape className="w-[400px] h-[400px] bg-blue-400 -bottom-32 left-1/3 animate-float delay-500" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.03),transparent_50%)]" />
       </div>
 
-      <nav className="relative z-10 max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+      <nav className="relative z-10 max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="flex items-center gap-3 group cursor-pointer" onClick={() => navigate("/")}>
+          <div className="w-11 h-11 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 group-hover:shadow-primary-500/50 transition-all duration-300 group-hover:scale-105">
             <BookOpen className="w-5 h-5 text-white" />
           </div>
-          <span className="font-bold text-xl gradient-text">ShareNotes</span>
+          <span className="font-extrabold text-xl gradient-text">ShareNotes</span>
         </div>
-        <div className="flex items-center gap-3">
-          <button onClick={toggle} className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors">
+        <div className="flex items-center gap-2">
+          <button onClick={toggle} className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all hover:scale-105">
             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
           {isAuthenticated ? (
             <>
-              <span className="text-sm text-gray-600 dark:text-gray-400">Hola, {user?.name}</span>
-              <button onClick={() => navigate("/dashboard")} className="btn-primary px-5 py-2.5 rounded-xl font-medium">
+              <span className="text-sm text-gray-600 dark:text-gray-400 hidden sm:block">Hola, {user?.name}</span>
+              <button onClick={() => navigate("/dashboard")} className="btn-primary px-5 py-2.5 text-sm font-semibold">
                 Ir a mi cuenta
               </button>
-              <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl font-medium transition-colors">
+              <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl font-medium transition-all text-sm">
                 <LogOut className="w-4 h-4" />
-                Cerrar sesión
+                <span className="hidden sm:inline">Salir</span>
               </button>
             </>
           ) : (
             <>
-              <button onClick={() => navigate("/login")} className="btn-secondary px-5 py-2.5 rounded-xl font-medium">
+              <button onClick={() => navigate("/login")} className="btn-secondary px-5 py-2.5 text-sm font-semibold">
                 Ingresar
               </button>
-              <button onClick={() => navigate("/register")} className="btn-primary px-5 py-2.5 rounded-xl font-medium">
+              <button onClick={() => navigate("/register")} className="btn-primary px-5 py-2.5 text-sm font-semibold">
                 Regístrate gratis
               </button>
             </>
@@ -71,116 +78,136 @@ const Landing = () => {
         </div>
       </nav>
 
-      <section className="relative z-10 max-w-6xl mx-auto px-6 pt-16 pb-24 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-primary-100 to-purple-100 dark:from-primary-900/40 dark:to-purple-900/40 rounded-full mb-8">
-          <Sparkles className="w-4 h-4 text-primary-600" />
-          <span className="text-sm font-medium text-primary-700 dark:text-primary-300">La mejor plataforma de notas académicas</span>
+      <section className="relative z-10 max-w-6xl mx-auto px-6 pt-20 pb-32 text-center">
+        <div className="inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-primary-100 to-purple-100 dark:from-primary-900/30 dark:to-purple-900/30 rounded-full mb-8 shadow-sm animate-fade-in">
+          <Sparkles className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+          <span className="text-sm font-semibold text-primary-700 dark:text-primary-300">La mejor plataforma de notas académicas</span>
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-bold mb-6">
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-6 leading-tight animate-slide-up">
           Tus notas,{" "}
           <span className="gradient-text">organizadas</span>
-          <br />y siempre contigo
+          <br className="hidden sm:block" />y siempre contigo
         </h1>
 
-        <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-10">
+        <p className="text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-12 animate-slide-up delay-100">
           Crea, organiza y comparte tus apuntes académicos. 
-          Con categorías de color, búsqueda rápida y modo lectura inmersiva.
+          Con categorías de color, búsqueda inteligente y estadísticas de progreso.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up delay-200">
           {isAuthenticated ? (
-            <button onClick={() => navigate("/dashboard")} className="group btn-primary px-8 py-4 text-lg rounded-2xl">
-              <span>Continuar a mi cuenta</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <button onClick={() => navigate("/dashboard")} className="group btn-primary px-10 py-5 text-lg rounded-2xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300 hover:scale-[1.02]">
+              <span>Ir a mi cuenta</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
             </button>
           ) : (
             <>
-              <button onClick={() => navigate("/register")} className="group btn-primary px-8 py-4 text-lg rounded-2xl">
+              <button onClick={() => navigate("/register")} className="group btn-primary px-10 py-5 text-lg rounded-2xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300 hover:scale-[1.02]">
                 <span>Empezar gratis</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
               </button>
-              <button onClick={() => navigate("/login")} className="btn-secondary px-8 py-4 text-lg rounded-2xl">
+              <button onClick={() => navigate("/login")} className="btn-secondary px-10 py-5 text-lg rounded-2xl hover:border-primary-300 dark:hover:border-primary-700 hover:bg-gray-50 dark:hover:bg-dark-800 transition-all duration-300 hover:scale-[1.02]">
                 Ya tengo cuenta
               </button>
             </>
           )}
         </div>
 
-        <div className="flex flex-wrap justify-center gap-8 mt-16">
+        <div className="flex flex-wrap justify-center gap-12 mt-20 animate-fade-in delay-300">
           {[
             { num: "1000+", label: "Estudiantes" },
             { num: "500+", label: "Notas creadas" },
             { num: "50+", label: "Categorías" },
+            { num: "99%", label: "Satisfacción" },
           ].map((stat, i) => (
-            <div key={i} className="text-center">
-              <div className="text-3xl font-bold gradient-text">{stat.num}</div>
-              <div className="text-sm text-gray-500">{stat.label}</div>
+            <div key={i} className="text-center group">
+              <div className="text-4xl md:text-5xl font-extrabold gradient-text group-hover:scale-110 transition-transform duration-300">{stat.num}</div>
+              <div className="text-sm text-gray-500 mt-1 font-medium">{stat.label}</div>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="relative z-10 max-w-6xl mx-auto px-6 pb-24">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">¿Por qué usar <span className="gradient-text">ShareNotes</span>?</h2>
-          <p className="text-gray-500">Todo lo que necesitas para organizar tus estudios</p>
+      <section className="relative z-10 max-w-6xl mx-auto px-6 pb-32">
+        <div className="text-center mb-16">
+          <span className="inline-block px-4 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-sm font-semibold rounded-full mb-4">Características</span>
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-4">¿Por qué usar <span className="gradient-text">ShareNotes</span>?</h2>
+          <p className="text-gray-500 text-lg max-w-xl mx-auto">Todo lo que necesitas para organizar tus estudios en un solo lugar</p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {features.map(({ icon: Icon, title, desc, color }, i) => (
-            <div key={i} className="card p-6 text-center hover:shadow-xl transition-shadow duration-300">
-              <div className={`w-14 h-14 ${color} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {features.map(({ icon: Icon, title, desc, color, shadow }, i) => (
+            <div key={i} className="group card p-7 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 cursor-default animate-fade-in" style={{ animationDelay: `${i * 100}ms` }}>
+              <div className={`w-14 h-14 bg-gradient-to-br ${color} rounded-2xl flex items-center justify-center mb-5 shadow-lg ${shadow} group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                 <Icon className="w-7 h-7 text-white" />
               </div>
-              <h3 className="font-semibold text-lg mb-2">{title}</h3>
-              <p className="text-sm text-gray-500">{desc}</p>
+              <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-gray-100">{title}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="relative z-10 max-w-6xl mx-auto px-6 pb-24">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">¿Cómo <span className="gradient-text">funciona</span>?</h2>
-          <p className="text-gray-500">En solo 3 pasos</p>
+      <section className="relative z-10 max-w-4xl mx-auto px-6 pb-32">
+        <div className="text-center mb-16">
+          <span className="inline-block px-4 py-1.5 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-sm font-semibold rounded-full mb-4">Cómo funciona</span>
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-4">Comienza en <span className="gradient-text">3 pasos</span></h2>
+          <p className="text-gray-500 text-lg">Es más fácil de lo que imaginas</p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-6">
-          {steps.map((step, i) => (
-            <div key={i} className="flex items-center gap-4 card p-5 px-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                {step.num}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+          {steps.map((step, i) => {
+            const Icon = step.icon;
+            return (
+              <div key={i} className="relative flex flex-col items-center text-center group w-full md:w-64">
+                <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl shadow-primary-500/25 group-hover:shadow-primary-500/40 group-hover:scale-110 transition-all duration-300 mb-5">
+                  <Icon className="w-9 h-9 text-white" />
+                </div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-white dark:bg-dark-900 rounded-full flex items-center justify-center font-bold text-sm text-primary-600 dark:text-primary-400 shadow-md border-2 border-primary-100 dark:border-primary-900">
+                  {step.num}
+                </div>
+                <h3 className="font-bold text-xl mb-2">{step.title}</h3>
+                <p className="text-sm text-gray-500">{step.desc}</p>
+                {i < steps.length - 1 && (
+                  <ArrowRight className="hidden md:block absolute -right-6 top-10 w-6 h-6 text-gray-300 dark:text-gray-600" />
+                )}
               </div>
-              <div className="text-left">
-                <div className="font-semibold">{step.title}</div>
-                <div className="text-sm text-gray-500">{step.desc}</div>
-              </div>
-              {i < steps.length - 1 && <ArrowRight className="w-5 h-5 text-gray-300 hidden sm:block" />}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
-      <section className="relative z-10 max-w-4xl mx-auto px-6 pb-24">
-        <div className="card p-12 text-center bg-gradient-to-br from-primary-600 to-purple-700 text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+      <section className="relative z-10 max-w-5xl mx-auto px-6 pb-32">
+        <div className="card p-14 text-center bg-gradient-to-br from-primary-600 via-purple-600 to-pink-600 text-white relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-60 h-60 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.05),transparent_50%)]" />
 
           <div className="relative z-10">
-            <h2 className="text-3xl font-bold mb-4">¿Listo para empezar?</h2>
-            <p className="text-primary-100 mb-8 text-lg">Únete a miles de estudiantes que ya organizan sus notas</p>
-            <Link to="/register" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors">
-              <Star className="w-5 h-5" />
+            <Sparkles className="w-12 h-12 mx-auto mb-6 text-white/80 animate-bounce-subtle" />
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-4">¿Listo para empezar?</h2>
+            <p className="text-white/80 mb-10 text-lg max-w-md mx-auto">Únete a miles de estudiantes que ya organizan sus notas con ShareNotes</p>
+            <Link to="/register" className="inline-flex items-center gap-3 px-10 py-5 bg-white text-primary-600 font-bold rounded-2xl hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-white/30 text-lg">
+              <Zap className="w-6 h-6" />
               Crear cuenta gratis
             </Link>
           </div>
         </div>
       </section>
 
-      <footer className="relative z-10 border-t border-gray-200 dark:border-gray-800 py-8">
-        <div className="max-w-6xl mx-auto px-6 text-center text-gray-500 text-sm">
-          <p>ShareNotes By Maicol438. Hecho con ❤️ para estudiantes.</p>
+      <footer className="relative z-10 border-t border-gray-200 dark:border-gray-800 py-10">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-gray-500 text-sm">
+            <BookOpen className="w-4 h-4 text-primary-500" />
+            <span>ShareNotes by <strong>Maicol438</strong></span>
+          </div>
+          <p className="text-gray-400 text-sm">Hecho con ❤️ para estudiantes</p>
+          <div className="flex items-center gap-4 text-gray-400 text-sm">
+            <span className="hover:text-primary-500 transition-colors cursor-pointer">Términos</span>
+            <span className="hover:text-primary-500 transition-colors cursor-pointer">Privacidad</span>
+            <span className="hover:text-primary-500 transition-colors cursor-pointer">Contacto</span>
+          </div>
         </div>
       </footer>
     </div>

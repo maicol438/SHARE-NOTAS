@@ -235,7 +235,7 @@ export default function Stats() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold gradient-text mb-2">Estadisticas</h1>
+        <h1 className="text-2xl font-bold gradient-text mb-2">Estadísticas</h1>
         <p className="text-gray-500">Tu actividad en ShareNotes</p>
       </div>
 
@@ -277,7 +277,7 @@ export default function Stats() {
         </div>
 
         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6">
-          <h3 className="font-semibold text-lg mb-6">Actividad (últimas 8 semanas)</h3>
+          <h3 className="font-semibold text-lg mb-6">Actividad reciente (últimas 8 semanas)</h3>
           <LineChart data={stats.byWeek || []} />
         </div>
       </div>
@@ -285,7 +285,7 @@ export default function Stats() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {categoryData.length > 0 && (
           <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6">
-            <h3 className="font-semibold text-lg mb-6">Notas por categoria</h3>
+            <h3 className="font-semibold text-lg mb-6">Notas por categoría</h3>
             <BarChart data={categoryData} />
           </div>
         )}
@@ -299,7 +299,7 @@ export default function Stats() {
 
         {tagData.length > 0 && (
           <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 lg:col-span-2">
-            <h3 className="font-semibold text-lg mb-6">Etiquetas mas usadas</h3>
+            <h3 className="font-semibold text-lg mb-6">Etiquetas más usadas</h3>
             <div className="flex flex-wrap gap-2">
               {tagData.map((tag, i) => (
                 <span

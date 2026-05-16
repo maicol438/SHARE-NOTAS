@@ -1,22 +1,44 @@
 import { useState, useEffect } from "react";
-import { FolderOpen, Upload, Image, FileText, X } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { FolderOpen, Upload, Image, FileText, X, Share2 } from "lucide-react";
 import useNoteStore from "../stores/useNoteStore";
+import { showToast } from "../utils/toast.jsx";
 import api from "../api/axios";
 import EmptyState from "../components/ui/EmptyState";
+import Modal from "../components/ui/Modal";
+import Button from "../components/ui/Button";
 
 export default function Files() {
   const { files, fetchFiles, deleteFile, isLoading } = useNoteStore();
   const [uploading, setUploading] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [sharingFile, setSharingFile] = useState(null);
+  const [shareEmail, setShareEmail] = useState("");
 
   useEffect(() => {
     fetchFiles();
   }, []);
 
+  const handleShareFile = async (e) => {
+    e.preventDefault();
+    if (!shareEmail.trim()) {
+      showToast("Ingresa un email", "error");
+      return;
+    }
+    try {
+      await api.post(`/files/${sharingFile._id}/share`, { email: shareEmail });
+      showToast(`Archivo compartido con ${shareEmail}`, "success");
+      setShowShareModal(false);
+      setShareEmail("");
+      setSharingFile(null);
+    } catch (err) {
+      showToast(err.response?.data?.message || "Error al compartir", "error");
+    }
+  };
+
   const handleUpload = async (e) => {
     const uploadedFiles = Array.from(e.target.files);
     if (uploadedFiles.length > 3) {
-      toast.error("Máximo 3 archivos a la vez");
+      showToast("Máximo 3 archivos a la vez", "error");
       return;
     }
 
@@ -31,10 +53,10 @@ export default function Files() {
       
       if (res.data.files && res.data.files.length > 0) {
         await fetchFiles();
-        toast.success(`${res.data.files.length} archivo(s) subido(s)`);
+        showToast(`${res.data.files.length} archivo(s) subido(s)`, "success");
       }
     } catch (err) {
-      toast.error("Error al subir archivos: " + (err.response?.data?.message || err.message));
+      showToast("Error al subir archivos: " + (err.response?.data?.message || err.message), "error");
     } finally {
       setUploading(false);
       e.target.value = '';
@@ -44,9 +66,9 @@ export default function Files() {
   const handleDelete = async (filename) => {
     try {
       await deleteFile(filename);
-      toast.success("Archivo eliminado");
+      showToast("Archivo eliminado", "success");
     } catch {
-      toast.error("Error al eliminar");
+      showToast("Error al eliminar", "error");
     }
   };
 
@@ -93,6 +115,13 @@ export default function Files() {
             return (
               <div key={file._id || file.filename} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 hover:shadow-lg transition-all relative group">
                 <button
+                  onClick={() => { setSharingFile(file); setShareEmail(""); setShowShareModal(true); }}
+                  className="absolute top-2 right-10 p-1 bg-primary-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  title="Compartir archivo"
+                >
+                  <Share2 className="w-3 h-3" />
+                </button>
+                <button
                   onClick={() => handleDelete(file.filename)}
                   className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                 >
@@ -112,6 +141,21 @@ export default function Files() {
           })}
         </div>
       )}
+      <Modal isOpen={showShareModal} onClose={() => { setShowShareModal(false); setSharingFile(null); }} title="Compartir archivo">
+        <form onSubmit={handleShareFile} className="space-y-4">
+          <p className="text-sm text-gray-500 mb-2">
+            {sharingFile && `Compartir "${sharingFile.name}" con otro usuario`}
+          </p>
+          <div>
+            <label className="block text-sm font-medium mb-1">Email del usuario</label>
+            <input type="email" value={shareEmail} onChange={(e) => setShareEmail(e.target.value)} className="input-field" placeholder="email@ejemplo.com" required />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={() => setShowShareModal(false)} className="flex-1 btn-secondary">Cancelar</button>
+            <Button type="submit" className="flex-1">Compartir</Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

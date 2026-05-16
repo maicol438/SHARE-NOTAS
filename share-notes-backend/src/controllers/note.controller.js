@@ -2,6 +2,7 @@ import Note from "../models/Note.js";
 import Category from "../models/Category.js";
 import Notebook from "../models/Notebook.js";
 import User from "../models/User.js";
+import { sendShareNotificationEmail } from "../config/email.js";
 
 const normalizeTags = (tags) => {
   if (!tags) return [];
@@ -212,9 +213,9 @@ export const updateNote = async (req, res, next) => {
       }
     }
 
-    const updateData = { title, content, contentHTML, description, category, isPinned, tags: normalizeTags(tags), images, reminder, isPublic, dueDate, priority, isCompleted, type };
+    const updateData = { title, content, contentHTML, description, isPinned, tags: normalizeTags(tags), images, reminder, isPublic, dueDate, priority, isCompleted, type };
+    if (category) updateData.category = category;
     if (notebook !== undefined) updateData.notebook = notebook;
-    delete updateData.category;
 
     const note = await Note.findOneAndUpdate(
       { _id: req.params.id, user: req.userId },
@@ -312,7 +313,12 @@ export const togglePin = async (req, res, next) => {
     note.isPinned = !note.isPinned;
     await note.save();
 
-    res.json({ message: `Nota ${note.isPinned ? "fijada" : "desfijada"}`, note });
+    const populated = await note.populate([
+      { path: "category", select: "name color" },
+      { path: "notebook", select: "name color" },
+    ]);
+
+    res.json({ message: `Nota ${note.isPinned ? "fijada" : "desfijada"}`, note: populated });
   } catch (error) {
     next(error);
   }
@@ -326,7 +332,12 @@ export const toggleFavorite = async (req, res, next) => {
     note.isFavorite = !note.isFavorite;
     await note.save();
 
-    res.json({ message: `Nota ${note.isFavorite ? "marcada" : "desmarcada"} como favorita`, note });
+    const populated = await note.populate([
+      { path: "category", select: "name color" },
+      { path: "notebook", select: "name color" },
+    ]);
+
+    res.json({ message: `Nota ${note.isFavorite ? "marcada" : "desmarcada"} como favorita`, note: populated });
   } catch (error) {
     next(error);
   }
@@ -364,6 +375,18 @@ export const shareNote = async (req, res, next) => {
     }
 
     await note.save();
+
+    const sender = await User.findById(req.userId);
+    const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    const noteUrl = `${clientUrl}/dashboard`;
+
+    sendShareNotificationEmail({
+      to: targetUser.email,
+      sharedByName: sender?.name || "Alguien",
+      noteTitle: note.title,
+      noteUrl,
+      type: note.type || "note",
+    }).catch((err) => console.error("Error sending share email:", err));
 
     res.json({ message: `Nota compartida con ${targetUser.name}` });
   } catch (error) {

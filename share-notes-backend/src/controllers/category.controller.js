@@ -39,6 +39,15 @@ export const updateCategory = async (req, res, next) => {
   try {
     const { name, color } = req.body;
 
+    if (name !== undefined) {
+      if (name.trim().length < 2) {
+        return res.status(400).json({ message: "El nombre debe tener al menos 2 caracteres" });
+      }
+      if (name.trim().length > 50) {
+        return res.status(400).json({ message: "El nombre no puede superar 50 caracteres" });
+      }
+    }
+
     const category = await Category.findOneAndUpdate(
       { _id: req.params.id, user: req.userId },
       { name, color },

@@ -7,7 +7,11 @@ import Category from "../models/Category.js";
 const API = "/api";
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.MONGO_URI_TEST || process.env.MONGO_URI);
+  const testUri = process.env.MONGO_URI_TEST;
+  if (!testUri) {
+    throw new Error("MONGO_URI_TEST no está configurada. Los tests requieren una base de datos separada.");
+  }
+  await mongoose.connect(testUri);
 });
 
 afterAll(async () => {

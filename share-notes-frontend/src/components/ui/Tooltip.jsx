@@ -8,8 +8,15 @@ const Tooltip = ({ children, text, position = "top" }) => {
   useEffect(() => {
     if (visible && wrapperRef.current) {
       const rect = wrapperRef.current.getBoundingClientRect();
-      if (rect.top < 60 && position === "top") {
+      const threshold = 150;
+      if (rect.top < threshold && actualPosition === "top") {
         setActualPosition("bottom");
+      } else if (rect.bottom > window.innerHeight - threshold && actualPosition === "bottom") {
+        setActualPosition("top");
+      } else if (rect.left < threshold && actualPosition === "left") {
+        setActualPosition("right");
+      } else if (rect.right > window.innerWidth - threshold && actualPosition === "right") {
+        setActualPosition("left");
       } else {
         setActualPosition(position);
       }
@@ -33,7 +40,7 @@ const Tooltip = ({ children, text, position = "top" }) => {
       {children}
       {visible && (
         <div
-          className={`absolute z-50 px-2 py-1 text-xs text-white bg-gray-800 dark:bg-gray-700 rounded whitespace-nowrap pointer-events-none ${positions[actualPosition]}`}
+          className={`absolute z-50 px-2.5 py-1.5 text-xs font-semibold text-white bg-gradient-to-r from-gray-800 to-gray-700 dark:from-gray-700 dark:to-gray-600 rounded-lg whitespace-nowrap pointer-events-none shadow-lg animate-fade-in ${positions[actualPosition]}`}
         >
           {text}
         </div>

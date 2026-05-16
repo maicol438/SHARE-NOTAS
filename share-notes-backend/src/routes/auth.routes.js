@@ -1,9 +1,12 @@
 import { Router } from "express";
 import passport from "passport";
-import { register, login, logout, getMe, googleAuthCallback } from "../controllers/auth.controller.js";
+import { register, login, logout, getMe, forgotPassword, resetPassword, googleAuthCallback } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middlewares/auth.middleware.js";
+import { authLimiter } from "../middlewares/rateLimiter.middleware.js";
 
 const router = Router();
+
+const googleEnabled = process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET;
 
 /**
  * @swagger
@@ -49,7 +52,7 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post("/register", register);
+router.post("/register", authLimiter, register);
 
 /**
  * @swagger
@@ -84,7 +87,7 @@ router.post("/register", register);
  *       401:
  *         description: Credenciales inválidas
  */
-router.post("/login", login);
+router.post("/login", authLimiter, login);
 
 /**
  * @swagger
@@ -115,22 +118,26 @@ router.post("/logout", logout);
  *         description: No autenticado
  */
 router.get("/me", verifyToken, getMe);
+router.post("/forgot-password", authLimiter, forgotPassword);
+router.post("/reset-password/:token", resetPassword);
 
-router.get(
-  "/google",
-  passport.authenticate("google", {
-    scope: ["profile", "email"],
-    session: false,
-  })
-);
+if (googleEnabled) {
+  router.get(
+    "/google",
+    passport.authenticate("google", {
+      scope: ["profile", "email"],
+      session: false,
+    })
+  );
 
-router.get(
-  "/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/login",
-    session: false,
-  }),
-  googleAuthCallback
-);
+  router.get(
+    "/google/callback",
+    passport.authenticate("google", {
+      failureRedirect: "/login",
+      session: false,
+    }),
+    googleAuthCallback
+  );
+}
 
 export default router;

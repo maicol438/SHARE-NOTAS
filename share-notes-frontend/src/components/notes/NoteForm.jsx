@@ -1,11 +1,22 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect, memo } from "react";
 import Button from "../ui/Button.jsx";
 import Input from "../ui/Input.jsx";
 import useNoteStore from "../../stores/useNoteStore.js";
-import toast from "react-hot-toast";
+import { showToast } from "../../utils/toast.jsx";
+
+const ContentTextarea = memo(({ value, onChange }) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sm font-semibold text-gray-700 dark:text-dark-300">Contenido</label>
+    <textarea name="content" value={value} onChange={onChange} rows={5} placeholder="Escribe el contenido de tu nota..." className="input-field resize-none" />
+  </div>
+));
 
 const NoteForm = ({ note, onClose }) => {
-  const { categories, createNote, updateNote, createCategory, isLoading } = useNoteStore();
+  const categories = useNoteStore((s) => s.categories);
+  const createNote = useNoteStore((s) => s.createNote);
+  const updateNote = useNoteStore((s) => s.updateNote);
+  const createCategory = useNoteStore((s) => s.createCategory);
+  const isLoading = useNoteStore((s) => s.isLoading);
   const isEdit = !!note;
 
   const [form, setForm] = useState({
@@ -20,15 +31,17 @@ const NoteForm = ({ note, onClose }) => {
   const [showNewCategory, setShowNewCategory] = useState(false);
 
   useEffect(() => {
-    const loadCategories = async () => {
-      const { fetchCategories, createCategory, categories } = useNoteStore.getState();
-      await fetchCategories();
-      const catList = useNoteStore.getState().categories;
-      if (!catList || catList.length === 0) {
-        await createCategory({ name: "General", color: "#6366f1" });
+    const load = async () => {
+      const store = useNoteStore.getState();
+      if (!store.categories || store.categories.length === 0) {
+        await store.fetchCategories();
+        const catList = useNoteStore.getState().categories;
+        if (!catList || catList.length === 0) {
+          await store.createCategory({ name: "General", color: "#6366f1" });
+        }
       }
     };
-    loadCategories();
+    load();
   }, []);
 
   const handleChange = useCallback((e) => {
@@ -38,7 +51,7 @@ const NoteForm = ({ note, onClose }) => {
 
   const handleCreateCategory = useCallback(async () => {
     if (!newCategory.trim()) {
-      toast.error("Ingresa un nombre para la categoría");
+      showToast("Ingresa un nombre para la categoría", "error");
       return;
     }
     const result = await createCategory({ name: newCategory.trim() });
@@ -46,26 +59,26 @@ const NoteForm = ({ note, onClose }) => {
       setForm((prev) => ({ ...prev, category: result.category._id }));
       setNewCategory("");
       setShowNewCategory(false);
-      toast.success("Categoría creada");
+      showToast("Categoría creada", "success");
     } else {
-      toast.error(result.message);
+      showToast(result.message, "error");
     }
   }, [newCategory, createCategory]);
 
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (!form.title.trim() || !form.content.trim() || !form.category) {
-      toast.error("Completa todos los campos");
+      showToast("Completa todos los campos", "error");
       return;
     }
 
     const result = isEdit ? await updateNote(note._id, form) : await createNote(form);
 
     if (result.ok) {
-      toast.success(isEdit ? "Nota actualizada correctamente" : "Nota creada con éxito!");
+      showToast(isEdit ? "Nota actualizada correctamente" : "Nota creada con éxito!", "success");
       onClose();
     } else {
-      toast.error(`Error: ${result.message || "Algo salió mal. Intenta de nuevo."}`);
+      showToast(`Error: ${result.message || "Algo salió mal. Intenta de nuevo."}`, "error");
     }
   }, [form, isEdit, note, createNote, updateNote, onClose]);
 
@@ -74,14 +87,11 @@ const NoteForm = ({ note, onClose }) => {
       <Input label="Título" name="title" value={form.title} onChange={handleChange} placeholder="Ej: Apuntes de Cálculo" maxLength={120} />
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Resumen breve / Descripción</label>
+        <label className="text-sm font-semibold text-gray-700 dark:text-dark-300">Resumen breve / Descripción</label>
         <textarea name="description" value={form.description} onChange={handleChange} rows={2} placeholder="Breve descripción de la nota..." className="input-field resize-none" maxLength={500} />
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contenido</label>
-        <textarea name="content" value={form.content} onChange={handleChange} rows={5} placeholder="Escribe el contenido de tu nota..." className="input-field resize-none" />
-      </div>
+      <ContentTextarea value={form.content} onChange={handleChange} />
 
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Categoría</label>
@@ -102,8 +112,8 @@ const NoteForm = ({ note, onClose }) => {
         )}
       </div>
 
-      <label className="flex items-center gap-2 text-sm cursor-pointer">
-        <input type="checkbox" name="isPinned" checked={form.isPinned} onChange={handleChange} className="w-4 h-4 rounded text-primary-600" />
+      <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+        <input type="checkbox" name="isPinned" checked={form.isPinned} onChange={handleChange} className="w-4 h-4 rounded text-primary-600 focus:ring-primary-500/30" />
         <span className="text-gray-700 dark:text-gray-300">Fijar nota</span>
       </label>
 
@@ -115,4 +125,4 @@ const NoteForm = ({ note, onClose }) => {
   );
 };
 
-export default NoteForm;
+export default memo(NoteForm);

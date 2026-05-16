@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker en Share Notes - Contenedores y Portabilidad</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --primary: #0ea5e9;
+            --secondary: #6366f1;
+            --accent: #22d3ee;
+            --code-bg: #000000;
+            --text: #f1f5f9;
+            --text-dim: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --success: #10b981;
+            --warning: #fbbf24;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 0;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #0c4a6e 0%, #1e1b4b 100%);
+            padding: 4rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero h1 { font-size: 2.8rem; margin-bottom: 1rem; color: var(--accent); }
+        .hero p { color: var(--text-dim); font-size: 1.2rem; max-width: 800px; margin: 0 auto; }
+
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 20px; }
+
+        .section-title {
+            margin: 3rem 0 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+            display: inline-block;
+            font-size: 1.8rem;
+        }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+
+        .card {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+
+        .card h3 { color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+        .card h4 { color: var(--accent); margin-bottom: 10px; }
+
+        code {
+            background: var(--code-bg);
+            color: var(--accent);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1.2rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        .command-list { list-style: none; }
+        .command-list li { margin-bottom: 10px; padding-left: 20px; position: relative; }
+        .command-list li::before { content: ">"; position: absolute; left: 0; color: var(--primary); font-weight: bold; }
+
+        .badge {
+            background: var(--secondary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .comparison {
+            display: flex;
+            gap: 20px;
+            margin-top: 1rem;
+        }
+
+        .comp-box {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .profe-tip {
+            background: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        .profe-tip strong { display: block; color: var(--primary); margin-bottom: 5px; }
+
+        .full-width { grid-column: 1 / -1; }
+
+        footer { text-align: center; padding: 4rem 2rem; color: var(--text-dim); }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .comparison { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <span class="badge" style="background: var(--accent); color: var(--bg);">Share Notes</span>
+        <h1>Docker: Contenedores y Portabilidad</h1>
+        <p>Virtualización de sistema operativo para entornos de desarrollo y producción consistentes.</p>
+    </div>
+
+    <div class="container">
+
+        <!-- 1. CONCEPTO -->
+        <h2 class="section-title">1. El Salto a los Contenedores</h2>
+        <div class="grid">
+            <div class="card">
+                <h3><i class="fas fa-box-open"></i> Virtualización de OS</h3>
+                <p>A diferencia de las máquinas virtuales, los contenedores comparten el <strong>Kernel del Sistema Operativo</strong> del host.</p>
+                <div class="comparison">
+                    <div class="comp-box"><strong>VMs:</strong> Hardware virtualizado + OS completo (Pesado).</div>
+                    <div class="comp-box"><strong>Contenedores:</strong> Aislamiento de procesos (Ligero/Rápido).</div>
+                </div>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-check-circle"></i> Ventajas Clave</h3>
+                <ul class="command-list" style="margin-top: 10px;">
+                    <li><strong>Portabilidad:</strong> "Funciona en mi máquina y en la tuya".</li>
+                    <li><strong>Consistencia:</strong> Entorno idéntico de Dev a Prod.</li>
+                    <li><strong>Eficiencia:</strong> Arranque en segundos, mínimo consumo de RAM.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 2. ARQUITECTURA SHARE NOTES -->
+        <h2 class="section-title">2. Arquitectura del Proyecto</h2>
+        <div class="grid">
+            <div class="card">
+                <h3><i class="fas fa-sitemap"></i> Componentes</h3>
+                <p><strong>Docker Engine:</strong> El motor que corre los contenedores.</p>
+                <p><strong>Imágenes:</strong> Plantillas de solo lectura (la "clase").</p>
+                <p><strong>Contenedores:</strong> Instancias vivas de una imagen (el "objeto").</p>
+                <div class="profe-tip">
+                    <strong>En Share Notes:</strong>
+                    Tenemos 2 servicios: <code>mongodb</code> (base de datos) y la API de Node.js.
+                </div>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-layer-group"></i> docker-compose.yml</h3>
+                <pre><code>version: "3.8"
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: share-notes-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: share_notes
+    volumes:
+      - mongodb_data:/data/db
+    command: ["mongod", "--quiet", "--logpath", "/dev/null"]
+
+volumes:
+  mongodb_data:
+    driver: local</code></pre>
+            </div>
+        </div>
+
+        <!-- 3. DOCKERFILE -->
+        <h2 class="section-title">3. Dockerfile: La Receta de la API</h2>
+        <div class="grid">
+            <div class="card full-width">
+                <h3><i class="fas fa-file-code"></i> share-notes-backend/Dockerfile</h3>
+                <pre><code>FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY . .
+
+EXPOSE 4000
+
+CMD ["node", "src/server.js"]</code></pre>
+                <div class="grid" style="margin-top: 1rem;">
+                    <div>
+                        <h4>Instrucciones</h4>
+                        <ul class="command-list">
+                            <li><code>FROM node:20-alpine</code> - Imagen base ultraligera</li>
+                            <li><code>WORKDIR /app</code> - Carpeta de trabajo</li>
+                            <li><code>COPY package*.json ./</code> - Copia dependencias primero para cachear</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Optimizaciones</h4>
+                        <ul class="command-list">
+                            <li><code>npm ci --only=production</code> - Solo dependencias de producción</li>
+                            <li><code>Alpine Linux</code> - Imagen ~170MB vs 1GB de node full</li>
+                            <li><code>EXPOSE 4000</code> - Puerto de la API</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. COMANDOS ESENCIALES -->
+        <h2 class="section-title">4. Comandos Esenciales (CLI)</h2>
+        <div class="card">
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                <div>
+                    <h4 style="color: var(--accent); margin-bottom: 10px;">Imágenes</h4>
+                    <ul class="command-list">
+                        <li><code>docker build -t share-notes-api .</code></li>
+                        <li><code>docker images</code> (Listar)</li>
+                        <li><code>docker pull mongo:7</code> (Descargar)</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: var(--accent); margin-bottom: 10px;">Contenedores</h4>
+                    <ul class="command-list">
+                        <li><code>docker-compose up -d</code> (Iniciar todo)</li>
+                        <li><code>docker ps</code> (Ver activos)</li>
+                        <li><code>docker stop share-notes-mongodb</code></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: var(--accent); margin-bottom: 10px;">Depuración</h4>
+                    <ul class="command-list">
+                        <li><code>docker-compose logs -f</code></li>
+                        <li><code>docker exec -it share-notes-mongodb sh</code></li>
+                        <li><code>docker-compose down -v</code> (Limpiar todo)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. FLUJO DE TRABAJO -->
+        <h2 class="section-title">5. Flujo de Trabajo con Docker</h2>
+        <div class="card">
+            <div class="grid">
+                <div>
+                    <h4 style="color: var(--accent);">Desarrollo Local</h4>
+                    <ol class="command-list" style="list-style: decimal; padding-left: 20px;">
+                        <li style="padding-left: 10px;">Clonar el repositorio</li>
+                        <li style="padding-left: 10px;">Ejecutar <code>docker-compose up -d</code> (levanta MongoDB)</li>
+                        <li style="padding-left: 10px;">Ejecutar <code>npm run dev</code> en la API (nodemon)</li>
+                        <li style="padding-left: 10px;">Ejecutar <code>npm run dev</code> en el frontend (Vite)</li>
+                    </ol>
+                </div>
+                <div>
+                    <h4 style="color: var(--accent);">Producción (Render)</h4>
+                    <ol class="command-list" style="list-style: decimal; padding-left: 20px;">
+                        <li style="padding-left: 10px;">Push a GitHub (main)</li>
+                        <li style="padding-left: 10px;">Render detecta el cambio y construye</li>
+                        <li style="padding-left: 10px;">Render ejecuta <code>npm install && npm start</code></li>
+                        <li style="padding-left: 10px;">API live en puerto 4000</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p><strong>Share Notes</strong> - Plataforma de Notas Colaborativas</p>
+        <p>Instituto Tecnológico del Putumayo • 2026</p>
+    </footer>
+
+</body>
+</html>

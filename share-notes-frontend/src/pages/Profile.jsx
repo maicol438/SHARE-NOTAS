@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { User, Mail, Lock, Camera, Trash2, Save, AlertTriangle } from "lucide-react";
-import { toast } from "react-hot-toast";
 import api from "../api/axios";
+import { showToast } from "../utils/toast.jsx";
 import Button from "../components/ui/Button";
 import useAuthStore from "../stores/useAuthStore";
 
 export default function Profile() {
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
+  const isGoogleUser = user?.authProvider === "google";
 
   const [form, setForm] = useState({
     name: "",
@@ -21,6 +22,7 @@ export default function Profile() {
   const [stats, setStats] = useState({ totalNotes: 0, sharedWithMe: 0 });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -53,7 +55,7 @@ export default function Profile() {
     }
     if (!form.email) errs.email = "El email es requerido";
     if (form.newPassword || form.confirmPassword) {
-      if (!form.currentPassword) errs.currentPassword = "Requiere contraseña actual";
+      if (!isGoogleUser && !form.currentPassword) errs.currentPassword = "Requiere contraseña actual";
       if (form.newPassword.length < 6) errs.newPassword = "Mínimo 6 caracteres";
       if (form.newPassword !== form.confirmPassword) {
         errs.confirmPassword = "Las contraseñas no coinciden";
@@ -70,9 +72,9 @@ export default function Profile() {
     setIsLoading(true);
     try {
       const data = { name: form.name, email: form.email };
-      if (form.newPassword) {
-        data.currentPassword = form.currentPassword;
-        data.newPassword = form.newPassword;
+      if (form.newPassword || isGoogleUser) {
+        if (!isGoogleUser) data.currentPassword = form.currentPassword;
+        data.newPassword = form.newPassword || "";
       }
 
       console.log("Enviando petición a /users/me", data);
@@ -87,7 +89,7 @@ export default function Profile() {
       console.log("Actualizando usuario con:", userData);
       
       setUser(userData);
-      toast.success("Perfil actualizado ✅");
+      showToast("Perfil actualizado", "success");
 
       if (form.newPassword) {
         setForm((f) => ({
@@ -106,7 +108,7 @@ export default function Profile() {
       });
       
       const errorMsg = err.response?.data?.message || err.message || "Error al actualizar";
-      toast.error(errorMsg);
+      showToast(errorMsg, "error");
     } finally {
       setIsLoading(false);
     }
@@ -133,7 +135,7 @@ export default function Profile() {
       
       if (avatarUrl) {
         setUser({ ...user, avatar: avatarUrl });
-        toast.success("Avatar actualizado ✅");
+        showToast("Avatar actualizado", "success");
         
         // Limpiar el input para permitir subir el mismo archivo otra vez
         e.target.value = "";
@@ -148,21 +150,26 @@ export default function Profile() {
       });
       
       const errorMsg = err.response?.data?.message || err.message || "Error al subir imagen";
-      toast.error(errorMsg);
+      showToast(errorMsg, "error");
     }
   };
 
   const handleDeleteAccount = async () => {
-    if (!deletePassword) {
-      toast.error("Ingresa tu contraseña");
+    if (!isGoogleUser && !deletePassword) {
+      showToast("Ingresa tu contraseña", "error");
+      return;
+    }
+    if (isGoogleUser && deleteConfirmText !== "ELIMINAR") {
+      showToast("Escribe ELIMINAR para confirmar", "error");
       return;
     }
 
     try {
-      await api.delete("/users/me", { data: { password: deletePassword } });
+      const data = isGoogleUser ? {} : { password: deletePassword };
+      await api.delete("/users/me", { data });
       window.location.href = "/";
     } catch (err) {
-      toast.error(err.response?.data?.message || "Contraseña incorrecta");
+      showToast(err.response?.data?.message || "Contraseña incorrecta", "error");
     }
   };
 
@@ -261,37 +268,43 @@ export default function Profile() {
         </div>
 
         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6">
-          <h3 className="font-semibold text-lg mb-6">Cambiar contraseña</h3>
+          <h3 className="font-semibold text-lg mb-6">
+            {isGoogleUser ? "Establecer contraseña" : "Cambiar contraseña"}
+          </h3>
           <p className="text-sm text-gray-500 mb-4">
-            Deja vacío si no quieres cambiar la contraseña
+            {isGoogleUser
+              ? "Si dejas los campos vacíos y guardas, se eliminará la contraseña y solo podrás iniciar con Google"
+              : "Deja vacío si no quieres cambiar la contraseña"}
           </p>
 
           <div className="space-y-4">
-            {/* Current Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Contraseña actual
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="password"
-                  name="currentPassword"
-                  value={form.currentPassword}
-                  onChange={handleChange}
-                  placeholder="********"
-                  className={`input-field pl-12 ${errors.currentPassword ? "border-red-500" : ""}`}
-                />
+            {/* Current Password (solo para usuarios locales) */}
+            {!isGoogleUser && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  Contraseña actual
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="password"
+                    name="currentPassword"
+                    value={form.currentPassword}
+                    onChange={handleChange}
+                    placeholder="********"
+                    className={`input-field pl-12 ${errors.currentPassword ? "border-red-500" : ""}`}
+                  />
+                </div>
+                {errors.currentPassword && (
+                  <p className="text-red-500 text-xs mt-1">{errors.currentPassword}</p>
+                )}
               </div>
-              {errors.currentPassword && (
-                <p className="text-red-500 text-xs mt-1">{errors.currentPassword}</p>
-              )}
-            </div>
+            )}
 
             {/* New Password */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Nueva contraseña
+                {isGoogleUser ? "Contraseña" : "Nueva contraseña"}
               </label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -366,19 +379,34 @@ export default function Profile() {
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-md w-full animate-scale-in">
             <h3 className="text-lg font-bold mb-4">¿Eliminar cuenta?</h3>
             <p className="text-gray-500 mb-4">
-              Esta acción es irreversible. Ingresa tu contraseña para confirmar.
+              Esta acción es irreversible y eliminará todas tus notas.
             </p>
-            <input
-              type="password"
-              value={deletePassword}
-              onChange={(e) => setDeletePassword(e.target.value)}
-              placeholder="Tu contraseña"
-              className="input-field mb-4"
-            />
+            {isGoogleUser ? (
+              <div className="mb-4">
+                <p className="text-sm text-gray-500 mb-2">
+                  Escribe <strong>ELIMINAR</strong> para confirmar:
+                </p>
+                <input
+                  type="text"
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  placeholder="ELIMINAR"
+                  className="input-field"
+                />
+              </div>
+            ) : (
+              <input
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                placeholder="Tu contraseña"
+                className="input-field mb-4"
+              />
+            )}
             <div className="flex gap-3">
               <Button
                 variant="secondary"
-                onClick={() => setShowDeleteModal(false)}
+                onClick={() => { setShowDeleteModal(false); setDeleteConfirmText(""); }}
                 className="flex-1"
               >
                 Cancelar

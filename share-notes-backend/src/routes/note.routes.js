@@ -28,8 +28,8 @@ const router = Router();
 
 router.get("/public", getAllPublicNotes);
 router.get("/public/:id", getPublicNoteById);
-router.post("/public/:id/download", downloadNote);
-router.post("/public/:id/rate", rateNote);
+router.post("/public/:id/download", verifyToken, downloadNote);
+router.post("/public/:id/rate", verifyToken, rateNote);
 
 router.get("/shared", verifyToken, getSharedWithMe);
 router.get("/reminders", verifyToken, getReminders);

@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import User from "../models/User.js";
+import { sendResetEmail } from "../config/email.js";
 
 const generateToken = (user) => {
   return jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -12,7 +14,7 @@ const setTokenCookie = (res, token) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? "strict" : "lax",
+    sameSite: isProduction ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
     path: "/",
   });
@@ -38,7 +40,7 @@ export const register = async (req, res, next) => {
     const user = await User.create({ name, email, password });
 
     res.status(201).json({
-      message: "Usuario registrado correctamente",
+      message: "Usuario registrado correctamente. Por favor inicia sesión.",
       user,
     });
   } catch (error) {
@@ -88,6 +90,62 @@ export const getMe = async (req, res, next) => {
       return res.status(404).json({ message: "Usuario no encontrado o eliminado" });
     }
     res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Email requerido" });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.json({ message: "Se ha enviado un enlace de restablecimiento a tu correo electrónico. Por favor, revisa tu bandeja de entrada." });
+    if (user.authProvider === "google") return res.status(400).json({ message: "Esta cuenta usa Google. Inicia sesión con Google." });
+
+    const token = crypto.randomBytes(32).toString("hex");
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 3600000;
+    await user.save();
+
+    const resetUrl = `${process.env.CLIENT_URL || "http://localhost:5173"}/reset-password/${token}`;
+
+    try {
+      await sendResetEmail(email, resetUrl);
+    } catch (emailErr) {
+      console.error("Error al enviar email:", emailErr);
+      return res.status(500).json({ message: "Error al enviar el correo. Verifica la configuración SMTP." });
+    }
+
+    res.json({ message: "Se ha enviado un enlace de restablecimiento a tu correo electrónico. Por favor, revisa tu bandeja de entrada." });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!password || password.length < 6) {
+      return res.status(400).json({ message: "La contraseña debe tener al menos 6 caracteres" });
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    }).select("+password");
+
+    if (!user) return res.status(400).json({ message: "Token inválido o expirado" });
+
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ message: "Contraseña actualizada correctamente. Ahora inicia sesión." });
   } catch (error) {
     next(error);
   }

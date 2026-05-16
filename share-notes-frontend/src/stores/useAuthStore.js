@@ -16,7 +16,7 @@ const useAuthStore = create((set) => ({
     try {
       const res = await api.post("/auth/register", data);
       const { user } = res.data;
-      set({ user, isAuthenticated: true, isLoading: false });
+      set({ isLoading: false });
       return { ok: true, user };
     } catch (err) {
       set({ isLoading: false });

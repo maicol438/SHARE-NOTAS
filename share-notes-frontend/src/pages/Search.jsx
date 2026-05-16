@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Search, Filter, X, Calendar, Tag as TagIcon, Star, Clock } from "lucide-react";
-import { toast } from "react-hot-toast";
 import useNoteStore from "../stores/useNoteStore";
 import NoteCard from "../components/notes/NoteCard";
 import EmptyState from "../components/ui/EmptyState";

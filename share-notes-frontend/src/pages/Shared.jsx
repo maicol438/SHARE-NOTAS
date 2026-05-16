@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Users, Mail, Share2 } from "lucide-react";
-import { toast } from "react-hot-toast";
 import api from "../api/axios";
+import { showToast } from "../utils/toast.jsx";
 import { useState } from "react";
 import useNoteStore from "../stores/useNoteStore";
 import NoteCard from "../components/notes/NoteCard";
@@ -36,16 +36,16 @@ export default function Shared() {
   const handleShare = async (e) => {
     e.preventDefault();
     if (!shareEmail.trim()) {
-      toast.error("Ingresa un email");
+      showToast("Ingresa un email", "error");
       return;
     }
     try {
       await api.post(`/notes/${selectedNote._id}/share`, { email: shareEmail, permission: sharePermission });
-      toast.success(`Nota compartida con ${shareEmail}`);
+      showToast(`Nota compartida con ${shareEmail}`, "success");
       setShowShareModal(false);
       setShareEmail("");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Error al compartir");
+      showToast(err.response?.data?.message || "Error al compartir", "error");
     }
   };
 

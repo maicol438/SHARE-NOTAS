@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing y Performance - Share Notes</title>
+    <style>
+        :root {
+            --bg: #0b0f1a; --card: #161b2b; --primary: #38bdf8; --secondary: #10b981;
+            --accent: #f472b6; --warning: #fbbf24; --text: #f1f5f9; --muted: #94a3b8;
+        }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui; line-height: 1.6; margin: 0; }
+        header { background: linear-gradient(135deg, #161b2b, #0b0f1a); padding: 3rem 1rem; text-align: center; border-bottom: 1px solid #2d3348; }
+        header h1 { font-size: 2.5rem; margin: 0 0 0.5rem; color: var(--primary); }
+        header p { color: var(--muted); font-size: 1.1rem; }
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+        section { background: var(--card); border-radius: 12px; padding: 2.5rem; margin-bottom: 3rem; border: 1px solid #2d3348; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); }
+        h2 { border-left: 5px solid var(--primary); padding-left: 15px; color: var(--primary); margin-top: 0; font-size: 1.8rem; }
+        .test-h2 { border-color: var(--accent); color: var(--accent); }
+        .deploy-h2 { border-color: var(--secondary); color: var(--secondary); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+        .item { background: #0b0f1a; padding: 1.5rem; border-radius: 8px; border: 1px solid #2d3348; }
+        .item h3 { color: var(--primary); margin-bottom: 1rem; }
+        code { color: var(--accent); font-family: 'Fira Code', monospace; font-size: 0.9rem; background: #000; padding: 2px 4px; border-radius: 4px; }
+        pre { background: #000; padding: 1.2rem; border-radius: 6px; overflow-x: auto; font-size: 0.85rem; border: 1px solid #334155; margin: 1rem 0; }
+        .profe-tip { background: rgba(56, 189, 248, 0.1); border-left: 4px solid var(--primary); padding: 1rem; margin: 1.5rem 0; border-radius: 4px; }
+        .profe-tip strong { display: block; color: var(--primary); margin-bottom: 5px; }
+        .error-card { background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); padding: 1.2rem; border-radius: 8px; }
+        .error-card strong { color: #ef4444; display: block; margin-bottom: 5px; }
+        .error-card p { margin: 0; font-size: 0.9rem; color: var(--muted); }
+        footer { text-align: center; padding: 3rem; color: var(--muted); border-top: 1px solid #2d3348; font-size: 0.9rem; }
+        .concept-tag { display: inline-block; background: #1e293b; padding: 2px 10px; border-radius: 99px; font-size: 0.8rem; color: var(--primary); border: 1px solid var(--primary); margin-bottom: 10px; }
+        ul { padding-left: 1.2rem; }
+        ul li { margin-bottom: 6px; color: var(--muted); }
+        .success-card { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1.2rem; border-radius: 8px; }
+        .success-card strong { color: var(--secondary); display: block; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Testing y Performance en Share Notes</h1>
+    <p>Garantizando calidad con Jest, Supertest y buenas prácticas de rendimiento</p>
+</header>
+
+<div class="container">
+
+    <!-- 1. TESTING BACKEND -->
+    <section>
+        <h2 class="test-h2">🧪 1. Testing Backend con Jest + Supertest</h2>
+        <p>Los tests se ejecutan contra una base de datos de prueba real (MongoDB). No usamos mocks de base de datos, sino una BD dedicada.</p>
+
+        <div class="item" style="margin-bottom: 1.5rem;">
+            <h3>Configuración del Proyecto</h3>
+            <p>En <code>package.json</code>, Jest está configurado así:</p>
+            <pre><code>// package.json (jest config)
+"jest": {
+  "testEnvironment": "node",
+  "testMatch": ["**/tests/**/*.test.js"],
+  "setupFiles": ["dotenv/config"],
+  "transform": {}
+}
+
+// Script de test
+"test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit"</code></pre>
+            <div class="profe-tip">
+                <strong>¿Por qué --experimental-vm-modules?</strong>
+                El proyecto usa ES Modules (<code>"type": "module"</code> en package.json). Jest necesita esta bandera para importar con <code>import/export</code>.
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="item">
+                <span class="concept-tag">Supertest</span>
+                <h3>Pruebas de Integración</h3>
+                <p>Usamos <strong>Supertest</strong> para simular peticiones HTTP reales contra la app Express sin necesidad de levantar el servidor.</p>
+                <pre><code>import request from "supertest";
+import app from "../app.js";
+
+const API = "/api";
+
+// beforeAll: Conectar a MongoDB de prueba
+beforeAll(async () => {
+  await mongoose.connect(process.env.MONGO_URI_TEST);
+});
+
+// afterEach: Limpiar datos entre tests
+afterEach(async () => {
+  await User.deleteMany({});
+  await Category.deleteMany({});
+});</code></pre>
+            </div>
+            <div class="item">
+                <span class="concept-tag">Autenticación</span>
+                <h3>Manejo de Cookies en Tests</h3>
+                <p>La API usa cookies httpOnly para autenticación. Los tests deben capturar y reenviar la cookie manualmente.</p>
+                <pre><code>const loginAndGetCookie = async () => {
+  // Registrar usuario
+  await request(app).post(`${API}/auth/register`).send({
+    name: "Test User",
+    email: "test@test.com",
+    password: "password123",
+  });
+
+  // Login y capturar cookie
+  const res = await request(app)
+    .post(`${API}/auth/login`)
+    .send({ email: "test@test.com", password: "password123" });
+
+  const cookie = res.headers["set-cookie"];
+  return { cookie, userId: res.body.user._id };
+};</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. ESTRUCTURA DE TESTS -->
+    <section>
+        <h2 class="test-h2">📋 2. Estructura de Tests: Auth</h2>
+        <p>Los tests de autenticación cubren los 3 estados principales de cada endpoint:</p>
+
+        <div class="grid">
+            <div class="success-card">
+                <strong>✅ Register - Happy Path</strong>
+                <p>Registro exitoso devuelve 201 con datos del usuario. No debe devolver cookie ni token en el body.</p>
+                <pre><code>it("Debe registrar y devolver 201 sin cookie", async () => {
+  const res = await request(app).post(`${API}/auth/register`).send({
+    name: "Ana García",
+    email: "ana@test.com",
+    password: "secret123",
+  });
+
+  expect(res.status).toBe(201);
+  expect(res.body.user).not.toHaveProperty("password");
+  expect(res.headers["set-cookie"]).toBeUndefined();
+});</code></pre>
+            </div>
+            <div class="error-card">
+                <strong>❌ Register - Error Path</strong>
+                <p>Email duplicado devuelve 400 con mensaje descriptivo.</p>
+                <pre><code>it("Debe retornar 400 si el email ya existe", async () => {
+  await registerUser();
+  const res = await request(app).post(`${API}/auth/register`).send({
+    name: "Otro",
+    email: "test@test.com",
+    password: "pass456",
+  });
+
+  expect(res.status).toBe(400);
+  expect(res.body.message).toMatch(/registrado/i);
+});</code></pre>
+            </div>
+            <div class="error-card">
+                <strong>❌ Login - Credenciales Inválidas</strong>
+                <p>Contraseña incorrecta devuelve 401.</p>
+                <pre><code>it("Debe retornar 401 con contraseña incorrecta", async () => {
+  await request(app).post(`${API}/auth/register`).send({
+    name: "Test",
+    email: "wrong@test.com",
+    password: "correctpass",
+  });
+
+  const res = await request(app).post(`${API}/auth/login`).send({
+    email: "wrong@test.com",
+    password: "wrongpass",
+  });
+
+  expect(res.status).toBe(401);
+  expect(res.body.message).toMatch(/credenciales/i);
+});</code></pre>
+            </div>
+            <div class="success-card">
+                <strong>✅ Login - Happy Path</strong>
+                <p>Login exitoso devuelve 200 con cookie Set-Cookie.</p>
+                <pre><code>it("Debe iniciar sesión y devolver 200 con cookie", async () => {
+  await registerUser();
+
+  const res = await request(app).post(`${API}/auth/login`).send({
+    email: "test@test.com",
+    password: "password123",
+  });
+
+  expect(res.status).toBe(200);
+  expect(res.body).toHaveProperty("user");
+  expect(res.headers["set-cookie"]).toBeDefined();
+});</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. TESTS DE NOTAS -->
+    <section>
+        <h2 class="test-h2">📝 3. Tests de Notas</h2>
+        <div class="grid">
+            <div class="item">
+                <h3>Flujo Completo</h3>
+                <p>Los tests de notas verifican desde la autenticación hasta la creación con categoría:</p>
+                <pre><code>// Test de autorización
+it("401 sin autenticación", async () => {
+  const res = await request(app).get(`${API}/notes`);
+  expect(res.status).toBe(401);
+});
+
+// Test de lista vacía
+it("Lista vacía para nuevo usuario", async () => {
+  const { cookie } = await loginAndGetCookie();
+  const res = await request(app).get(`${API}/notes`).set("Cookie", cookie);
+  expect(res.body.notes.length).toBe(0);
+});
+
+// Test de creación con categoría
+it("Crear nota y retornar 201", async () => {
+  const { cookie, userId } = await loginAndGetCookie();
+  const category = await Category.create({
+    name: "Matemáticas", color: "#6366f1", user: userId,
+  });
+
+  const res = await request(app)
+    .post(`${API}/notes`)
+    .set("Cookie", cookie)
+    .send({ title: "Álgebra", content: "Matrices...", category: category._id });
+
+  expect(res.status).toBe(201);
+  expect(res.body.note.title).toBe("Álgebra");
+});</code></pre>
+            </div>
+            <div class="item">
+                <h3>BD de Prueba</h3>
+                <p>Usamos <code>MONGO_URI_TEST</code> del <code>.env</code> para aislar los tests de la base de datos de desarrollo.</p>
+                <pre><code>// .env
+MONGO_URI_TEST=mongodb://127.0.0.1:27017/share_notes_test
+
+// En los tests:
+beforeAll(async () => {
+  await mongoose.connect(process.env.MONGO_URI_TEST);
+});
+
+afterAll(async () => {
+  await mongoose.connection.dropDatabase();
+  await mongoose.connection.close();
+});</code></pre>
+                <div class="profe-tip">
+                    <strong>Importante:</strong> El <code>dropDatabase()</code> en afterAll limpia todo después de los tests. Nunca afecta a la BD de desarrollo.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. RENDIMIENTO -->
+    <section>
+        <h2>🚀 4. Rendimiento: Código que Vuela</h2>
+        <div class="grid">
+            <div class="item">
+                <span class="concept-tag">Static Analysis</span>
+                <h3>Buenas Prácticas</h3>
+                <ul>
+                    <li><strong>Índices en MongoDB:</strong> Las colecciones tienen índices en campos de búsqueda frecuente (<code>tags</code>, <code>reminder.date</code>, texto completo)</li>
+                    <li><strong>Select +password:</strong> La contraseña solo se trae cuando es necesario (<code>.select("+password")</code>)</li>
+                    <li><strong>Soft Delete:</strong> Las notas no se eliminan realmente, solo se marca <code>deletedAt</code></li>
+                </ul>
+            </div>
+            <div class="item">
+                <span class="concept-tag">Optimización</span>
+                <h3>API Performance</h3>
+                <ul>
+                    <li><strong>Paginación:</strong> Las listas de notas están paginadas</li>
+                    <li><strong>Population selectiva:</strong> Solo se traen los campos necesarios de referencias</li>
+                    <li><strong>Compresión:</strong> Respuestas JSON ligeras sin datos sensibles</li>
+                </ul>
+            </div>
+            <div class="item">
+                <span class="concept-tag">Frontend</span>
+                <h3>React Performance</h3>
+                <ul>
+                    <li><strong>Zustand:</strong> Estado global ligero sin re-renders innecesarios</li>
+                    <li><strong>Vite:</strong> Build con Tree Shaking elimina código muerto</li>
+                    <li><strong>Lazy loading:</strong> Las rutas del dashboard cargan bajo demanda</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. GUÍA DE ERRORES -->
+    <section style="border-color: #ef4444;">
+        <h2 style="color: #ef4444;">🚩 Guía de Errores: "Profe, no funciona"</h2>
+        <div class="grid">
+            <div class="error-card">
+                <strong>01. jwt malformed</strong>
+                <p>Causa: La cookie <code>token</code> está corrupta o no se envió correctamente.</p>
+            </div>
+            <div class="error-card">
+                <strong>02. Email ya registrado (400)</strong>
+                <p>Causa: El email ya existe en la BD. Cada email debe ser único.</p>
+            </div>
+            <div class="error-card">
+                <strong>03. Error al enviar email (SMTP)</strong>
+                <p>Causa: Credenciales SMTP incorrectas o Contraseña de Aplicación inválida.</p>
+            </div>
+            <div class="error-card">
+                <strong>04. require is not defined</strong>
+                <p>Causa: Usar <code>require</code> en un proyecto ESM (<code>"type": "module"</code>). Usa <code>import/export</code>.</p>
+            </div>
+            <div class="error-card">
+                <strong>05. Token inválido o expirado</strong>
+                <p>Causa: El token de reset de contraseña expiró (1 hora) o ya fue usado.</p>
+            </div>
+            <div class="error-card">
+                <strong>06. CORS Policy Error</strong>
+                <p>Causa: El frontend y backend están en distintos puertos/orígenes y CORS no está configurado.</p>
+            </div>
+            <div class="error-card">
+                <strong>07. Cookies no se guardan</strong>
+                <p>Causa: Falta <code>withCredentials: true</code> en Axios o <code>sameSite: 'none'</code> en la cookie.</p>
+            </div>
+            <div class="error-card">
+                <strong>08. MongoDB Connection Error</strong>
+                <p>Causa: MongoDB Compass no está abierto o la URI es incorrecta.</p>
+            </div>
+            <div class="error-card">
+                <strong>09. 429 Too Many Requests</strong>
+                <p>Causa: Rate limit activado. En Render, agregar <code>app.set("trust proxy", 1)</code>.</p>
+            </div>
+            <div class="error-card">
+                <strong>10. Mocha/Chai no encontrado</strong>
+                <p>Causa: El proyecto no usa Mocha, usa <strong>Jest + Supertest</strong>. Ejecuta <code>npm test</code>.</p>
+            </div>
+            <div class="error-card">
+                <strong>11. Module not found (~/...)</strong>
+                <p>Causa: Jest no entiende los alias. Revisa <code>moduleNameMapper</code> en la config de Jest.</p>
+            </div>
+            <div class="error-card">
+                <strong>12. SIGTERM (Render)</strong>
+                <p>Causa: La app consumió mucha memoria. Optimiza el build o cambia de plan.</p>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<footer>
+    <p><strong>Share Notes</strong> - Plataforma de Notas Colaborativas</p>
+    <p>"El código es arte, pero el testing es la ciencia que lo mantiene vivo."</p>
+    <p>ITP 2026 • Mocoa, Putumayo</p>
+</footer>
+
+</body>
+</html>

@@ -14,7 +14,7 @@ export const errorHandler = (err, _req, res, _next) => {
 
   // Duplicado (índice único)
   if (err.code === 11000) {
-    const field = Object.keys(err.keyValue)[0];
+    const field = Object.keys(err.keyValue ?? {})[0];
     return res.status(400).json({ message: `El campo '${field}' ya existe` });
   }
 

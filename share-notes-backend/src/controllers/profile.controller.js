@@ -35,27 +35,30 @@ export const getProfile = async (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
   try {
-    console.log("🔵 updateProfile called with:", { name: req.body.name, email: req.body.email, hasNewPassword: !!req.body.newPassword });
-    
     const { name, email, currentPassword, newPassword } = req.body;
 
     const user = await User.findById(req.userId).select("+password");
     if (!user) {
-      console.log("❌ User not found:", req.userId);
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
-    if (newPassword) {
-      if (!currentPassword) {
-        return res.status(400).json({ message: "Se requiere contraseña actual" });
-      }
+    if (newPassword !== undefined) {
+      const isGoogleUser = user.authProvider === "google";
 
-      const isMatch = await user.comparePassword(currentPassword);
-      if (!isMatch) {
-        return res.status(401).json({ message: "Contraseña actual incorrecta" });
-      }
+      if (!isGoogleUser) {
+        if (!currentPassword) {
+          return res.status(400).json({ message: "Se requiere contraseña actual" });
+        }
 
-      user.password = newPassword;
+        const isMatch = await user.comparePassword(currentPassword);
+        if (!isMatch) {
+          return res.status(401).json({ message: "Contraseña actual incorrecta" });
+        }
+
+        user.password = newPassword;
+      } else {
+        user.password = newPassword || null;
+      }
     }
 
     if (email && email !== user.email) {
@@ -69,25 +72,18 @@ export const updateProfile = async (req, res, next) => {
     if (name) user.name = name;
 
     await user.save();
-    console.log("✅ Profile saved successfully for user:", user.email);
 
-    const responseData = {
+    res.json({
       message: "Perfil actualizado",
       user: { name: user.name, email: user.email, avatar: user.avatar },
-    };
-    console.log("📤 Sending response:", responseData);
-    
-    res.json(responseData);
+    });
   } catch (error) {
-    console.error("💥 Update profile error:", error);
     next(error);
   }
 };
 
 export const updateAvatar = async (req, res, next) => {
   try {
-    console.log("🔵 updateAvatar called, file:", req.file?.filename);
-    
     if (!req.file) {
       return res.status(400).json({ message: "Archivo de imagen requerido" });
     }
@@ -97,7 +93,6 @@ export const updateAvatar = async (req, res, next) => {
     }
 
     const avatarUrl = `/api/files/uploads/avatars/${req.file.filename}`;
-    console.log("📸 Avatar URL:", avatarUrl);
 
     const user = await User.findByIdAndUpdate(
       req.userId,
@@ -109,19 +104,15 @@ export const updateAvatar = async (req, res, next) => {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
-    const responseData = { 
+    res.json({ 
       message: "Avatar actualizado", 
       user: { 
         name: user.name, 
         email: user.email, 
         avatar: user.avatar 
       } 
-    };
-    console.log("📤 Sending avatar response:", responseData);
-    
-    res.json(responseData);
+    });
   } catch (error) {
-    console.error("💥 Avatar update error:", error);
     next(error);
   }
 };
@@ -133,9 +124,13 @@ export const deleteAccount = async (req, res, next) => {
     const user = await User.findById(req.userId).select("+password");
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Contraseña incorrecta" });
+    const isGoogleUser = user.authProvider === "google";
+
+    if (!isGoogleUser) {
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Contraseña incorrecta" });
+      }
     }
 
     await Note.deleteMany({ user: req.userId });

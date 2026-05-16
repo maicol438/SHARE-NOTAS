@@ -23,6 +23,15 @@ export const createComment = async (req, res, next) => {
       return res.status(404).json({ message: "Nota no encontrada" });
     }
 
+    const hasAccess =
+      note.user.toString() === req.userId ||
+      note.sharedWith.some((s) => s.user.toString() === req.userId) ||
+      note.isPublic === true;
+
+    if (!hasAccess) {
+      return res.status(403).json({ message: "No tienes permiso para comentar en esta nota" });
+    }
+
     const comment = await Comment.create({
       content,
       note: noteId,

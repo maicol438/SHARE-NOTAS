@@ -1,17 +1,21 @@
 import useNoteStore from "../stores/useNoteStore";
 import { useEffect } from "react";
-import { CheckSquare, Plus, Clock, AlertCircle } from "lucide-react";
+import { CheckSquare, Plus, Clock, AlertCircle, Share2, Mail, ExternalLink, Loader2 } from "lucide-react";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
+import { showToast } from "../utils/toast.jsx";
+import api from "../api/axios";
 
 export default function Tasks() {
   const { fetchNotes, notes, categories, fetchCategories, isLoading, toggleTaskComplete, createNote, updateNote, moveToTrash } = useNoteStore();
   const [showModal, setShowModal] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [form, setForm] = useState({ title: "", description: "", dueDate: "", priority: "medium", category: "" });
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [sharingTask, setSharingTask] = useState(null);
+  const [shareEmail, setShareEmail] = useState("");
 
   useEffect(() => { 
     fetchNotes({ type: "task" }); 
@@ -32,14 +36,58 @@ export default function Tasks() {
     await toggleTaskComplete(id);
   };
 
+  const [creatingGoogleDoc, setCreatingGoogleDoc] = useState(null);
+
+  const handleGoogleDocTask = async (task, force = false) => {
+    if (force && task.googleDocId) {
+      const ok = window.confirm("¿Regenerar el documento de Google? Se creará uno nuevo.");
+      if (!ok) return;
+    }
+    setCreatingGoogleDoc(task._id);
+    try {
+      const url = force ? `/tasks/${task._id}/google-doc?force=true` : `/tasks/${task._id}/google-doc`;
+      const res = await api.post(url);
+      if (res.data.googleDocUrl) {
+        window.open(res.data.googleDocUrl, "_blank");
+        showToast("Documento de Google creado", "success");
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || "Error al crear documento";
+      if (msg.includes("GOOGLE_SERVICE_ACCOUNT_JSON")) {
+        showToast("Google Docs no está configurado en el servidor", "error");
+      } else {
+        showToast(msg, "error");
+      }
+    } finally {
+      setCreatingGoogleDoc(null);
+    }
+  };
+
+  const handleShareTask = async (e) => {
+    e.preventDefault();
+    if (!shareEmail.trim()) {
+      showToast("Ingresa un email", "error");
+      return;
+    }
+    try {
+      await api.post(`/notes/${sharingTask._id}/share`, { email: shareEmail, permission: "read" });
+      showToast(`Tarea compartida con ${shareEmail}`, "success");
+      setShowShareModal(false);
+      setShareEmail("");
+      setSharingTask(null);
+    } catch (err) {
+      showToast(err.response?.data?.message || "Error al compartir", "error");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.title.trim()) {
-      toast.error("El título es requerido");
+      showToast("El título es requerido", "error");
       return;
     }
     if (!form.category) {
-      toast.error("Selecciona una categoría");
+      showToast("Selecciona una categoría", "error");
       return;
     }
     const data = { ...form, type: "task" };
@@ -84,13 +132,34 @@ export default function Tasks() {
                 Pendientes ({pending.length})
               </h2>
               <div className="space-y-3">
-                {pending.map((task) => (
-                  <div key={task._id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5 hover:shadow-lg transition-all">
+                  {pending.map((task) => (
+                  <div key={task._id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5 hover:shadow-lg transition-all group">
                     <div className="flex items-start gap-4">
                       <button onClick={() => handleComplete(task._id)} className="mt-1 w-6 h-6 rounded-full border-2 border-gray-300 hover:border-primary-500 hover:bg-primary-500 transition-all flex-shrink-0" />
                       <div className="flex-1">
-                        <h3 className="font-semibold">{task.title}</h3>
-                        {task.description && <p className="text-gray-500 text-sm mt-1">{task.description}</p>}
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <h3 className="font-semibold">{task.title}</h3>
+                            {task.description && <p className="text-gray-500 text-sm mt-1">{task.description}</p>}
+                          </div>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <button
+                              onClick={() => handleGoogleDocTask(task, !!task.googleDocId)}
+                              disabled={creatingGoogleDoc === task._id}
+                              className="p-2 rounded-xl text-gray-400 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-600 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                              title={creatingGoogleDoc === task._id ? "Exportando..." : (task.googleDocId ? "Regenerar Google Doc" : "Crear Google Doc")}
+                            >
+                              {creatingGoogleDoc === task._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
+                            </button>
+                            <button
+                              onClick={() => { setSharingTask(task); setShareEmail(""); setShowShareModal(true); }}
+                              className="p-2 rounded-xl text-gray-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-500 transition-all opacity-0 group-hover:opacity-100"
+                              title="Compartir tarea"
+                            >
+                              <Share2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
                         <div className="flex items-center gap-4 mt-3 text-xs text-gray-400">
                           {task.dueDate && (
                             <span className="flex items-center gap-1">
@@ -175,6 +244,16 @@ export default function Tasks() {
           <Button type="submit" className="w-full">
             {editingTask ? "Guardar cambios" : "Crear tarea"}
           </Button>
+        </form>
+      </Modal>
+
+      <Modal isOpen={showShareModal} onClose={() => { setShowShareModal(false); setSharingTask(null); }} title="Compartir tarea">
+        <form onSubmit={handleShareTask} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Email del usuario</label>
+            <input type="email" value={shareEmail} onChange={(e) => setShareEmail(e.target.value)} className="input-field" placeholder="email@ejemplo.com" required />
+          </div>
+          <Button type="submit" className="w-full">Compartir</Button>
         </form>
       </Modal>
     </div>

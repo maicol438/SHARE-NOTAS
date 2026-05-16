@@ -20,14 +20,24 @@ export default function DashboardLayout() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && sidebarOpen) {
+        closeSidebar();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [sidebarOpen, closeSidebar]);
+
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-950">
-      <div className={`${sidebarOpen ? "block" : "hidden"} lg:block`}>
+    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-dark-950">
+      <div className={`${sidebarOpen ? "fixed inset-y-0 left-0 z-30" : "hidden"} lg:relative lg:flex transition-all duration-300 ease-out`}>
         <Sidebar onNavClick={closeSidebar} />
       </div>
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-10 lg:hidden"
+          className="fixed inset-0 bg-black/40 z-20 lg:hidden animate-fade-in"
           onClick={closeSidebar}
         />
       )}

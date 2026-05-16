@@ -56,13 +56,23 @@ const userSchema = new mongoose.Schema(
       enum: ["local", "google"],
       default: "local",
     },
+
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
+    googleAccessToken: { type: String },
+    googleRefreshToken: { type: String },
   },
   { timestamps: true }
 );
 
 // ── Hash de contraseña antes de guardar ───────────────────────────
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password") || this.authProvider === "google") return next();
+  if (!this.isModified("password")) return next();
   if (!this.password) return next();
   const salt = await bcrypt.genSalt(12);
   this.password = await bcrypt.hash(this.password, salt);
@@ -75,11 +85,15 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// ── Eliminar __v y password del JSON de respuesta ────────────────
+// ── No exponer datos sensibles en JSON ──────────────────────────
 userSchema.methods.toJSON = function () {
   const user = this.toObject();
   delete user.password;
   delete user.__v;
+  delete user.googleAccessToken;
+  delete user.googleRefreshToken;
+  delete user.resetPasswordToken;
+  delete user.resetPasswordExpires;
   return user;
 };
 
