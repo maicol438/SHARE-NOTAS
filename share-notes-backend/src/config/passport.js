@@ -19,7 +19,7 @@ export const initializeGoogleAuth = () => {
         clientSecret,
         callbackURL,
         accessType: "offline",
-        prompt: "consent",
+        prompt: "select_account",
         scope: [
           "profile",
           "email",

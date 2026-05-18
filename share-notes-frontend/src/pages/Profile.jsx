@@ -189,6 +189,7 @@ export default function Profile() {
               <img
                 src={user.avatar}
                 alt={user.name}
+                referrerPolicy="no-referrer"
                 className="w-24 h-24 rounded-full object-cover"
               />
             ) : (

@@ -160,7 +160,7 @@ export default function Admin() {
                 <div key={u._id} className="bg-white dark:bg-dark-900 rounded-2xl p-5 border border-gray-100 dark:border-dark-800 flex items-center justify-between gap-4 animate-fade-in hover:shadow-md transition-all">
                   <div className="flex items-center gap-4">
                     {u.avatar ? (
-                      <img src={u.avatar} className="w-10 h-10 rounded-full object-cover" />
+                      <img src={u.avatar} referrerPolicy="no-referrer" className="w-10 h-10 rounded-full object-cover" />
                     ) : (
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
                         {u.name?.charAt(0)}

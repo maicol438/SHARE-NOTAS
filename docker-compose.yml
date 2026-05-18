@@ -3,8 +3,6 @@ services:
     image: mongo:7
     container_name: share-notes-mongodb
     restart: unless-stopped
-    ports:
-      - "27017:27017"
     environment:
       MONGO_INITDB_DATABASE: share_notes
     volumes:
@@ -25,18 +23,20 @@ services:
     restart: unless-stopped
     ports:
       - "4000:4000"
+    env_file:
+      - ./share-notes-backend/.env
     environment:
       NODE_ENV: production
       PORT: 4000
       MONGO_URI: mongodb://mongodb:27017/share_notes
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRES_IN: 7d
       CLIENT_URL: http://localhost
     depends_on:
       mongodb:
         condition: service_healthy
+    volumes:
+      - uploads_data:/app/uploads
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000/api/health"]
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4000/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
       interval: 15s
       timeout: 5s
       retries: 3
@@ -56,4 +56,6 @@ services:
 
 volumes:
   mongodb_data:
+    driver: local
+  uploads_data:
     driver: local

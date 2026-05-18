@@ -64,7 +64,7 @@ const Navbar = ({ onMenuToggle }) => {
             className="flex items-center gap-2 p-1.5 pr-3 rounded-xl hover:bg-gray-100 dark:hover:bg-dark-800 transition-all hover:scale-105 active:scale-90 group"
           >
             {user?.avatar ? (
-              <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full ring-2 ring-primary-500/30 group-hover:ring-primary-500/50 transition-all" />
+              <img src={user.avatar} alt={user.name} referrerPolicy="no-referrer" className="w-8 h-8 rounded-full ring-2 ring-primary-500/30 group-hover:ring-primary-500/50 transition-all" />
             ) : (
               <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md ring-2 ring-primary-500/30 group-hover:ring-primary-500/50 transition-all">
                 {user?.name?.charAt(0) || <User className="w-4 h-4" />}

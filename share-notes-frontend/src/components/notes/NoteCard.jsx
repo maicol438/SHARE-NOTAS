@@ -295,7 +295,7 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
       {external && showAuthor && note.user && (
         <div className="flex items-center gap-2 pt-4 border-t border-gray-100 dark:border-dark-800">
           {note.user.avatar ? (
-            <img src={note.user.avatar} alt={note.user.name} className="w-6 h-6 rounded-full" />
+            <img src={note.user.avatar} alt={note.user.name} referrerPolicy="no-referrer" className="w-6 h-6 rounded-full" />
           ) : (
             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-xs font-medium text-white">
               {note.user.name?.charAt(0)}

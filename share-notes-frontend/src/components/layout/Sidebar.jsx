@@ -248,7 +248,7 @@ export default function Sidebar({ onNavClick }) {
         <div className="p-4 border-t border-gray-100 dark:border-dark-800">
           <Link to="/dashboard/profile" onClick={handleNavClick} className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-800 transition-all group">
             {user.avatar ? (
-              <img src={user.avatar} alt={user.name} className="w-9 h-9 rounded-full object-cover ring-2 ring-primary-500/30 group-hover:ring-primary-500/50 transition-all" />
+              <img src={user.avatar} alt={user.name} referrerPolicy="no-referrer" className="w-9 h-9 rounded-full object-cover ring-2 ring-primary-500/30 group-hover:ring-primary-500/50 transition-all" />
             ) : (
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center shadow-md ring-2 ring-primary-500/30 group-hover:ring-primary-500/50 transition-all">
                 <span className="text-white font-bold text-sm">{user.name?.charAt(0)}</span>

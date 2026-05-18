@@ -76,11 +76,17 @@ export const createGoogleDoc = async (title, content, collaboratorEmails = [], u
     throw new Error("La nota está vacía. Escribe algo antes de exportar a Google Docs.");
   }
 
-  const auth = userAccessToken
-    ? getUserAuth(userAccessToken, userRefreshToken)
-    : await getServiceAccountAuth();
+  let auth;
+  let usingServiceAccount = false;
 
-  const drive = google.drive({ version: "v3", auth });
+  if (userAccessToken) {
+    auth = getUserAuth(userAccessToken, userRefreshToken);
+  } else {
+    auth = await getServiceAccountAuth();
+    usingServiceAccount = true;
+  }
+
+  let drive = google.drive({ version: "v3", auth });
 
   let file;
   try {
@@ -92,11 +98,34 @@ export const createGoogleDoc = async (title, content, collaboratorEmails = [], u
       fields: "id, webViewLink",
     });
   } catch (e) {
+    const errorMsg = e?.response?.data?.error?.message || e.message;
     console.error("Error al crear Google Doc:", JSON.stringify(e?.response?.data || e.message));
-    throw new Error(
-      "Error al crear el documento en Google Docs: " +
-      (e?.response?.data?.error?.message || e.message)
-    );
+
+    if (!usingServiceAccount) {
+      console.log("Reintentando con cuenta de servicio...");
+      auth = await getServiceAccountAuth();
+      usingServiceAccount = true;
+      drive = google.drive({ version: "v3", auth });
+      try {
+        file = await drive.files.create({
+          requestBody: {
+            name: title || "Nota de Share Notes",
+            mimeType: "application/vnd.google-apps.document",
+          },
+          fields: "id, webViewLink",
+        });
+      } catch (e2) {
+        const errorMsg2 = e2?.response?.data?.error?.message || e2.message;
+        console.error("Error también con cuenta de servicio:", errorMsg2);
+        throw new Error(
+          "Error al crear el documento en Google Docs: " + errorMsg2
+        );
+      }
+    } else {
+      throw new Error(
+        "Error al crear el documento en Google Docs: " + errorMsg
+      );
+    }
   }
 
   const docId = file.data.id;
