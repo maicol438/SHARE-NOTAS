@@ -11,7 +11,8 @@ RUN npm ci --only=production
 # Copiar el resto del código del backend
 COPY . .
 
-# Usar la variable PORT dinámica que inyecta Render (por defecto 10000)
+# Usar la variable PORT dinámica que inyecta Render
 EXPOSE 10000
 
-CMD ["node", "src/server.js"]
+# CORRECCIÓN: Quitamos el 'src/' para que busque el archivo directamente en la raíz
+CMD ["node", "server.js"]
