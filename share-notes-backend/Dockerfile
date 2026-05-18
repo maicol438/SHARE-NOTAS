@@ -8,11 +8,11 @@ COPY package*.json ./
 # Instalar dependencias de producción
 RUN npm ci --only=production
 
-# Copiar el resto del código del backend
+# Copiar todo el código al contenedor
 COPY . .
 
 # Usar la variable PORT dinámica que inyecta Render
 EXPOSE 10000
 
-# CORRECCIÓN: Quitamos el 'src/' para que busque el archivo directamente en la raíz
-CMD ["node", "server.js"]
+# CONFIGURACIÓN CORRECTA: Tu archivo está dentro de la carpeta src
+CMD ["node", "src/server.js"]
