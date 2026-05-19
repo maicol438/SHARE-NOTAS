@@ -45,6 +45,9 @@ app.use(helmet());
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:3000",
+  "https://share-notas.vercel.app",
+  "https://share-notas-6skqlt2or-maicol438s-projects.vercel.app",
   process.env.CLIENT_URL,
 ].filter(Boolean);
 
