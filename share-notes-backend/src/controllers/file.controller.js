@@ -59,7 +59,16 @@ export const getFile = async (req, res) => {
 
 export const getFiles = async (req, res, next) => {
   try {
-    const files = await File.find({ user: req.userId }).sort({ createdAt: -1 });
+    const docs = await File.find({ user: req.userId }).sort({ createdAt: -1 });
+    const files = docs.map((f) => ({
+      _id: f._id,
+      name: f.originalName,
+      filename: f.filename,
+      url: f.url,
+      type: f.type,
+      size: f.size,
+      createdAt: f.createdAt,
+    }));
     res.json({ files });
   } catch (error) {
     next(error);
