@@ -155,7 +155,7 @@ export const googleAuthCallback = async (req, res, next) => {
   try {
     const token = generateToken(req.user);
     setTokenCookie(res, token);
-    res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/dashboard`);
+    res.redirect('https://share-notas.vercel.app/dashboard');
   } catch (error) {
     next(error);
   }
