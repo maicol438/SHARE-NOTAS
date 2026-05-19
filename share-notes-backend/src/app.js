@@ -84,6 +84,11 @@ app.use("/api/files", fileRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api", googleDocsRoutes);
 
+// ── Ruta raíz ────────────────────────────────────────────
+app.get("/", (_req, res) => {
+  res.send("Servidor funcionando correctamente");
+});
+
 // ── Health Check ──────────────────────────────────────────
 app.get("/api/health", (_req, res) => {
   let googleDocsStatus = "no configurado";
