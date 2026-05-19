@@ -43,34 +43,34 @@ const Landing = () => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.03),transparent_50%)]" />
       </div>
 
-      <nav className="relative z-10 max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
-        <div className="flex items-center gap-3 group cursor-pointer" onClick={() => navigate("/")}>
-          <div className="w-11 h-11 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 group-hover:shadow-primary-500/50 transition-all duration-300 group-hover:scale-105">
-            <BookOpen className="w-5 h-5 text-white" />
+      <nav className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 sm:gap-3 group cursor-pointer flex-shrink-0" onClick={() => navigate("/")}>
+          <div className="w-9 h-9 sm:w-11 sm:h-11 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 group-hover:shadow-primary-500/50 transition-all duration-300 group-hover:scale-105">
+            <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
-          <span className="font-extrabold text-xl gradient-text">ShareNotes</span>
+          <span className="font-extrabold text-lg sm:text-xl gradient-text hidden xs:block">ShareNotes</span>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={toggle} className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all hover:scale-105">
-            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+        <div className="flex items-center gap-1 sm:gap-2">
+          <button onClick={toggle} className="p-2 sm:p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all hover:scale-105">
+            {isDark ? <Sun className="w-4 h-4 sm:w-5 sm:h-5" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5" />}
           </button>
           {isAuthenticated ? (
             <>
               <span className="text-sm text-gray-600 dark:text-gray-400 hidden sm:block">Hola, {user?.name}</span>
-              <button onClick={() => navigate("/dashboard")} className="btn-primary px-5 py-2.5 text-sm font-semibold">
+              <button onClick={() => navigate("/dashboard")} className="btn-primary px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap">
                 Ir a mi cuenta
               </button>
-              <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl font-medium transition-all text-sm">
-                <LogOut className="w-4 h-4" />
+              <button onClick={handleLogout} className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl font-medium transition-all text-xs sm:text-sm">
+                <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">Salir</span>
               </button>
             </>
           ) : (
             <>
-              <button onClick={() => navigate("/login")} className="btn-secondary px-5 py-2.5 text-sm font-semibold">
+              <button onClick={() => navigate("/login")} className="btn-secondary px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap">
                 Ingresar
               </button>
-              <button onClick={() => navigate("/register")} className="btn-primary px-5 py-2.5 text-sm font-semibold">
+              <button onClick={() => navigate("/register")} className="btn-primary px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap">
                 Regístrate gratis
               </button>
             </>
@@ -78,43 +78,43 @@ const Landing = () => {
         </div>
       </nav>
 
-      <section className="relative z-10 max-w-6xl mx-auto px-6 pt-20 pb-32 text-center">
-        <div className="inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-primary-100 to-purple-100 dark:from-primary-900/30 dark:to-purple-900/30 rounded-full mb-8 shadow-sm animate-fade-in">
-          <Sparkles className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-          <span className="text-sm font-semibold text-primary-700 dark:text-primary-300">La mejor plataforma de notas académicas</span>
+      <section className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 pb-24 sm:pb-32 text-center">
+        <div className="inline-flex items-center gap-2 px-4 sm:px-5 py-1.5 sm:py-2 bg-gradient-to-r from-primary-100 to-purple-100 dark:from-primary-900/30 dark:to-purple-900/30 rounded-full mb-6 sm:mb-8 shadow-sm animate-fade-in">
+          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-600 dark:text-primary-400" />
+          <span className="text-xs sm:text-sm font-semibold text-primary-700 dark:text-primary-300">La mejor plataforma de notas académicas</span>
         </div>
 
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-6 leading-tight animate-slide-up">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold mb-4 sm:mb-6 leading-tight animate-slide-up">
           Tus notas,{" "}
           <span className="gradient-text">organizadas</span>
           <br className="hidden sm:block" />y siempre contigo
         </h1>
 
-        <p className="text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-12 animate-slide-up delay-100">
+        <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-8 sm:mb-12 animate-slide-up delay-100 px-2">
           Crea, organiza y comparte tus apuntes académicos. 
           Con categorías de color, búsqueda inteligente y estadísticas de progreso.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up delay-200">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center animate-slide-up delay-200 px-4 sm:px-0">
           {isAuthenticated ? (
-            <button onClick={() => navigate("/dashboard")} className="group btn-primary px-10 py-5 text-lg rounded-2xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300 hover:scale-[1.02]">
+            <button onClick={() => navigate("/dashboard")} className="group btn-primary px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg rounded-2xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300 hover:scale-[1.02]">
               <span>Ir a mi cuenta</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
             </button>
           ) : (
             <>
-              <button onClick={() => navigate("/register")} className="group btn-primary px-10 py-5 text-lg rounded-2xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300 hover:scale-[1.02]">
+              <button onClick={() => navigate("/register")} className="group btn-primary px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg rounded-2xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300 hover:scale-[1.02]">
                 <span>Empezar gratis</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
               </button>
-              <button onClick={() => navigate("/login")} className="btn-secondary px-10 py-5 text-lg rounded-2xl hover:border-primary-300 dark:hover:border-primary-700 hover:bg-gray-50 dark:hover:bg-dark-800 transition-all duration-300 hover:scale-[1.02]">
+              <button onClick={() => navigate("/login")} className="btn-secondary px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg rounded-2xl hover:border-primary-300 dark:hover:border-primary-700 hover:bg-gray-50 dark:hover:bg-dark-800 transition-all duration-300 hover:scale-[1.02]">
                 Ya tengo cuenta
               </button>
             </>
           )}
         </div>
 
-        <div className="flex flex-wrap justify-center gap-12 mt-20 animate-fade-in delay-300">
+        <div className="flex flex-wrap justify-center gap-6 sm:gap-12 mt-16 sm:mt-20 animate-fade-in delay-300">
           {[
             { num: "1000+", label: "Estudiantes" },
             { num: "500+", label: "Notas creadas" },
@@ -122,21 +122,21 @@ const Landing = () => {
             { num: "99%", label: "Satisfacción" },
           ].map((stat, i) => (
             <div key={i} className="text-center group">
-              <div className="text-4xl md:text-5xl font-extrabold gradient-text group-hover:scale-110 transition-transform duration-300">{stat.num}</div>
-              <div className="text-sm text-gray-500 mt-1 font-medium">{stat.label}</div>
+              <div className="text-3xl sm:text-4xl md:text-5xl font-extrabold gradient-text group-hover:scale-110 transition-transform duration-300">{stat.num}</div>
+              <div className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">{stat.label}</div>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="relative z-10 max-w-6xl mx-auto px-6 pb-32">
-        <div className="text-center mb-16">
-          <span className="inline-block px-4 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-sm font-semibold rounded-full mb-4">Características</span>
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-4">¿Por qué usar <span className="gradient-text">ShareNotes</span>?</h2>
-          <p className="text-gray-500 text-lg max-w-xl mx-auto">Todo lo que necesitas para organizar tus estudios en un solo lugar</p>
+      <section className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pb-24 sm:pb-32">
+        <div className="text-center mb-10 sm:mb-16">
+          <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs sm:text-sm font-semibold rounded-full mb-3 sm:mb-4">Características</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 sm:mb-4">¿Por qué usar <span className="gradient-text">ShareNotes</span>?</h2>
+          <p className="text-gray-500 text-base sm:text-lg max-w-xl mx-auto px-2">Todo lo que necesitas para organizar tus estudios en un solo lugar</p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {features.map(({ icon: Icon, title, desc, color, shadow }, i) => (
             <div key={i} className="group card p-7 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 cursor-default animate-fade-in" style={{ animationDelay: `${i * 100}ms` }}>
               <div className={`w-14 h-14 bg-gradient-to-br ${color} rounded-2xl flex items-center justify-center mb-5 shadow-lg ${shadow} group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
@@ -149,14 +149,14 @@ const Landing = () => {
         </div>
       </section>
 
-      <section className="relative z-10 max-w-4xl mx-auto px-6 pb-32">
-        <div className="text-center mb-16">
-          <span className="inline-block px-4 py-1.5 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-sm font-semibold rounded-full mb-4">Cómo funciona</span>
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-4">Comienza en <span className="gradient-text">3 pasos</span></h2>
-          <p className="text-gray-500 text-lg">Es más fácil de lo que imaginas</p>
+      <section className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pb-24 sm:pb-32">
+        <div className="text-center mb-10 sm:mb-16">
+          <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-xs sm:text-sm font-semibold rounded-full mb-3 sm:mb-4">Cómo funciona</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 sm:mb-4">Comienza en <span className="gradient-text">3 pasos</span></h2>
+          <p className="text-gray-500 text-base sm:text-lg">Es más fácil de lo que imaginas</p>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6 sm:gap-8">
           {steps.map((step, i) => {
             const Icon = step.icon;
             return (
@@ -178,18 +178,18 @@ const Landing = () => {
         </div>
       </section>
 
-      <section className="relative z-10 max-w-5xl mx-auto px-6 pb-32">
-        <div className="card p-14 text-center bg-gradient-to-br from-primary-600 via-purple-600 to-pink-600 text-white relative overflow-hidden shadow-2xl">
+      <section className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pb-24 sm:pb-32">
+        <div className="card p-6 sm:p-10 md:p-14 text-center bg-gradient-to-br from-primary-600 via-purple-600 to-pink-600 text-white relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-60 h-60 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.05),transparent_50%)]" />
 
           <div className="relative z-10">
-            <Sparkles className="w-12 h-12 mx-auto mb-6 text-white/80 animate-bounce-subtle" />
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-4">¿Listo para empezar?</h2>
-            <p className="text-white/80 mb-10 text-lg max-w-md mx-auto">Únete a miles de estudiantes que ya organizan sus notas con ShareNotes</p>
-            <Link to="/register" className="inline-flex items-center gap-3 px-10 py-5 bg-white text-primary-600 font-bold rounded-2xl hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-white/30 text-lg">
-              <Zap className="w-6 h-6" />
+            <Sparkles className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-4 sm:mb-6 text-white/80 animate-bounce-subtle" />
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 sm:mb-4">¿Listo para empezar?</h2>
+            <p className="text-white/80 mb-6 sm:mb-10 text-base sm:text-lg max-w-md mx-auto">Únete a miles de estudiantes que ya organizan sus notas con ShareNotes</p>
+            <Link to="/register" className="inline-flex items-center gap-2 sm:gap-3 px-6 sm:px-10 py-4 sm:py-5 bg-white text-primary-600 font-bold rounded-xl sm:rounded-2xl hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-white/30 text-base sm:text-lg">
+              <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
               Crear cuenta gratis
             </Link>
           </div>

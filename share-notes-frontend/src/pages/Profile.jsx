@@ -182,25 +182,25 @@ export default function Profile() {
       </div>
 
       {/* Avatar */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 mb-6">
-        <div className="flex items-center gap-6">
-          <div className="relative">
+      <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-6 mb-6">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
+          <div className="relative flex-shrink-0">
             {user?.avatar ? (
               <img
                 src={user.avatar}
                 alt={user.name}
                 referrerPolicy="no-referrer"
-                className="w-24 h-24 rounded-full object-cover"
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"
               />
             ) : (
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center">
-                <span className="text-white text-3xl font-bold">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center">
+                <span className="text-white text-2xl sm:text-3xl font-bold">
                   {user?.name?.charAt(0)?.toUpperCase()}
                 </span>
               </div>
             )}
-            <label className="absolute bottom-0 right-0 p-2 bg-primary-500 text-white rounded-full cursor-pointer hover:bg-primary-600 transition-colors shadow-lg">
-              <Camera className="w-4 h-4" />
+            <label className="absolute bottom-0 right-0 p-1.5 sm:p-2 bg-primary-500 text-white rounded-full cursor-pointer hover:bg-primary-600 transition-colors shadow-lg">
+              <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <input
                 type="file"
                 accept="image/*"
@@ -209,10 +209,10 @@ export default function Profile() {
               />
             </label>
           </div>
-          <div>
-            <h3 className="font-semibold text-lg">{user?.name}</h3>
-            <p className="text-gray-500 text-sm">{user?.email}</p>
-            <div className="flex gap-4 mt-2 text-sm">
+          <div className="min-w-0">
+            <h3 className="font-semibold text-lg truncate">{user?.name}</h3>
+            <p className="text-gray-500 text-sm truncate">{user?.email}</p>
+            <div className="flex justify-center sm:justify-start gap-4 mt-2 text-sm">
               <span className="text-gray-500">
                 <strong className="text-gray-900 dark:text-gray-100">{stats.totalNotes}</strong> notas
               </span>
@@ -225,9 +225,9 @@ export default function Profile() {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6">
-          <h3 className="font-semibold text-lg mb-6">Información personal</h3>
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-6">
+          <h3 className="font-semibold text-lg mb-4 sm:mb-6">Información personal</h3>
 
           <div className="space-y-4">
             {/* Name */}
@@ -268,8 +268,8 @@ export default function Profile() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6">
-          <h3 className="font-semibold text-lg mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-6">
+          <h3 className="font-semibold text-lg mb-4 sm:mb-6">
             {isGoogleUser ? "Establecer contraseña" : "Cambiar contraseña"}
           </h3>
           <p className="text-sm text-gray-500 mb-4">
@@ -357,7 +357,7 @@ export default function Profile() {
       </form>
 
       {/* Danger Zone */}
-      <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-2xl p-6 mt-8">
+      <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-2xl p-4 sm:p-6 mt-6 sm:mt-8">
         <h3 className="font-semibold text-red-600 dark:text-red-400 mb-2 flex items-center gap-2">
           <AlertTriangle className="w-5 h-5" />
           Zona de peligro
@@ -376,8 +376,8 @@ export default function Profile() {
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-md w-full animate-scale-in">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 sm:p-6 max-w-md w-full animate-scale-in">
             <h3 className="text-lg font-bold mb-4">¿Eliminar cuenta?</h3>
             <p className="text-gray-500 mb-4">
               Esta acción es irreversible y eliminará todas tus notas.

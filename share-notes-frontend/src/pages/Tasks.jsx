@@ -146,14 +146,14 @@ export default function Tasks() {
                             <button
                               onClick={() => handleGoogleDocTask(task, !!task.googleDocId)}
                               disabled={creatingGoogleDoc === task._id}
-                              className="p-2 rounded-xl text-gray-400 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-600 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                              className="p-2 rounded-xl text-gray-400 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-600 transition-all sm:opacity-0 sm:group-hover:opacity-100 disabled:opacity-40 disabled:cursor-not-allowed"
                               title={creatingGoogleDoc === task._id ? "Exportando..." : (task.googleDocId ? "Regenerar Google Doc" : "Crear Google Doc")}
                             >
                               {creatingGoogleDoc === task._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
                             </button>
                             <button
                               onClick={() => { setSharingTask(task); setShareEmail(""); setShowShareModal(true); }}
-                              className="p-2 rounded-xl text-gray-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-500 transition-all opacity-0 group-hover:opacity-100"
+                              className="p-2 rounded-xl text-gray-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-500 transition-all sm:opacity-0 sm:group-hover:opacity-100"
                               title="Compartir tarea"
                             >
                               <Share2 className="w-4 h-4" />

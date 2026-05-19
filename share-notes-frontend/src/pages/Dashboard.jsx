@@ -141,28 +141,28 @@ const Dashboard = () => {
   return (
     <div className="max-w-6xl mx-auto">
       {showWelcome && notes.length === 0 && !isLoading && (
-        <div className="mb-8 p-8 bg-gradient-to-br from-primary-600 via-purple-600 to-pink-600 rounded-3xl text-white relative overflow-hidden animate-scale-in">
+        <div className="mb-8 p-5 sm:p-8 bg-gradient-to-br from-primary-600 via-purple-600 to-pink-600 rounded-3xl text-white relative overflow-hidden animate-scale-in">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
           <div className="relative z-10 flex items-start justify-between">
-            <div>
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-5 h-5 text-yellow-300" />
+                <Sparkles className="w-5 h-5 text-yellow-300 flex-shrink-0" />
                 <span className="text-sm font-semibold text-white/80">¡Bienvenido!</span>
               </div>
-              <h2 className="text-3xl font-extrabold mb-2">Hola, {user?.name?.split(" ")[0]} 👋</h2>
-              <p className="text-white/80 text-lg">Crea tu primera nota y empieza a organizar tus estudios.</p>
-              <div className="flex gap-3 mt-6">
-                <button onClick={() => setShowModal(true)} className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary-600 font-bold rounded-xl hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-xl">
+              <h2 className="text-2xl sm:text-3xl font-extrabold mb-2">Hola, {user?.name?.split(" ")[0]} 👋</h2>
+              <p className="text-white/80 text-sm sm:text-lg">Crea tu primera nota y empieza a organizar tus estudios.</p>
+              <div className="flex flex-col sm:flex-row gap-3 mt-6">
+                <button onClick={() => setShowModal(true)} className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-primary-600 font-bold rounded-xl hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-xl">
                   <Zap className="w-5 h-5" />
                   Crear primera nota
                 </button>
-                <button onClick={() => navigate("/dashboard/explore")} className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-300 backdrop-blur-sm border border-white/10">
+                <button onClick={() => navigate("/dashboard/explore")} className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-300 backdrop-blur-sm border border-white/10">
                   Explorar
                 </button>
               </div>
             </div>
-            <button onClick={() => setShowWelcome(false)} className="p-2 hover:bg-white/10 rounded-xl transition-all">
+            <button onClick={() => setShowWelcome(false)} className="p-2 hover:bg-white/10 rounded-xl transition-all flex-shrink-0">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -178,12 +178,12 @@ const Dashboard = () => {
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
-        <div className="flex-1 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-start gap-4 mb-6">
+        <div className="flex-1 animate-fade-in min-w-0">
           <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-extrabold gradient-text">{title}</h2>
+            <h2 className="text-xl sm:text-2xl font-extrabold gradient-text truncate">{title}</h2>
             {!isTrashTab && !isFavoritesTab && (
-              <span className="px-2.5 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-xs font-bold rounded-full">
+              <span className="px-2.5 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-xs font-bold rounded-full flex-shrink-0">
                 {displayedNotes.length}
               </span>
             )}
@@ -198,7 +198,7 @@ const Dashboard = () => {
           {isFavoritesTab && <p className="text-sm text-gray-500 mt-0.5">{displayedNotes.length} notas favoritas</p>}
         </div>
 
-        <div className="relative flex-1 sm:max-w-md animate-fade-in delay-100 group">
+        <div className="relative flex-1 sm:max-w-md animate-fade-in delay-100 group w-full">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
           <input
             type="text"
@@ -209,17 +209,19 @@ const Dashboard = () => {
           />
         </div>
 
-        {!isTrashTab && (
-          <Button icon={Plus} onClick={() => setShowModal(true)} className="animate-fade-in delay-200 bg-gradient-to-r from-primary-500 to-purple-600 hover:from-primary-600 hover:to-purple-700 text-white border-none shadow-lg shadow-primary-500/20 hover:shadow-xl hover:shadow-primary-500/30 transition-all hover:scale-105">
-            Nueva nota
-          </Button>
-        )}
+        <div className="flex gap-2 sm:block">
+          {!isTrashTab && (
+            <Button icon={Plus} onClick={() => setShowModal(true)} className="animate-fade-in delay-200 bg-gradient-to-r from-primary-500 to-purple-600 hover:from-primary-600 hover:to-purple-700 text-white border-none shadow-lg shadow-primary-500/20 hover:shadow-xl hover:shadow-primary-500/30 transition-all hover:scale-105 w-full sm:w-auto">
+              Nueva nota
+            </Button>
+          )}
 
-        {isTrashTab && (
-          <Button icon={RotateCcw} onClick={() => setSearchParams({})} className="btn-secondary animate-fade-in delay-200">
-            Volver
-          </Button>
-        )}
+          {isTrashTab && (
+            <Button icon={RotateCcw} onClick={() => setSearchParams({})} className="btn-secondary animate-fade-in delay-200 w-full sm:w-auto">
+              Volver
+            </Button>
+          )}
+        </div>
       </div>
 
       {showSkeleton && (

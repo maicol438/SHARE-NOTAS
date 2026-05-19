@@ -116,16 +116,16 @@ export default function Files() {
               <div key={file._id || file.filename} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 hover:shadow-lg transition-all relative group">
                 <button
                   onClick={() => { setSharingFile(file); setShareEmail(""); setShowShareModal(true); }}
-                  className="absolute top-2 right-10 p-1 bg-primary-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute top-2 right-10 p-1.5 bg-primary-500 text-white rounded-full sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:scale-110 active:scale-90"
                   title="Compartir archivo"
                 >
-                  <Share2 className="w-3 h-3" />
+                  <Share2 className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => handleDelete(file.filename)}
-                  className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:scale-110 active:scale-90"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
                 {file.type?.startsWith("image/") ? (
                   <img src={file.url} alt={file.name} className="w-full h-32 object-cover rounded-xl mb-3" />
