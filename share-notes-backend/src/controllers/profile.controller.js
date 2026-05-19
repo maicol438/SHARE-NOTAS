@@ -92,7 +92,7 @@ export const updateAvatar = async (req, res, next) => {
       return res.status(401).json({ message: "Usuario no autenticado" });
     }
 
-    const avatarUrl = `/api/files/uploads/avatars/${req.file.filename}`;
+    const avatarUrl = req.file.path;
 
     const user = await User.findByIdAndUpdate(
       req.userId,
