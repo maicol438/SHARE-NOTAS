@@ -177,7 +177,7 @@ const Login = () => {
 
                 <button
                   type="button"
-                  onClick={() => window.location.href = `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'}/api/auth/google`}
+                  onClick={() => { const base = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000').replace(/\/api$/, ''); window.location.href = `${base}/api/auth/google`; }}
                   className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 dark:border-dark-700 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-800 transition-all active:scale-[0.98]"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
