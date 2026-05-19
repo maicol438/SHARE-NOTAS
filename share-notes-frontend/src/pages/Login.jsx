@@ -58,6 +58,9 @@ const Login = () => {
     }
   };
 
+  console.log("🔍 VITE_BACKEND_URL:", import.meta.env.VITE_BACKEND_URL);
+  console.log("🔍 VITE_API_URL:", import.meta.env.VITE_API_URL);
+
   if (isCheckingAuth) return <LoadingScreen />;
 
   if (isAuthenticated && user) {
