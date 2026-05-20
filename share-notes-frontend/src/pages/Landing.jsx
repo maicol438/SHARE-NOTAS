@@ -31,7 +31,7 @@ const Landing = () => {
 
   const handleLogout = async () => {
     await logout();
-    window.location.href = "/";
+    navigate("/");
   };
 
   return (
@@ -204,9 +204,9 @@ const Landing = () => {
           </div>
           <p className="text-gray-400 text-sm">Hecho con ❤️ para estudiantes</p>
           <div className="flex items-center gap-4 text-gray-400 text-sm">
-            <span className="hover:text-primary-500 transition-colors cursor-pointer">Términos</span>
-            <span className="hover:text-primary-500 transition-colors cursor-pointer">Privacidad</span>
-            <span className="hover:text-primary-500 transition-colors cursor-pointer">Contacto</span>
+            <Link to="/terms" className="hover:text-primary-500 transition-colors cursor-pointer">Términos</Link>
+            <Link to="/privacy" className="hover:text-primary-500 transition-colors cursor-pointer">Privacidad</Link>
+            <Link to="/contact" className="hover:text-primary-500 transition-colors cursor-pointer">Contacto</Link>
           </div>
         </div>
       </footer>

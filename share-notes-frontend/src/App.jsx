@@ -19,6 +19,7 @@ import Shared from "./pages/Shared.jsx";
 import Admin from "./pages/Admin.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
+import Privacy from "./pages/Privacy.jsx";
 
 import DashboardLayout from "./components/layout/DashboardLayout.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
@@ -94,6 +95,7 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/privacy" element={<Privacy />} />
 
         <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route index element={<Dashboard />} />

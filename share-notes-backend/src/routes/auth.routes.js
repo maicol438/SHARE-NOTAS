@@ -125,12 +125,7 @@ if (googleEnabled) {
   router.get(
     "/google",
     passport.authenticate("google", {
-      scope: [
-        "profile",
-        "email",
-        "https://www.googleapis.com/auth/documents",
-        "https://www.googleapis.com/auth/drive",
-      ],
+      scope: ["profile", "email"],
       prompt: "select_account",
       session: false,
     })

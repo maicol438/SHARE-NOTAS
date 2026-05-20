@@ -21,8 +21,11 @@ const setTokenCookie = (res, token) => {
 };
 
 const clearTokenCookie = (res) => {
+  const isProduction = process.env.NODE_ENV === "production";
   res.cookie("token", "", {
     httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     expires: new Date(0),
     path: "/",
   });
@@ -155,7 +158,8 @@ export const googleAuthCallback = async (req, res, next) => {
   try {
     const token = generateToken(req.user);
     setTokenCookie(res, token);
-    res.redirect('https://share-notas.vercel.app/dashboard');
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    res.redirect(`${clientUrl}/dashboard`);
   } catch (error) {
     next(error);
   }
