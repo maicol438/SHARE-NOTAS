@@ -14,34 +14,27 @@ const findNote = async (noteId, userId) => {
 
 const createDoc = async (note, type, userId) => {
   const collaborators = [];
-  let userAccessToken = null;
-  let userRefreshToken = null;
 
-  try {
-    const currentUser = await User.findById(userId);
-    if (currentUser?.googleAccessToken) {
-      userAccessToken = currentUser.googleAccessToken;
-      userRefreshToken = currentUser.googleRefreshToken;
-    }
-  } catch (err) {
-    console.error("Error al obtener token del usuario:", err.message);
+  const currentUser = await User.findById(userId);
+  if (!currentUser) {
+    throw new Error("Usuario no encontrado");
+  }
+  if (!currentUser.googleAccessToken) {
+    throw new Error(
+      "Debes conectar tu cuenta de Google desde tu perfil antes de exportar a Google Docs."
+    );
   }
 
-  try {
-    const owner = await User.findById(note.user);
-    if (owner?.email) collaborators.push(owner.email);
-  } catch (err) {
-    console.error("Error al buscar dueño de la nota:", err.message);
-  }
+  const userAccessToken = currentUser.googleAccessToken;
+  const userRefreshToken = currentUser.googleRefreshToken;
+
+  const owner = await User.findById(note.user);
+  if (owner?.email) collaborators.push(owner.email);
 
   for (const share of note.sharedWith || []) {
-    try {
-      const targetUser = await User.findById(share.user);
-      if (targetUser?.email && !collaborators.includes(targetUser.email)) {
-        collaborators.push(targetUser.email);
-      }
-    } catch (err) {
-      console.error(`Error al buscar colaborador ${share.user}:`, err.message);
+    const targetUser = await User.findById(share.user);
+    if (targetUser?.email && !collaborators.includes(targetUser.email)) {
+      collaborators.push(targetUser.email);
     }
   }
 
