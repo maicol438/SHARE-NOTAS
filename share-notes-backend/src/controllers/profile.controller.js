@@ -133,12 +133,23 @@ export const deleteAccount = async (req, res, next) => {
       }
     }
 
+    if (isGoogleUser && user.googleAccessToken) {
+      try {
+        await fetch(
+          `https://oauth2.googleapis.com/revoke?token=${user.googleAccessToken}`,
+          { method: "POST" }
+        );
+      } catch (revokeErr) {
+        console.error("Error al revocar token de Google:", revokeErr.message);
+      }
+    }
+
     await Note.deleteMany({ user: req.userId });
 
     await User.findByIdAndDelete(req.userId);
 
     res.clearCookie("token");
-    res.json({ message: "Cuenta eliminada" });
+    res.json({ message: "Cuenta eliminada correctamente" });
   } catch (error) {
     next(error);
   }

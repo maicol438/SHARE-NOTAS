@@ -37,7 +37,9 @@ export const register = async (req, res, next) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "El email ya está registrado" });
+      return res.status(400).json({
+        message: "Este correo electrónico ya está registrado. Por favor, inicia sesión.",
+      });
     }
 
     const user = await User.create({ name, email, password });

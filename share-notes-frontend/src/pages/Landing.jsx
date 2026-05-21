@@ -159,12 +159,27 @@ const Landing = () => {
         <div className="flex flex-col md:flex-row items-center justify-center gap-6 sm:gap-8">
           {steps.map((step, i) => {
             const Icon = step.icon;
+            const handleClick = () => {
+              if (step.num === "1") {
+                navigate("/register");
+              } else {
+                if (isAuthenticated) {
+                  navigate("/dashboard");
+                } else {
+                  navigate("/login");
+                }
+              }
+            };
             return (
-              <div key={i} className="relative flex flex-col items-center text-center group w-full md:w-64">
+              <div
+                key={i}
+                onClick={handleClick}
+                className="relative flex flex-col items-center text-center group w-full md:w-64 cursor-pointer"
+              >
                 <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl shadow-primary-500/25 group-hover:shadow-primary-500/40 group-hover:scale-110 transition-all duration-300 mb-5">
                   <Icon className="w-9 h-9 text-white" />
                 </div>
-                <div className="absolute -top-2 -right-2 w-8 h-8 bg-white dark:bg-dark-900 rounded-full flex items-center justify-center font-bold text-sm text-primary-600 dark:text-primary-400 shadow-md border-2 border-primary-100 dark:border-primary-900">
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-white dark:bg-dark-900 rounded-full flex items-center justify-center font-bold text-sm text-primary-600 dark:text-primary-400 shadow-md border-2 border-primary-100 dark:border-primary-900 group-hover:scale-110 transition-transform duration-300">
                   {step.num}
                 </div>
                 <h3 className="font-bold text-xl mb-2">{step.title}</h3>

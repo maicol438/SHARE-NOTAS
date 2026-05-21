@@ -20,7 +20,12 @@ export const initializeGoogleAuth = () => {
         callbackURL,
         accessType: "offline",
         prompt: "select_account",
-        scope: ["profile", "email"],
+        scope: [
+          "profile",
+          "email",
+          "https://www.googleapis.com/auth/documents",
+          "https://www.googleapis.com/auth/drive.file",
+        ],
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
