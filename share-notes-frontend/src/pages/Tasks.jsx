@@ -1,6 +1,6 @@
 import useNoteStore from "../stores/useNoteStore";
 import { useEffect } from "react";
-import { CheckSquare, Plus, Clock, AlertCircle, Share2, Mail, ExternalLink, Loader2 } from "lucide-react";
+import { CheckSquare, Plus, Clock, AlertCircle, Share2, Mail, Download, Loader2 } from "lucide-react";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
@@ -36,30 +36,29 @@ export default function Tasks() {
     await toggleTaskComplete(id);
   };
 
-  const [creatingGoogleDoc, setCreatingGoogleDoc] = useState(null);
+  const [exportingDocx, setExportingDocx] = useState(null);
 
-  const handleGoogleDocTask = async (task, force = false) => {
-    if (force && task.googleDocId) {
-      const ok = window.confirm("¿Regenerar el documento de Google? Se creará uno nuevo.");
-      if (!ok) return;
-    }
-    setCreatingGoogleDoc(task._id);
+  const handleExportDocx = async (task) => {
+    setExportingDocx(task._id);
     try {
-      const url = force ? `/tasks/${task._id}/google-doc?force=true` : `/tasks/${task._id}/google-doc`;
-      const res = await api.post(url);
-      if (res.data.googleDocUrl) {
-        window.open(res.data.googleDocUrl, "_blank");
-        showToast("Documento de Google creado", "success");
-      }
+      const res = await api.post(`/tasks/${task._id}/export-docx`, {}, { responseType: "blob" });
+      const blob = new Blob([res.data], {
+        type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${task.title.replace(/[^a-zA-Z0-9áéíóúñ\s-]/g, "").trim() || "tarea"}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("Documento Word descargado", "success");
     } catch (err) {
-      const msg = err.response?.data?.message || "Error al crear documento";
-      if (msg.includes("GOOGLE_SERVICE_ACCOUNT_JSON")) {
-        showToast("Google Docs no está configurado en el servidor", "error");
-      } else {
-        showToast(msg, "error");
-      }
+      const msg = err.response?.data?.message || "Error al exportar a Word";
+      showToast(msg, "error");
     } finally {
-      setCreatingGoogleDoc(null);
+      setExportingDocx(null);
     }
   };
 
@@ -144,12 +143,12 @@ export default function Tasks() {
                           </div>
                           <div className="flex items-center gap-1 flex-shrink-0">
                             <button
-                              onClick={() => handleGoogleDocTask(task, !!task.googleDocId)}
-                              disabled={creatingGoogleDoc === task._id}
-                              className="p-2 rounded-xl text-gray-400 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-600 transition-all sm:opacity-0 sm:group-hover:opacity-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                              title={creatingGoogleDoc === task._id ? "Exportando..." : (task.googleDocId ? "Regenerar Google Doc" : "Crear Google Doc")}
+                              onClick={() => handleExportDocx(task)}
+                              disabled={exportingDocx === task._id}
+                              className="p-2 rounded-xl text-gray-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 transition-all sm:opacity-0 sm:group-hover:opacity-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                              title={exportingDocx === task._id ? "Exportando..." : "Descargar Word"}
                             >
-                              {creatingGoogleDoc === task._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
+                              {exportingDocx === task._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                             </button>
                             <button
                               onClick={() => { setSharingTask(task); setShareEmail(""); setShowShareModal(true); }}

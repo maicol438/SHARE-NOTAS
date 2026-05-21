@@ -34,6 +34,7 @@ import notebookRoutes from "./routes/notebook.routes.js";
 import fileRoutes from "./routes/file.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import googleDocsRoutes from "./routes/googleDocs.routes.js";
+import docxExportRoutes from "./routes/docxExport.routes.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 
 initializeGoogleAuth();
@@ -85,6 +86,7 @@ app.use("/api/notebooks", notebookRoutes);
 app.use("/api/files", fileRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api", googleDocsRoutes);
+app.use("/api", docxExportRoutes);
 
 // ── Ruta raíz ────────────────────────────────────────────
 app.get("/", (_req, res) => {

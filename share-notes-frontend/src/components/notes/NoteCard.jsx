@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Maximize2, Copy, X, Pin, Trash2, Pencil, Star, Download, FileText, Check, Sparkles, Clock, Share2, Mail, ExternalLink, Loader2 } from "lucide-react";
+import { Maximize2, Copy, X, Pin, Trash2, Pencil, Star, Download, FileText, Check, Sparkles, Clock, Share2, Mail, Loader2 } from "lucide-react";
 import Badge from "../ui/Badge.jsx";
 import Tooltip from "../ui/Tooltip.jsx";
 import { exportToPDF } from "../../utils/exportPDF.js";
@@ -22,30 +22,29 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
     return () => window.removeEventListener("keydown", handleKey);
   }, [expanded]);
 
-  const [creatingDoc, setCreatingDoc] = useState(false);
+  const [exportingDocx, setExportingDocx] = useState(false);
 
-  const handleGoogleDoc = async (force = false) => {
-    if (force && note.googleDocId) {
-      const ok = window.confirm("¿Regenerar el documento de Google? Se creará uno nuevo.");
-      if (!ok) return;
-    }
-    setCreatingDoc(true);
+  const handleExportDocx = async () => {
+    setExportingDocx(true);
     try {
-      const url = force ? `/notes/${note._id}/google-doc?force=true` : `/notes/${note._id}/google-doc`;
-      const res = await api.post(url);
-      if (res.data.googleDocUrl) {
-        window.open(res.data.googleDocUrl, "_blank");
-        showToast("Documento de Google creado", "success");
-      }
+      const res = await api.post(`/notes/${note._id}/export-docx`, {}, { responseType: "blob" });
+      const blob = new Blob([res.data], {
+        type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${note.title.replace(/[^a-zA-Z0-9áéíóúñ\s-]/g, "").trim() || "nota"}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("Documento Word descargado", "success");
     } catch (err) {
-      const msg = err.response?.data?.message || "Error al crear documento";
-      if (msg.includes("GOOGLE_SERVICE_ACCOUNT_JSON")) {
-        showToast("Google Docs no está configurado en el servidor", "error");
-      } else {
-        showToast(msg, "error");
-      }
+      const msg = err.response?.data?.message || "Error al exportar a Word";
+      showToast(msg, "error");
     } finally {
-      setCreatingDoc(false);
+      setExportingDocx(false);
     }
   };
 
@@ -123,9 +122,9 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
             </button>
             {!external && (
               <>
-                <button onClick={() => handleGoogleDoc(!!note.googleDocId)} disabled={creatingDoc} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl flex items-center gap-2 transition-all hover:scale-105 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
-                  {creatingDoc ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
-                  {creatingDoc ? "Exportando..." : note.googleDocId ? "Regenerar" : "Google Docs"}
+                <button onClick={handleExportDocx} disabled={exportingDocx} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl flex items-center gap-2 transition-all hover:scale-105 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                  {exportingDocx ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                  {exportingDocx ? "Exportando..." : "Word"}
                 </button>
                 <button onClick={() => setShowShareModal(true)} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-xl flex items-center gap-2 transition-all hover:scale-105 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-500">
                   <Share2 className="w-4 h-4" /> Compartir
@@ -214,9 +213,9 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
           </Tooltip>
           {!external && (
             <>
-              <Tooltip text={creatingDoc ? "Exportando..." : (note.googleDocId ? "Regenerar Google Doc" : "Crear Google Doc")}>
-                <button onClick={(e) => { e.stopPropagation(); handleGoogleDoc(!!note.googleDocId); }} disabled={creatingDoc} className="p-2 rounded-xl text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all hover:scale-110 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100">
-                  {creatingDoc ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
+              <Tooltip text={exportingDocx ? "Exportando..." : "Descargar Word"}>
+                <button onClick={(e) => { e.stopPropagation(); handleExportDocx(); }} disabled={exportingDocx} className="p-2 rounded-xl text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all hover:scale-110 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100">
+                  {exportingDocx ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                 </button>
               </Tooltip>
               <Tooltip text="Compartir">
