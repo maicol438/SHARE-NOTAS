@@ -158,8 +158,7 @@ export const googleAuthCallback = async (req, res, next) => {
   try {
     const token = generateToken(req.user);
     setTokenCookie(res, token);
-    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-    res.redirect(`${clientUrl}/dashboard`);
+    res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/dashboard`);
   } catch (error) {
     next(error);
   }
