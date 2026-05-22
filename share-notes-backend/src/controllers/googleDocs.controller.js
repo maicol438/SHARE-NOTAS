@@ -20,9 +20,11 @@ const createDoc = async (note, type, userId) => {
     throw new Error("Usuario no encontrado");
   }
   if (!currentUser.googleAccessToken) {
-    throw new Error(
-      "Debes conectar tu cuenta de Google desde tu perfil antes de exportar a Google Docs."
+    const err = new Error(
+      "insufficient_scopes: Debes conectar tu cuenta de Google con los permisos requeridos antes de exportar a Google Docs."
     );
+    err.status = 403;
+    throw err;
   }
 
   const userAccessToken = currentUser.googleAccessToken;
@@ -80,6 +82,21 @@ export const createDocFromNote = async (req, res, next) => {
   } catch (error) {
     const googleError = error?.response?.data?.error?.message || error.message;
     console.error("Error en createDocFromNote:", googleError);
+
+    const errorCode = error?.response?.status || error?.status || error?.code;
+    const isInsufficientScope = errorCode === 403 || 
+                                 googleError.toLowerCase().includes("insufficient") || 
+                                 googleError.toLowerCase().includes("scope") || 
+                                 googleError.toLowerCase().includes("permission") ||
+                                 googleError.toLowerCase().includes("caller does not have permission");
+
+    if (isInsufficientScope) {
+      return res.status(403).json({
+        message: "Se requieren permisos de Google Drive",
+        detail: "insufficient_scopes: " + googleError,
+      });
+    }
+
     return res.status(500).json({
       message: "Error al crear documento en Google Docs",
       detail: googleError,
@@ -117,6 +134,21 @@ export const createDocFromTask = async (req, res, next) => {
   } catch (error) {
     const googleError = error?.response?.data?.error?.message || error.message;
     console.error("Error en createDocFromTask:", googleError);
+
+    const errorCode = error?.response?.status || error?.status || error?.code;
+    const isInsufficientScope = errorCode === 403 || 
+                                 googleError.toLowerCase().includes("insufficient") || 
+                                 googleError.toLowerCase().includes("scope") || 
+                                 googleError.toLowerCase().includes("permission") ||
+                                 googleError.toLowerCase().includes("caller does not have permission");
+
+    if (isInsufficientScope) {
+      return res.status(403).json({
+        message: "Se requieren permisos de Google Drive",
+        detail: "insufficient_scopes: " + googleError,
+      });
+    }
+
     return res.status(500).json({
       message: "Error al crear documento en Google Docs",
       detail: googleError,

@@ -34,15 +34,16 @@ const clearTokenCookie = (res) => {
 export const register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
+    const cleanEmail = email ? email.trim().toLowerCase() : "";
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: cleanEmail });
     if (existingUser) {
       return res.status(400).json({
         message: "Este correo electrónico ya está registrado. Por favor, inicia sesión.",
       });
     }
 
-    const user = await User.create({ name, email, password });
+    const user = await User.create({ name, email: cleanEmail, password });
 
     res.status(201).json({
       message: "Usuario registrado correctamente. Por favor inicia sesión.",
@@ -61,7 +62,8 @@ export const login = async (req, res, next) => {
       return res.status(400).json({ message: "Email y contraseña son requeridos" });
     }
 
-    const user = await User.findOne({ email }).select("+password");
+    const cleanEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: cleanEmail }).select("+password");
     if (!user) {
       return res.status(401).json({ message: "Credenciales inválidas" });
     }
@@ -105,7 +107,8 @@ export const forgotPassword = async (req, res, next) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ message: "Email requerido" });
 
-    const user = await User.findOne({ email });
+    const cleanEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: cleanEmail });
     if (!user) return res.json({ message: "Se ha enviado un enlace de restablecimiento a tu correo electrónico. Por favor, revisa tu bandeja de entrada." });
     if (user.authProvider === "google") return res.status(400).json({ message: "Esta cuenta usa Google. Inicia sesión con Google." });
 

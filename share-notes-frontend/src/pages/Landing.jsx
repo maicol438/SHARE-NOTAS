@@ -23,9 +23,27 @@ const Landing = () => {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const isCheckingAuth = useAuthStore((s) => s.isCheckingAuth);
   const logout = useAuthStore((s) => s.logout);
 
+  useEffect(() => {
+    if (!isCheckingAuth && isAuthenticated) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, isCheckingAuth, navigate]);
+
   const handleLogout = async () => { await logout(); navigate("/"); };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-950">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-surface-700 border-t-primary-500 rounded-full animate-spin" />
+          <p className="text-surface-500 text-sm animate-pulse-subtle">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-surface-950 overflow-hidden">

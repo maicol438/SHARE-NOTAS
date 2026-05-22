@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Mail, Lock, BookOpen, Eye, EyeOff, ArrowLeft, LogOut } from "lucide-react";
 import useAuthStore from "../stores/useAuthStore.js";
 import Button from "../components/ui/Button.jsx";
@@ -34,6 +34,7 @@ const FloatingParticle = ({ delay, left, top, size, opacity, color }) => (
 
 const Login = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user, isAuthenticated, isCheckingAuth, logout, login, isLoading } = useAuthStore();
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
@@ -44,7 +45,21 @@ const Login = () => {
     api.get("/health").then((res) => {
       setGoogleEnabled(res.data?.features?.googleAuth || false);
     }).catch(() => {});
-  }, []);
+
+    // Capturar y mostrar errores de autenticación (ej: de Google OAuth)
+    const err = searchParams.get("error");
+    if (err) {
+      if (err === "account_exists") {
+        showToast("Tu correo de Google ya está registrado con contraseña. Por favor, inicia sesión aquí.", "error", { duration: 5000 });
+      } else if (err === "auth_error") {
+        showToast("Hubo un error al autenticar con Google. Inténtalo de nuevo.", "error");
+      } else {
+        showToast("Error de autenticación.", "error");
+      }
+      // Limpiar los query params para no repetir el toast en recargas
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const validate = () => {
     const errs = {};
@@ -280,7 +295,7 @@ const Login = () => {
                     type="button"
                     onClick={() => {
                       const base = import.meta.env.VITE_BACKEND_URL || "";
-                      window.location.href = `${base}/api/auth/google`;
+                      window.location.href = `${base}/api/auth/google?mode=login`;
                     }}
                     className="w-full flex items-center justify-center gap-3 px-4 py-3.5 bg-white dark:bg-dark-800/80 backdrop-blur-sm border border-gray-200/80 dark:border-dark-700/80 rounded-xl hover:bg-gray-50/80 dark:hover:bg-dark-700/80 hover:border-gray-300 dark:hover:border-dark-600 hover:shadow-lg hover:shadow-gray-200/40 dark:hover:shadow-black/20 transition-all duration-200 active:scale-[0.98] animate-slide-up delay-600"
                   >

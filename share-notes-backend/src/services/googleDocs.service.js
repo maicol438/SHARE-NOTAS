@@ -70,14 +70,20 @@ export const createGoogleDoc = async (
       fields: "id, webViewLink",
     });
   } catch (e) {
-    const errorCode = e?.response?.status;
+    const errorCode = e?.response?.status || e?.status || e?.code;
     const errorMsg = e?.response?.data?.error?.message || e.message;
     console.error("Error al crear Google Doc:", JSON.stringify(e?.response?.data || e.message));
 
-    if (userAccessToken && (errorCode === 401 || errorCode === 403)) {
+    if (userAccessToken && errorCode === 401) {
       throw new Error(
         "Tu conexión con Google expiró. Desconecta y vuelve a conectar tu cuenta de Google desde tu perfil."
       );
+    }
+
+    if (userAccessToken && (errorCode === 403 || errorMsg.toLowerCase().includes("insufficient") || errorMsg.toLowerCase().includes("scope") || errorMsg.toLowerCase().includes("permission"))) {
+      const err = new Error("insufficient_scopes: Se requieren permisos de Google Drive para crear documentos.");
+      err.status = 403;
+      throw err;
     }
 
     throw new Error("Error al crear el documento en Google Docs: " + errorMsg);

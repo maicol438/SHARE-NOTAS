@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Moon, Sun, LogOut, Menu, User, ChevronDown, Settings, StickyNote } from "lucide-react";
+import { Moon, Sun, LogOut, Menu, User, ChevronDown, StickyNote } from "lucide-react";
 import { useDarkMode } from "../../hooks/useDarkMode.js";
 import useAuthStore from "../../stores/useAuthStore.js";
 import { showToast } from "../../utils/toast.jsx";
@@ -31,55 +31,91 @@ const Navbar = ({ onMenuToggle }) => {
 
   return (
     <>
-      <header className="h-14 border-b border-surface-800/60 bg-surface-950/80 backdrop-blur-xl flex items-center px-3 gap-2 sticky top-0 z-30">
-        <button onClick={onMenuToggle} className="lg:hidden p-2 rounded-lg hover:bg-surface-800 transition-all text-surface-400 hover:text-surface-200">
+      <header className="h-16 border-b border-gray-200/50 dark:border-white/[0.04] bg-white/80 dark:bg-dark-900/80 backdrop-blur-2xl flex items-center px-4 md:px-5 gap-3 sticky top-0 z-30 shadow-sm shadow-gray-200/[0.02] dark:shadow-black/[0.02]">
+        <button
+          onClick={onMenuToggle}
+          className="lg:hidden p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-dark-800 transition-all text-gray-500 dark:text-dark-400 hover:text-gray-900 dark:hover:text-dark-100 border border-transparent dark:hover:border-white/[0.04]"
+        >
           <Menu className="w-[18px] h-[18px]" />
         </button>
 
-        <Link to="/" className="flex items-center gap-2 mr-auto group">
-          <div className="w-7 h-7 bg-primary-500 rounded-lg flex items-center justify-center">
-            <StickyNote className="w-3.5 h-3.5 text-white" />
+        {/* Small Logo for mobile/tablet */}
+        <Link to="/" className="flex items-center gap-2.5 mr-auto group lg:hidden">
+          <div className="relative">
+            <div className="absolute -inset-0.5 bg-gradient-to-br from-primary-500 to-purple-500 rounded-lg opacity-40 blur-xs group-hover:opacity-75 transition-all duration-300" />
+            <div className="relative w-7 h-7 bg-gradient-to-br from-primary-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <StickyNote className="w-3.5 h-3.5 text-white" />
+            </div>
           </div>
-          <span className="font-bold text-sm text-surface-200 hidden sm:block group-hover:text-white transition-colors">ShareNotes</span>
+          <span className="font-bold text-sm tracking-wide text-gray-800 dark:text-dark-100 group-hover:text-primary-500 transition-colors">
+            ShareNotes
+          </span>
         </Link>
 
-        <div className="flex items-center gap-1">
-          <button onClick={toggle}
-            className="p-2 rounded-lg hover:bg-surface-800 text-surface-400 hover:text-surface-200 transition-all"
+        {/* Spacer for desktop layout */}
+        <div className="hidden lg:block mr-auto" />
+
+        <div className="flex items-center gap-1.5">
+          {/* Theme Toggle */}
+          <button
+            onClick={toggle}
+            className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-dark-800 text-gray-500 dark:text-dark-400 hover:text-gray-900 dark:hover:text-dark-100 transition-all border border-transparent dark:hover:border-white/[0.04] active:scale-95"
+            aria-label="Cambiar tema"
           >
             {isDark ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
           </button>
 
+          {/* User Menu */}
           <div className="relative" ref={menuRef}>
-            <button onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center gap-2 p-1 rounded-lg hover:bg-surface-800 transition-all group"
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="flex items-center gap-2.5 p-1 px-2 rounded-xl hover:bg-gray-100 dark:hover:bg-dark-800 transition-all border border-transparent dark:hover:border-white/[0.04] group"
             >
               {user?.avatar ? (
-                <img src={user.avatar} alt="" referrerPolicy="no-referrer" className="w-7 h-7 rounded-full ring-1 ring-surface-700" />
+                <img
+                  src={user.avatar}
+                  alt=""
+                  referrerPolicy="no-referrer"
+                  className="w-7.5 h-7.5 rounded-full object-cover ring-2 ring-primary-500/10 group-hover:ring-primary-500/30 transition-all duration-300"
+                />
               ) : (
-                <div className="w-7 h-7 rounded-full bg-surface-800 flex items-center justify-center ring-1 ring-surface-700">
-                  <User className="w-3.5 h-3.5 text-surface-400" />
+                <div className="w-7.5 h-7.5 rounded-full bg-primary-500/10 dark:bg-primary-500/20 flex items-center justify-center ring-2 ring-primary-500/10 group-hover:ring-primary-500/30 transition-all duration-300">
+                  <User className="w-3.5 h-3.5 text-primary-600 dark:text-primary-400" />
                 </div>
               )}
-              <span className="text-sm font-medium text-surface-300 hidden md:block group-hover:text-surface-100 transition-colors">
+              <span className="text-xs font-bold text-gray-700 dark:text-dark-300 hidden sm:block group-hover:text-gray-900 dark:group-hover:text-dark-100 transition-colors leading-none">
                 {user?.name?.split(" ")[0]}
               </span>
-              <ChevronDown className={`w-3.5 h-3.5 text-surface-500 hidden md:block transition-transform duration-200 ${showUserMenu ? "rotate-180" : ""}`} />
+              <ChevronDown
+                className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-300 hidden sm:block ${
+                  showUserMenu ? "rotate-180 text-primary-500" : ""
+                }`}
+              />
             </button>
 
             {showUserMenu && (
-              <div className="absolute right-0 top-full mt-2 w-56 bg-surface-900 rounded-xl border border-surface-700 shadow-tesla-lg p-1.5 animate-scale-in z-50">
-                <div className="px-3 py-2 border-b border-surface-800 mb-1">
-                  <p className="font-medium text-sm text-surface-200 truncate">{user?.name}</p>
-                  <p className="text-xs text-surface-500 truncate">{user?.email}</p>
+              <div className="absolute right-0 top-full mt-2 w-56 bg-white/95 dark:bg-dark-900/95 backdrop-blur-2xl rounded-2xl border border-gray-200/50 dark:border-white/[0.06] shadow-2xl p-1.5 animate-scale-in z-50">
+                <div className="px-3.5 py-2.5 border-b border-gray-150/40 dark:border-white/[0.04] mb-1">
+                  <p className="font-bold text-sm text-gray-800 dark:text-dark-200 truncate leading-snug">{user?.name}</p>
+                  <p className="text-2xs text-gray-400 dark:text-dark-500 truncate leading-none mt-0.5">{user?.email}</p>
                 </div>
-                <button onClick={() => { setShowUserMenu(false); navigate("/dashboard/profile"); }}
-                  className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-surface-300 hover:bg-surface-800 rounded-lg transition-all">
-                  <User className="w-4 h-4" />
+                <button
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    navigate("/dashboard/profile");
+                  }}
+                  className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-gray-600 dark:text-dark-300 hover:bg-gray-100 dark:hover:bg-dark-800/60 rounded-xl transition-all font-bold"
+                >
+                  <User className="w-4 h-4 text-gray-400" />
                   Perfil
                 </button>
-                <button onClick={() => { setShowUserMenu(false); setShowLogoutConfirm(true); }}
-                  className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg transition-all">
+                <button
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    setShowLogoutConfirm(true);
+                  }}
+                  className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 rounded-xl transition-all font-bold"
+                >
                   <LogOut className="w-4 h-4" />
                   Cerrar sesión
                 </button>
@@ -89,20 +125,30 @@ const Navbar = ({ onMenuToggle }) => {
         </div>
       </header>
 
-      {/* Logout Confirm */}
+      {/* Logout Confirm Dialog */}
       {showLogoutConfirm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4" onClick={() => setShowLogoutConfirm(false)}>
-          <div className="bg-surface-900 rounded-xl p-6 max-w-sm w-full animate-scale-in border border-surface-700 shadow-tesla-lg" onClick={e => e.stopPropagation()}>
-            <div className="flex flex-col items-center text-center gap-2 mb-6">
-              <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
-                <LogOut className="w-5 h-5 text-red-400" />
+        <div
+          className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center z-[60] p-4 animate-fade-in"
+          onClick={() => setShowLogoutConfirm(false)}
+        >
+          <div
+            className="bg-white dark:bg-dark-900 border border-gray-250/20 dark:border-white/[0.06] rounded-3xl p-6 max-w-sm w-full animate-scale-in shadow-2xl text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center shadow-sm">
+                <LogOut className="w-5 h-5 text-red-500" />
               </div>
-              <h3 className="font-semibold text-surface-100">Cerrar sesión</h3>
-              <p className="text-sm text-surface-500">¿Estás seguro?</p>
+              <h3 className="font-extrabold text-lg text-gray-800 dark:text-dark-100 tracking-wide">Cerrar sesión</h3>
+              <p className="text-sm text-gray-500 dark:text-dark-400">¿Estás seguro de que deseas cerrar sesión?</p>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setShowLogoutConfirm(false)} className="btn-secondary flex-1">Cancelar</button>
-              <button onClick={handleLogout} className="btn-danger flex-1">Cerrar sesión</button>
+              <button onClick={() => setShowLogoutConfirm(false)} className="btn-secondary flex-1 font-bold">
+                Cancelar
+              </button>
+              <button onClick={handleLogout} className="btn-danger flex-1 font-bold">
+                Cerrar sesión
+              </button>
             </div>
           </div>
         </div>

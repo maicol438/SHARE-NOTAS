@@ -124,11 +124,21 @@ router.post("/reset-password/:token", resetPassword);
 if (googleEnabled) {
   router.get(
     "/google",
-    passport.authenticate("google", {
-      scope: ["profile", "email"],
-      prompt: "select_account",
-      session: false,
-    })
+    (req, res, next) => {
+      const { mode, redirectTo } = req.query;
+      const stateObj = {
+        mode: mode || null,
+        redirectTo: redirectTo || null,
+      };
+      const state = Buffer.from(JSON.stringify(stateObj)).toString("base64");
+
+      passport.authenticate("google", {
+        scope: ["profile", "email"],
+        prompt: "select_account",
+        session: false,
+        state,
+      })(req, res, next);
+    }
   );
 
   router.get("/google/drive", (req, res, next) => {
@@ -151,25 +161,58 @@ if (googleEnabled) {
 
   router.get(
     "/google/callback",
-    passport.authenticate("google", {
-      failureRedirect: `${process.env.CLIENT_URL || "https://share-notas.vercel.app"}/login`,
-      session: false,
-    }),
-    (req, res) => {
-      try {
-        const token = generateToken(req.user);
-        setTokenCookie(res, token);
+    (req, res, next) => {
+      passport.authenticate("google", { session: false }, (err, user, info) => {
+        const clientUrl = process.env.CLIENT_URL || "https://share-notas.vercel.app";
 
-        if (req.query.state) {
-          const originalUrl = Buffer.from(req.query.state, "base64").toString("ascii");
-          return res.redirect(originalUrl);
+        if (err) {
+          console.error("Error en google auth:", err);
+          return res.redirect(`${clientUrl}/login?error=auth_error`);
         }
 
-        res.redirect(`${process.env.CLIENT_URL || "https://share-notas.vercel.app"}/dashboard`);
-      } catch (error) {
-        console.error("Error en callback de Google:", error);
-        res.redirect(`${process.env.CLIENT_URL || "https://share-notas.vercel.app"}/login?error=auth_error`);
-      }
+        if (!user) {
+          const reason = info?.message || "auth_failed";
+          if (reason === "account_not_found") {
+            return res.redirect(`${clientUrl}/register?error=account_not_found`);
+          }
+          if (reason === "account_exists") {
+            return res.redirect(`${clientUrl}/login?error=account_exists`);
+          }
+          return res.redirect(`${clientUrl}/login?error=${reason}`);
+        }
+
+        try {
+          const token = generateToken(user);
+          setTokenCookie(res, token);
+
+          // Intentar decodificar el state
+          let originalUrl = null;
+          if (req.query.state) {
+            try {
+              const decoded = JSON.parse(Buffer.from(req.query.state, "base64").toString("ascii"));
+              originalUrl = decoded.redirectTo;
+            } catch (e) {
+              // Fallback para compatibilidad con estados que son strings planos
+              try {
+                const plain = Buffer.from(req.query.state, "base64").toString("ascii");
+                if (!plain.startsWith("{")) {
+                  originalUrl = plain;
+                }
+              } catch (errDec) {}
+            }
+          }
+
+          if (originalUrl) {
+            return res.redirect(originalUrl);
+          }
+
+          const welcomeParam = req.isNewGoogleUser ? "?welcome=true" : "";
+          res.redirect(`${clientUrl}/dashboard${welcomeParam}`);
+        } catch (error) {
+          console.error("Error en callback de Google:", error);
+          res.redirect(`${clientUrl}/login?error=auth_error`);
+        }
+      })(req, res, next);
     }
   );
 }

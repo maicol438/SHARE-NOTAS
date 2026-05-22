@@ -21,44 +21,45 @@ export const showToast = (message, type = "success", options = {}) => {
     ),
   };
 
-  const borders = {
-    success: "border-emerald-500/40",
-    error: "border-red-500/40",
-    info: "border-blue-500/40",
+  const borderColors = {
+    success: "border-emerald-500/30 dark:border-emerald-500/20",
+    error: "border-red-500/30 dark:border-red-500/20",
+    info: "border-blue-500/30 dark:border-blue-500/20",
   };
 
-  const colors = {
-    success: "text-emerald-400",
-    error: "text-red-400",
-    info: "text-blue-400",
-  };
-
-  const gradients = {
-    success: "from-emerald-500/10 to-emerald-600/5",
-    error: "from-red-500/10 to-red-600/5",
-    info: "from-blue-500/10 to-blue-600/5",
+  const iconColors = {
+    success: "text-emerald-500 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/20 border-emerald-500/20",
+    error: "text-red-500 dark:text-red-400 bg-red-500/10 dark:bg-red-500/20 border-red-500/20",
+    info: "text-blue-500 dark:text-blue-400 bg-blue-500/10 dark:bg-blue-500/20 border-blue-500/20",
   };
 
   toast.custom(
     (t) => (
       <div
         className={`
-          relative flex items-center gap-3 px-4 py-3.5 pr-4 rounded-2xl min-w-[320px] max-w-md
-          bg-neutral-900/95 dark:bg-neutral-900/95
-          border ${borders[type] || borders.success}
-          text-white text-sm font-medium
-          shadow-2xl shadow-black/40
-          ${t.visible ? "animate-slide-in-right" : "animate-fade-in"}
-          backdrop-blur-xl
+          relative flex items-center gap-3.5 px-4.5 py-4 rounded-2xl min-w-[320px] max-w-md
+          bg-white/90 dark:bg-dark-900/90
+          backdrop-blur-2xl
+          border ${borderColors[type] || borderColors.success}
+          shadow-xl shadow-primary-500/[0.05] dark:shadow-black/40
+          transition-all duration-300
+          ${t.visible ? "animate-scale-in" : "animate-fade-out opacity-0"}
         `}
       >
-        <span className={`flex items-center justify-center w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex-shrink-0 ${colors[type] || colors.success}`}>
+        {/* Glow behind the icon depending on type */}
+        <div className={`absolute left-4 w-8 h-8 rounded-xl blur-lg opacity-40 pointer-events-none ${
+          type === "success" ? "bg-emerald-500" : type === "error" ? "bg-red-500" : "bg-blue-500"
+        }`} />
+
+        <span className={`relative flex items-center justify-center w-9 h-9 rounded-xl border flex-shrink-0 ${iconColors[type] || iconColors.success}`}>
           {icons[type] || icons.success}
         </span>
-        <span className="flex-1 text-white/90 leading-tight">{message}</span>
+
+        <span className="flex-1 text-gray-800 dark:text-gray-100 text-sm font-semibold leading-tight">{message}</span>
+
         <button
           onClick={() => toast.dismiss(t.id)}
-          className="flex items-center justify-center w-6 h-6 rounded-lg hover:bg-white/10 text-white/40 hover:text-white/70 transition-all flex-shrink-0 cursor-pointer border-none"
+          className="flex items-center justify-center w-6 h-6 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-800 text-gray-400 dark:text-dark-500 hover:text-gray-600 dark:hover:text-dark-300 transition-all flex-shrink-0 cursor-pointer border-none"
           aria-label="Cerrar"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
