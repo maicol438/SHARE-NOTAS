@@ -84,7 +84,7 @@ export default function EmptyState({ type = "notes", title, subtitle, actionLabe
   const IconBg = config.icon || icons[type] || icons.notes;
 
   return (
-    <div className={`relative flex flex-col items-center justify-center py-16 px-6 text-center animate-slide-up rounded-3xl overflow-hidden bg-gray-50/50 dark:bg-dark-900/30 border border-gray-150/40 dark:border-white/[0.03] backdrop-blur-md max-w-xl mx-auto shadow-sm ${className}`}>
+    <div className={`relative flex flex-col items-center justify-center py-16 px-6 text-center animate-slide-up rounded-3xl overflow-hidden bg-gray-50/50 dark:bg-dark-900/30 border border-gray-200/40 dark:border-white/[0.03] backdrop-blur-md max-w-xl mx-auto shadow-sm ${className}`}>
       
       {/* Decorative background glows */}
       <div className="absolute -top-24 -left-24 w-48 h-48 bg-primary-500/10 rounded-full blur-3xl pointer-events-none dark:bg-primary-500/5"></div>
@@ -130,7 +130,7 @@ export default function EmptyState({ type = "notes", title, subtitle, actionLabe
             {config.tips.map((tip, i) => (
               <div 
                 key={i} 
-                className="flex items-start gap-3 p-3 rounded-xl bg-white/40 dark:bg-dark-850/40 border border-gray-150/50 dark:border-white/[0.02] hover:border-gray-200 dark:hover:border-white/[0.05] transition-all duration-200 ease-tesla group"
+                className="flex items-start gap-3 p-3 rounded-xl bg-white/40 dark:bg-dark-850/40 border border-gray-200/50 dark:border-white/[0.02] hover:border-gray-200 dark:hover:border-white/[0.05] transition-all duration-200 ease-tesla group"
               >
                 <div className="w-5 h-5 rounded-lg bg-primary-50/80 dark:bg-primary-950/20 border border-primary-100/50 dark:border-primary-500/10 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-200">
                   <Lightbulb className="w-3 h-3 text-primary-500 dark:text-primary-400" />

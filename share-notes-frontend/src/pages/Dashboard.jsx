@@ -30,8 +30,8 @@ const SkeletonCard = () => (
   <div className="bg-white/80 dark:bg-dark-900/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/[0.04] rounded-2xl p-5.5 flex flex-col gap-3.5 animate-fade-in-fast shadow-sm">
     <div className="h-5 bg-gray-200 dark:bg-dark-800 rounded-lg w-3/4 animate-pulse" />
     <div className="space-y-2">
-      <div className="h-3 bg-gray-150 dark:bg-dark-800/60 rounded-md animate-pulse" />
-      <div className="h-3 bg-gray-150 dark:bg-dark-800/60 rounded-md w-5/6 animate-pulse" />
+      <div className="h-3 bg-gray-200 dark:bg-dark-800/60 rounded-md animate-pulse" />
+      <div className="h-3 bg-gray-200 dark:bg-dark-800/60 rounded-md w-5/6 animate-pulse" />
     </div>
     <div className="flex gap-2 pt-3.5 border-t border-gray-100 dark:border-white/[0.04] mt-auto">
       <div className="h-5 w-16 bg-gray-200 dark:bg-dark-800 rounded-md animate-pulse" />
@@ -229,7 +229,7 @@ const Dashboard = () => {
                 localSearchNotes(e.target.value);
               }}
               placeholder={isTrashTab ? "Buscar en papelera..." : "Buscar notas..."}
-              className="w-full pl-10 pr-4 py-2.5 bg-white/70 dark:bg-dark-900/70 border border-gray-250/20 dark:border-white/[0.04] rounded-xl text-sm text-gray-800 dark:text-dark-200 placeholder-gray-400 dark:placeholder-dark-500 focus:outline-none focus:border-primary-500/50 focus:ring-4 focus:ring-primary-500/5 transition-all font-semibold"
+              className="w-full pl-10 pr-4 py-2.5 bg-white/70 dark:bg-dark-900/70 border border-gray-300/20 dark:border-white/[0.04] rounded-xl text-sm text-gray-800 dark:text-dark-200 placeholder-gray-400 dark:placeholder-dark-500 focus:outline-none focus:border-primary-500/50 focus:ring-4 focus:ring-primary-500/5 transition-all font-semibold"
             />
           </div>
 

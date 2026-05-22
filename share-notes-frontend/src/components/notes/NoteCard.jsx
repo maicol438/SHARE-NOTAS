@@ -180,7 +180,7 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
               {note.content}
             </div>
             {note.description && (
-              <div className="mt-10 p-6 bg-gray-50/50 dark:bg-dark-900/50 rounded-2xl border border-gray-150/40 dark:border-white/[0.04]">
+              <div className="mt-10 p-6 bg-gray-50/50 dark:bg-dark-900/50 rounded-2xl border border-gray-200/40 dark:border-white/[0.04]">
                 <div className="flex items-center gap-2 mb-2.5">
                   <Sparkles className="w-4 h-4 text-primary-500 dark:text-primary-400" />
                   <span className="text-xs font-bold text-gray-500 dark:text-dark-400 uppercase tracking-wider">Resumen</span>
@@ -194,7 +194,7 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
         {/* Share Modal in Expanded */}
         {showShareModal && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-md" onClick={() => setShowShareModal(false)}>
-            <div className="bg-white dark:bg-dark-900 border border-gray-250/20 dark:border-white/[0.06] rounded-3xl p-6.5 max-w-md w-full shadow-2xl animate-scale-in" onClick={e => e.stopPropagation()}>
+            <div className="bg-white dark:bg-dark-900 border border-gray-300/20 dark:border-white/[0.06] rounded-3xl p-6.5 max-w-md w-full shadow-2xl animate-scale-in" onClick={e => e.stopPropagation()}>
               <h3 className="font-extrabold text-lg text-gray-800 dark:text-dark-100 mb-1 tracking-wide">Compartir nota</h3>
               <p className="text-xs text-gray-400 dark:text-dark-500 mb-5 font-medium">Comparte &quot;{note.title}&quot; con otro usuario</p>
               <form onSubmit={handleShare} className="space-y-4.5">
@@ -226,7 +226,7 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
 
   return (
     <div
-      className={`group bg-white/80 dark:bg-dark-900/80 backdrop-blur-xl border rounded-2xl flex flex-col gap-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gray-250/[0.04] dark:hover:shadow-black/[0.12]
+      className={`group bg-white/80 dark:bg-dark-900/80 backdrop-blur-xl border rounded-2xl flex flex-col gap-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gray-300/[0.04] dark:hover:shadow-black/[0.12]
         ${note.isPinned ? "border-primary-500/35 dark:border-primary-500/20 ring-1 ring-primary-500/25 dark:ring-primary-500/10 shadow-sm shadow-primary-500/[0.04]" : "border-gray-200/50 dark:border-white/[0.04] shadow-sm shadow-gray-200/[0.02] dark:shadow-black/[0.02]"}
         ${note.isFavorite ? "ring-1 ring-amber-500/15 border-amber-500/20" : ""}
         animate-fade-in-fast`}
@@ -363,7 +363,7 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
       {/* Share Modal overlay */}
       {showShareModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-md" onClick={() => setShowShareModal(false)}>
-          <div className="bg-white dark:bg-dark-900 border border-gray-250/20 dark:border-white/[0.06] rounded-3xl p-6.5 max-w-md w-full shadow-2xl animate-scale-in" onClick={e => e.stopPropagation()}>
+          <div className="bg-white dark:bg-dark-900 border border-gray-300/20 dark:border-white/[0.06] rounded-3xl p-6.5 max-w-md w-full shadow-2xl animate-scale-in" onClick={e => e.stopPropagation()}>
             <h3 className="font-extrabold text-lg text-gray-800 dark:text-dark-100 mb-1 tracking-wide">Compartir nota</h3>
             <p className="text-xs text-gray-400 dark:text-dark-500 mb-5 font-medium">Comparte &quot;{note.title}&quot; con otro usuario</p>
             <form onSubmit={handleShare} className="space-y-4.5">

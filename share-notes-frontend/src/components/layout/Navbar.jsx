@@ -95,7 +95,7 @@ const Navbar = ({ onMenuToggle }) => {
 
             {showUserMenu && (
               <div className="absolute right-0 top-full mt-2 w-56 bg-white/95 dark:bg-dark-900/95 backdrop-blur-2xl rounded-2xl border border-gray-200/50 dark:border-white/[0.06] shadow-2xl p-1.5 animate-scale-in z-50">
-                <div className="px-3.5 py-2.5 border-b border-gray-150/40 dark:border-white/[0.04] mb-1">
+                <div className="px-3.5 py-2.5 border-b border-gray-200/40 dark:border-white/[0.04] mb-1">
                   <p className="font-bold text-sm text-gray-800 dark:text-dark-200 truncate leading-snug">{user?.name}</p>
                   <p className="text-2xs text-gray-400 dark:text-dark-500 truncate leading-none mt-0.5">{user?.email}</p>
                 </div>
@@ -132,7 +132,7 @@ const Navbar = ({ onMenuToggle }) => {
           onClick={() => setShowLogoutConfirm(false)}
         >
           <div
-            className="bg-white dark:bg-dark-900 border border-gray-250/20 dark:border-white/[0.06] rounded-3xl p-6 max-w-sm w-full animate-scale-in shadow-2xl text-center"
+            className="bg-white dark:bg-dark-900 border border-gray-300/20 dark:border-white/[0.06] rounded-3xl p-6 max-w-sm w-full animate-scale-in shadow-2xl text-center"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col items-center gap-3 mb-6">

@@ -80,7 +80,7 @@ export default function Sidebar({ onNavClick }) {
         className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 group relative
           ${active
             ? "bg-primary-500/10 dark:bg-primary-500/15 text-primary-600 dark:text-primary-400 font-bold border border-primary-500/20 dark:border-primary-500/10 shadow-sm"
-            : "text-gray-500 dark:text-dark-400 hover:text-gray-900 dark:hover:text-dark-100 hover:bg-gray-150/40 dark:hover:bg-dark-800/40 border border-transparent"
+            : "text-gray-500 dark:text-dark-400 hover:text-gray-900 dark:hover:text-dark-100 hover:bg-gray-200/40 dark:hover:bg-dark-800/40 border border-transparent"
           }`}
       >
         <Icon className={`w-[18px] h-[18px] flex-shrink-0 transition-transform duration-300 group-hover:scale-110 ${active ? "text-primary-500 dark:text-primary-400" : "text-gray-400 dark:text-dark-500 group-hover:text-primary-500"}`} />
@@ -124,7 +124,7 @@ export default function Sidebar({ onNavClick }) {
         }`}
       >
         {/* Header/Logo */}
-        <div className={`flex items-center border-b border-gray-150/40 dark:border-white/[0.04] ${collapsed ? "justify-center p-4" : "justify-between px-5 py-4.5"}`}>
+        <div className={`flex items-center border-b border-gray-200/40 dark:border-white/[0.04] ${collapsed ? "justify-center p-4" : "justify-between px-5 py-4.5"}`}>
           {!collapsed && (
             <button onClick={() => navigate("/")} className="flex items-center gap-3 group">
               <div className="relative group">
@@ -140,7 +140,7 @@ export default function Sidebar({ onNavClick }) {
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-xl hover:bg-gray-150/50 dark:hover:bg-dark-800 text-gray-400 dark:text-dark-500 hover:text-gray-800 dark:hover:text-dark-100 transition-all border border-transparent dark:hover:border-white/[0.04]"
+            className="p-1.5 rounded-xl hover:bg-gray-200/50 dark:hover:bg-dark-800 text-gray-400 dark:text-dark-500 hover:text-gray-800 dark:hover:text-dark-100 transition-all border border-transparent dark:hover:border-white/[0.04]"
           >
             {collapsed ? <PanelLeft className="w-[18px] h-[18px]" /> : <PanelLeftClose className="w-[18px] h-[18px]" />}
           </button>
@@ -193,7 +193,7 @@ export default function Sidebar({ onNavClick }) {
                       className={`group flex items-center justify-between px-3 py-2 rounded-xl transition-all border
                         ${active
                           ? "bg-primary-500/10 dark:bg-primary-500/15 border-primary-500/20 dark:border-primary-500/10 text-primary-600 dark:text-primary-400 font-bold"
-                          : "hover:bg-gray-150/40 dark:hover:bg-dark-800/40 text-gray-500 dark:text-dark-400 hover:text-gray-900 dark:hover:text-dark-100 border-transparent"
+                          : "hover:bg-gray-200/40 dark:hover:bg-dark-800/40 text-gray-500 dark:text-dark-400 hover:text-gray-900 dark:hover:text-dark-100 border-transparent"
                         }`}
                     >
                       <Link to={`/dashboard?notebook=${nb._id}`} onClick={handleClick} className="flex items-center gap-2.5 flex-1 min-w-0">
@@ -267,7 +267,7 @@ export default function Sidebar({ onNavClick }) {
 
         {/* User Card at bottom */}
         {user && !collapsed && (
-          <div className="p-3 border-t border-gray-150/40 dark:border-white/[0.04]">
+          <div className="p-3 border-t border-gray-200/40 dark:border-white/[0.04]">
             <Link
               to="/dashboard/profile"
               onClick={handleClick}
@@ -298,7 +298,7 @@ export default function Sidebar({ onNavClick }) {
         )}
 
         {user && collapsed && (
-          <div className="p-3 border-t border-gray-150/40 dark:border-white/[0.04] flex justify-center">
+          <div className="p-3 border-t border-gray-200/40 dark:border-white/[0.04] flex justify-center">
             <Link
               to="/dashboard/profile"
               onClick={handleClick}
@@ -356,7 +356,7 @@ export default function Sidebar({ onNavClick }) {
           onClick={() => setShowCreateModal(false)}
         >
           <div
-            className="bg-white dark:bg-dark-900 border border-gray-250/20 dark:border-white/[0.06] rounded-3xl p-6.5 w-full max-w-sm animate-scale-in shadow-2xl"
+            className="bg-white dark:bg-dark-900 border border-gray-300/20 dark:border-white/[0.06] rounded-3xl p-6.5 w-full max-w-sm animate-scale-in shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="font-extrabold text-lg text-gray-800 dark:text-dark-100 mb-4 tracking-wide">Nuevo cuaderno</h3>

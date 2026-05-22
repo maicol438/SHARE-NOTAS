@@ -49,7 +49,7 @@ const Modal = ({ isOpen, onClose, title, children, size = "md" }) => {
         <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-primary-500/30 to-transparent pointer-events-none" />
         
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-150/60 dark:border-white/[0.04]">
+        <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-200/60 dark:border-white/[0.04]">
           <h2 className="text-lg font-bold text-gray-900 dark:text-dark-100 tracking-tight">
             {title}
           </h2>
