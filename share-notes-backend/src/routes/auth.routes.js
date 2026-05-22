@@ -133,9 +133,12 @@ if (googleEnabled) {
 
   router.get(
     "/google/callback",
-    passport.authenticate("google", { failureRedirect: "/login" }),
+    passport.authenticate("google", {
+      failureRedirect: `${process.env.CLIENT_URL || "https://share-notas.vercel.app"}/login`,
+      session: false,
+    }),
     (req, res) => {
-      res.redirect(process.env.CLIENT_URL || "https://share-notas.vercel.app");
+      res.redirect(process.env.CLIENT_URL || "https://share-notas.vercel.app/dashboard");
     }
   );
 }
