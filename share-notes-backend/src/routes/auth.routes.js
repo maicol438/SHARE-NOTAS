@@ -1,6 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
-import { register, login, logout, getMe, forgotPassword, resetPassword } from "../controllers/auth.controller.js";
+import { register, login, logout, getMe, forgotPassword, resetPassword, googleAuthCallback } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middlewares/auth.middleware.js";
 import { authLimiter } from "../middlewares/rateLimiter.middleware.js";
 
@@ -137,9 +137,7 @@ if (googleEnabled) {
       failureRedirect: `${process.env.CLIENT_URL || "https://share-notas.vercel.app"}/login`,
       session: false,
     }),
-    (req, res) => {
-      res.redirect(process.env.CLIENT_URL || "https://share-notas.vercel.app/dashboard");
-    }
+    googleAuthCallback
   );
 }
 
