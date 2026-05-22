@@ -178,11 +178,11 @@ export default function Profile() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold gradient-text mb-2">Mi Perfil</h1>
-        <p className="text-gray-500">Administra tu información</p>
+        <p className="text-surface-500">Administra tu información</p>
       </div>
 
       {/* Avatar */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-6 mb-6">
+      <div className="bg-surface-900 border border-surface-800/60 rounded-xl p-4 sm:p-6 mb-6">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
           <div className="relative flex-shrink-0">
             {user?.avatar ? (
@@ -210,14 +210,14 @@ export default function Profile() {
             </label>
           </div>
           <div className="min-w-0">
-            <h3 className="font-semibold text-lg truncate">{user?.name}</h3>
-            <p className="text-gray-500 text-sm truncate">{user?.email}</p>
+            <h3 className="font-semibold text-surface-100 text-lg truncate">{user?.name}</h3>
+            <p className="text-surface-500 text-sm truncate">{user?.email}</p>
             <div className="flex justify-center sm:justify-start gap-4 mt-2 text-sm">
-              <span className="text-gray-500">
-                <strong className="text-gray-900 dark:text-gray-100">{stats.totalNotes}</strong> notas
+              <span className="text-surface-500">
+                <strong className="text-surface-100">{stats.totalNotes}</strong> notas
               </span>
-              <span className="text-gray-500">
-                <strong className="text-gray-900 dark:text-gray-100">{stats.sharedWithMe}</strong> compartidas
+              <span className="text-surface-500">
+                <strong className="text-surface-100">{stats.sharedWithMe}</strong> compartidas
               </span>
             </div>
           </div>
@@ -226,53 +226,53 @@ export default function Profile() {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-6">
-          <h3 className="font-semibold text-lg mb-4 sm:mb-6">Información personal</h3>
+        <div className="bg-surface-900 border border-surface-800/60 rounded-xl p-4 sm:p-6">
+          <h3 className="font-semibold text-surface-100 text-lg mb-4 sm:mb-6">Información personal</h3>
 
           <div className="space-y-4">
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-surface-300 mb-1.5">
                 Nombre
               </label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
                 <input
                   type="text"
                   name="name"
                   value={form.name}
                   onChange={handleChange}
-                  className={`input-field pl-12 ${errors.name ? "border-red-500" : ""}`}
+                  className={`input-field pl-12 ${errors.name ? "border-red-500/50" : ""}`}
                 />
               </div>
-              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+              {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-surface-300 mb-1.5">
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
                 <input
                   type="email"
                   name="email"
                   value={form.email}
                   onChange={handleChange}
-                  className={`input-field pl-12 ${errors.email ? "border-red-500" : ""}`}
+                  className={`input-field pl-12 ${errors.email ? "border-red-500/50" : ""}`}
                 />
               </div>
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+              {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 sm:p-6">
-          <h3 className="font-semibold text-lg mb-4 sm:mb-6">
+        <div className="bg-surface-900 border border-surface-800/60 rounded-xl p-4 sm:p-6">
+          <h3 className="font-semibold text-surface-100 text-lg mb-4 sm:mb-6">
             {isGoogleUser ? "Establecer contraseña" : "Cambiar contraseña"}
           </h3>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-surface-500 mb-4">
             {isGoogleUser
               ? "Si dejas los campos vacíos y guardas, se eliminará la contraseña y solo podrás iniciar con Google"
               : "Deja vacío si no quieres cambiar la contraseña"}
@@ -282,65 +282,65 @@ export default function Profile() {
             {/* Current Password (solo para usuarios locales) */}
             {!isGoogleUser && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                <label className="block text-sm font-medium text-surface-300 mb-1.5">
                   Contraseña actual
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
                   <input
                     type="password"
                     name="currentPassword"
                     value={form.currentPassword}
                     onChange={handleChange}
                     placeholder="********"
-                    className={`input-field pl-12 ${errors.currentPassword ? "border-red-500" : ""}`}
+                    className={`input-field pl-12 ${errors.currentPassword ? "border-red-500/50" : ""}`}
                   />
                 </div>
                 {errors.currentPassword && (
-                  <p className="text-red-500 text-xs mt-1">{errors.currentPassword}</p>
+                  <p className="text-red-400 text-xs mt-1">{errors.currentPassword}</p>
                 )}
               </div>
             )}
 
             {/* New Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-surface-300 mb-1.5">
                 {isGoogleUser ? "Contraseña" : "Nueva contraseña"}
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
                 <input
                   type="password"
                   name="newPassword"
                   value={form.newPassword}
                   onChange={handleChange}
                   placeholder="Mínimo 6 caracteres"
-                  className={`input-field pl-12 ${errors.newPassword ? "border-red-500" : ""}`}
+                  className={`input-field pl-12 ${errors.newPassword ? "border-red-500/50" : ""}`}
                 />
               </div>
               {errors.newPassword && (
-                <p className="text-red-500 text-xs mt-1">{errors.newPassword}</p>
+                <p className="text-red-400 text-xs mt-1">{errors.newPassword}</p>
               )}
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-surface-300 mb-1.5">
                 Confirmar contraseña
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
                 <input
                   type="password"
                   name="confirmPassword"
                   value={form.confirmPassword}
                   onChange={handleChange}
                   placeholder="Repite la nueva contraseña"
-                  className={`input-field pl-12 ${errors.confirmPassword ? "border-red-500" : ""}`}
+                  className={`input-field pl-12 ${errors.confirmPassword ? "border-red-500/50" : ""}`}
                 />
               </div>
               {errors.confirmPassword && (
-                <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+                <p className="text-red-400 text-xs mt-1">{errors.confirmPassword}</p>
               )}
             </div>
           </div>
@@ -357,12 +357,12 @@ export default function Profile() {
       </form>
 
       {/* Danger Zone */}
-      <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-2xl p-4 sm:p-6 mt-6 sm:mt-8">
-        <h3 className="font-semibold text-red-600 dark:text-red-400 mb-2 flex items-center gap-2">
+      <div className="bg-red-950/20 border border-red-900/30 rounded-xl p-4 sm:p-6 mt-6 sm:mt-8">
+        <h3 className="font-semibold text-red-400 mb-2 flex items-center gap-2">
           <AlertTriangle className="w-5 h-5" />
           Zona de peligro
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <p className="text-sm text-surface-400 mb-4">
           Eliminar tu cuenta es permanente y no se puede deshacer.
         </p>
         <Button
@@ -376,15 +376,15 @@ export default function Profile() {
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 sm:p-6 max-w-md w-full animate-scale-in">
-            <h3 className="text-lg font-bold mb-4">¿Eliminar cuenta?</h3>
-            <p className="text-gray-500 mb-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
+          <div className="bg-surface-900 border border-surface-800/60 rounded-xl max-w-md w-full animate-scale-in">
+            <h3 className="text-lg font-bold text-surface-100 mb-4">¿Eliminar cuenta?</h3>
+            <p className="text-surface-500 mb-4">
               Esta acción es irreversible y eliminará todas tus notas.
             </p>
             {isGoogleUser ? (
               <div className="mb-4">
-                <p className="text-sm text-gray-500 mb-2">
+                <p className="text-sm text-surface-500 mb-2">
                   Escribe <strong>ELIMINAR</strong> para confirmar:
                 </p>
                 <input

@@ -62,35 +62,32 @@ export default function SearchPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold gradient-text mb-2">Buscar</h1>
-        <p className="text-gray-500">Encuentra tus notas rápidamente</p>
+        <p className="text-surface-400">Encuentra tus notas rápidamente</p>
       </div>
 
-      {/* Search Bar */}
       <div className="mb-6">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar por título, contenido o etiquetas..."
-            className="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all shadow-sm"
+            className="w-full pl-12 pr-4 py-3.5 bg-surface-900 border border-surface-800/60 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all shadow-sm"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-surface-800 rounded-full transition-colors"
             >
-              <X className="w-4 h-4 text-gray-400" />
+              <X className="w-4 h-4 text-surface-500" />
             </button>
           )}
         </div>
       </div>
 
-      {/* Filters Toggle */}
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => setShowFilters(!showFilters)}
@@ -98,34 +95,32 @@ export default function SearchPage() {
             flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all
             ${showFilters
               ? "bg-primary-500 text-white"
-              : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+              : "bg-surface-800 text-surface-400 hover:bg-surface-700"
             }
           `}
         >
           <Filter className="w-4 h-4" />
           Filtros
           {hasActiveFilters && (
-            <span className="w-2 h-2 bg-white rounded-full" />
+            <span className="w-2 h-2 bg-primary-400 rounded-full" />
           )}
         </button>
 
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="text-sm text-gray-500 hover:text-red-500 transition-colors"
+            className="text-sm text-surface-500 hover:text-red-500 transition-colors"
           >
             Limpiar filtros
           </button>
         )}
       </div>
 
-      {/* Filters Panel */}
       {showFilters && (
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 mb-6 animate-fade-in">
+        <div className="bg-surface-900 border border-surface-800/60 rounded-xl p-6 mb-6 animate-fade-in">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Category */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-surface-300 mb-2">
                 Categoría
               </label>
               <select
@@ -142,9 +137,8 @@ export default function SearchPage() {
               </select>
             </div>
 
-            {/* Tags */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-surface-300 mb-2">
                 Etiquetas
               </label>
               <input
@@ -158,14 +152,13 @@ export default function SearchPage() {
               />
             </div>
 
-            {/* Date Range */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-surface-300 mb-2">
                 Rango de fechas
               </label>
               <div className="flex items-center gap-4">
                 <div className="flex-1">
-                  <label className="block text-xs text-gray-500 mb-1">Desde</label>
+                  <label className="block text-xs text-surface-500 mb-1">Desde</label>
                   <input
                     type="date"
                     value={filters.dateFrom}
@@ -176,7 +169,7 @@ export default function SearchPage() {
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block text-xs text-gray-500 mb-1">Hasta</label>
+                  <label className="block text-xs text-surface-500 mb-1">Hasta</label>
                   <input
                     type="date"
                     value={filters.dateTo}
@@ -189,9 +182,8 @@ export default function SearchPage() {
               </div>
             </div>
 
-            {/* Quick Filters */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-surface-300 mb-2">
                 Filtros rápidos
               </label>
               <div className="flex flex-wrap gap-3">
@@ -203,7 +195,7 @@ export default function SearchPage() {
                     flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all
                     ${filters.pinned
                       ? "bg-primary-500 text-white"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                      : "bg-surface-800 text-surface-400"
                     }
                   `}
                 >
@@ -218,7 +210,7 @@ export default function SearchPage() {
                     flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all
                     ${filters.hasReminder
                       ? "bg-primary-500 text-white"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                      : "bg-surface-800 text-surface-400"
                     }
                   `}
                 >
@@ -231,9 +223,8 @@ export default function SearchPage() {
         </div>
       )}
 
-      {/* Results */}
       <div className="mb-4">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-surface-500">
           {isLoading ? "Buscando..." : `${publicNotes.length} resultados`}
         </p>
       </div>
@@ -243,12 +234,12 @@ export default function SearchPage() {
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 animate-pulse"
+              className="bg-surface-900 border border-surface-800/60 rounded-xl p-6 animate-pulse"
             >
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-3" />
+              <div className="h-4 bg-surface-800 rounded w-3/4 mb-3" />
               <div className="space-y-2">
-                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-full" />
-                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-5/6" />
+                <div className="h-3 bg-surface-800 rounded w-full" />
+                <div className="h-3 bg-surface-800 rounded w-5/6" />
               </div>
             </div>
           ))}

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Plus, Search, Star, Trash2, RotateCcw, X, FileText, TrendingUp, Clock, CheckSquare, Sparkles, Pin, Zap } from "lucide-react";
+import { Plus, Search, Star, RotateCcw, X, FileText, TrendingUp, CheckSquare, Sparkles, Pin, Zap } from "lucide-react";
 import useNoteStore from "../stores/useNoteStore.js";
 import useAuthStore from "../stores/useAuthStore.js";
 import NoteCard from "../components/notes/NoteCard.jsx";
@@ -11,30 +11,29 @@ import EmptyState from "../components/ui/EmptyState.jsx";
 import { showToast } from "../utils/toast.jsx";
 import api from "../api/axios.js";
 
-const StatCard = ({ icon: Icon, label, value, gradient, delay = 0 }) => (
-  <div className="card p-5 flex items-center gap-4 animate-slide-up group hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 cursor-default"
-    style={{ animationDelay: `${delay}ms`, animationFillMode: "forwards" }}>
-    <div className={`w-12 h-12 bg-gradient-to-br ${gradient} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
-      <Icon className="w-6 h-6 text-white" />
+const StatCard = ({ icon: Icon, label, value, delay = 0 }) => (
+  <div className="bg-surface-900 border border-surface-800/60 rounded-xl p-4 flex items-center gap-3 animate-slide-up hover:border-surface-700/60 hover:bg-surface-850 transition-all duration-300 cursor-default"
+    style={{ animationDelay: `${delay}ms` }}>
+    <div className="w-10 h-10 bg-surface-800 rounded-lg flex items-center justify-center flex-shrink-0">
+      <Icon className="w-5 h-5 text-primary-400" />
     </div>
-    <div>
-      <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 tabular-nums">{value}</p>
-      <p className="text-xs text-gray-500 font-medium">{label}</p>
+    <div className="min-w-0">
+      <p className="text-lg font-bold text-surface-100 tabular-nums leading-none mb-0.5">{value}</p>
+      <p className="text-xs text-surface-500 font-medium truncate">{label}</p>
     </div>
   </div>
 );
 
 const SkeletonCard = () => (
-  <div className="bg-white dark:bg-dark-900 border border-gray-100 dark:border-dark-800 rounded-2xl p-6 flex flex-col gap-4 opacity-0 animate-fade-in" style={{ animationDelay: "200ms", animationFillMode: "forwards" }}>
-    <div className="h-6 bg-gray-200 dark:bg-dark-700 rounded w-3/4 animate-pulse" />
-    <div className="space-y-3">
-      <div className="h-4 bg-gray-100 dark:bg-dark-800 rounded animate-pulse" />
-      <div className="h-4 bg-gray-100 dark:bg-dark-800 rounded w-5/6 animate-pulse" />
-      <div className="h-4 bg-gray-100 dark:bg-dark-800 rounded w-4/6 animate-pulse" />
+  <div className="bg-surface-900 border border-surface-800/60 rounded-xl p-5 flex flex-col gap-3 animate-fade-in-fast">
+    <div className="h-5 bg-surface-800 rounded w-3/4 animate-pulse" />
+    <div className="space-y-2">
+      <div className="h-3 bg-surface-800/50 rounded animate-pulse" />
+      <div className="h-3 bg-surface-800/50 rounded w-5/6 animate-pulse" />
     </div>
-    <div className="flex justify-between pt-4 border-t border-gray-100 dark:border-dark-800 mt-auto">
-      <div className="h-6 w-24 bg-gray-200 dark:bg-dark-700 rounded-full animate-pulse" />
-      <div className="h-4 w-16 bg-gray-100 dark:bg-dark-800 rounded animate-pulse" />
+    <div className="flex gap-2 pt-3 border-t border-surface-800/60 mt-auto">
+      <div className="h-5 w-16 bg-surface-800 rounded animate-pulse" />
+      <div className="h-5 w-12 bg-surface-800 rounded animate-pulse" />
     </div>
   </div>
 );
@@ -139,110 +138,94 @@ const Dashboard = () => {
   const displayedNotes = isTrashTab ? trashNotes : regularNotes;
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto p-4 md:p-6">
       {showWelcome && notes.length === 0 && !isLoading && (
-        <div className="mb-8 p-5 sm:p-8 bg-gradient-to-br from-primary-600 via-purple-600 to-pink-600 rounded-3xl text-white relative overflow-hidden animate-scale-in">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-          <div className="relative z-10 flex items-start justify-between">
+        <div className="mb-6 p-6 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl text-white relative overflow-hidden animate-scale-in">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_60%)]" />
+          <div className="relative z-10 flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-5 h-5 text-yellow-300 flex-shrink-0" />
-                <span className="text-sm font-semibold text-white/80">¡Bienvenido!</span>
+              <div className="flex items-center gap-2 mb-1">
+                <Sparkles className="w-4 h-4 text-primary-200" />
+                <span className="text-xs font-semibold text-primary-200">¡Bienvenido!</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold mb-2">Hola, {user?.name?.split(" ")[0]} 👋</h2>
-              <p className="text-white/80 text-sm sm:text-lg">Crea tu primera nota y empieza a organizar tus estudios.</p>
-              <div className="flex flex-col sm:flex-row gap-3 mt-6">
-                <button onClick={() => setShowModal(true)} className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-primary-600 font-bold rounded-xl hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-xl">
-                  <Zap className="w-5 h-5" />
-                  Crear primera nota
+              <h2 className="text-xl sm:text-2xl font-bold mb-1">Hola, {user?.name?.split(" ")[0]}</h2>
+              <p className="text-primary-200 text-sm">Crea tu primera nota y empieza a organizar tus estudios.</p>
+              <div className="flex gap-3 mt-4">
+                <button onClick={() => setShowModal(true)} className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-primary-700 font-semibold rounded-lg text-sm hover:bg-primary-50 transition-all shadow-lg">
+                  <Zap className="w-4 h-4" />
+                  Crear nota
                 </button>
-                <button onClick={() => navigate("/dashboard/explore")} className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-300 backdrop-blur-sm border border-white/10">
+                <button onClick={() => navigate("/dashboard/explore")} className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 text-white font-medium rounded-lg text-sm hover:bg-white/20 transition-all">
                   Explorar
                 </button>
               </div>
             </div>
-            <button onClick={() => setShowWelcome(false)} className="p-2 hover:bg-white/10 rounded-xl transition-all flex-shrink-0">
-              <X className="w-5 h-5" />
+            <button onClick={() => setShowWelcome(false)} className="p-1.5 hover:bg-white/10 rounded-lg transition-all flex-shrink-0">
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
       )}
 
       {(!isTrashTab || (isTrashTab && trashNotes.length === 0)) && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <StatCard icon={FileText} label="Total notas" value={loadNotesCount} gradient="from-primary-500 to-purple-600" delay={0} />
-          <StatCard icon={Star} label="Favoritos" value={totalFavorites} gradient="from-yellow-500 to-amber-600" delay={100} />
-          <StatCard icon={CheckSquare} label={`Tareas (${completedTasks}/${totalTasks})`} value={completedTasks} gradient="from-emerald-500 to-green-600" delay={200} />
-          <StatCard icon={TrendingUp} label="Categorías" value={categories?.length || 0} gradient="from-blue-500 to-cyan-600" delay={300} />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          <StatCard icon={FileText} label="Total notas" value={loadNotesCount} delay={0} />
+          <StatCard icon={Star} label="Favoritos" value={totalFavorites} delay={100} />
+          <StatCard icon={CheckSquare} label={`Tareas (${completedTasks}/${totalTasks})`} value={completedTasks} delay={200} />
+          <StatCard icon={TrendingUp} label="Categorías" value={categories?.length || 0} delay={300} />
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row sm:items-start gap-4 mb-6">
-        <div className="flex-1 animate-fade-in min-w-0">
-          <div className="flex items-center gap-3">
-            <h2 className="text-xl sm:text-2xl font-extrabold gradient-text truncate">{title}</h2>
+      <div className="flex flex-col sm:flex-row items-start gap-3 mb-6">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-surface-100 truncate">{title}</h1>
             {!isTrashTab && !isFavoritesTab && (
-              <span className="px-2.5 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-xs font-bold rounded-full flex-shrink-0">
-                {displayedNotes.length}
-              </span>
+              <span className="px-2 py-0.5 bg-surface-800 text-surface-400 text-xs font-medium rounded-md">{displayedNotes.length}</span>
             )}
           </div>
           {!isTrashTab && !isFavoritesTab && notes.length > 0 && (
-            <p className="text-sm text-gray-500 mt-0.5">
-              {pinnedNotes.length > 0 && `${pinnedNotes.length} fijadas · `}
-              {regularNotes.length} notas
+            <p className="text-xs text-surface-500 mt-0.5">
+              {pinnedNotes.length > 0 && `${pinnedNotes.length} fijadas · `}{regularNotes.length} notas
             </p>
           )}
-          {isTrashTab && <p className="text-sm text-gray-500 mt-0.5">{trashNotes.length} notas en papelera</p>}
-          {isFavoritesTab && <p className="text-sm text-gray-500 mt-0.5">{displayedNotes.length} notas favoritas</p>}
+          {isTrashTab && <p className="text-xs text-surface-500 mt-0.5">{trashNotes.length} notas en papelera</p>}
+          {isFavoritesTab && <p className="text-xs text-surface-500 mt-0.5">{displayedNotes.length} notas favoritas</p>}
         </div>
 
-        <div className="relative flex-1 sm:max-w-md animate-fade-in delay-100 group w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
-          <input
-            type="text"
-            value={search}
+        <div className="relative flex-1 sm:max-w-xs w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
+          <input type="text" value={search}
             onChange={(e) => { setSearch(e.target.value); localSearchNotes(e.target.value); }}
             placeholder={isTrashTab ? "Buscar en papelera..." : "Buscar notas..."}
-            className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-dark-850/50 border border-gray-200 dark:border-dark-700 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all hover:border-gray-300 dark:hover:border-dark-600 group-focus-within:shadow-lg group-focus-within:shadow-primary-500/5"
+            className="w-full pl-10 pr-3 py-2 bg-surface-850 border border-surface-700 rounded-lg text-sm text-surface-200 placeholder-surface-500 focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20 transition-all"
           />
         </div>
 
-        <div className="flex gap-2 sm:block">
+        <div className="flex gap-2 w-full sm:w-auto">
           {!isTrashTab && (
-            <Button icon={Plus} onClick={() => setShowModal(true)} className="animate-fade-in delay-200 bg-gradient-to-r from-primary-500 to-purple-600 hover:from-primary-600 hover:to-purple-700 text-white border-none shadow-lg shadow-primary-500/20 hover:shadow-xl hover:shadow-primary-500/30 transition-all hover:scale-105 w-full sm:w-auto">
-              Nueva nota
-            </Button>
+            <Button icon={Plus} onClick={() => setShowModal(true)} className="w-full sm:w-auto">Nueva nota</Button>
           )}
-
           {isTrashTab && (
-            <Button icon={RotateCcw} onClick={() => setSearchParams({})} className="btn-secondary animate-fade-in delay-200 w-full sm:w-auto">
-              Volver
-            </Button>
+            <Button variant="secondary" icon={RotateCcw} onClick={() => setSearchParams({})} className="w-full sm:w-auto">Volver</Button>
           )}
         </div>
       </div>
 
       {showSkeleton && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
         </div>
       )}
 
       {!showSkeleton && displayedNotes.length === 0 && !isTrashTab && (
-        <EmptyState
-          type={isFavoritesTab ? "favorites" : "notes"}
-          onAction={!isTrashTab ? () => setShowModal(true) : undefined}
-        />
+        <EmptyState type={isFavoritesTab ? "favorites" : "notes"} onAction={!isTrashTab ? () => setShowModal(true) : undefined} />
       )}
 
-      {!showSkeleton && displayedNotes.length === 0 && isTrashTab && (
-        <EmptyState type="trash" />
-      )}
+      {!showSkeleton && displayedNotes.length === 0 && isTrashTab && <EmptyState type="trash" />}
 
       {!showSkeleton && isTrashTab && trashNotes.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {trashNotes.map((note, i) => (
             <NoteCard key={note._id} note={note} index={i} onEdit={() => {}} onDelete={() => handlePermanentDelete(note._id)} onTogglePin={() => handleRestore(note._id)} />
           ))}
@@ -250,16 +233,13 @@ const Dashboard = () => {
       )}
 
       {!showSkeleton && !isTrashTab && pinnedNotes.length > 0 && (
-        <div className="mb-8 animate-fade-in">
-          <div className="flex items-center gap-2 mb-4 px-1">
-            <div className="w-1 h-6 rounded-full bg-gradient-to-b from-primary-500 to-purple-500" />
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
-              <Pin className="w-3.5 h-3.5 text-primary-500" />
-              Fijadas
-            </h3>
-            <span className="px-2 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-[10px] font-bold rounded-full">{pinnedNotes.length}</span>
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Pin className="w-3.5 h-3.5 text-primary-400" />
+            <span className="text-xs font-semibold text-surface-500 uppercase tracking-wider">Fijadas</span>
+            <span className="px-1.5 py-0.5 bg-surface-800 text-surface-400 text-2xs font-medium rounded">{pinnedNotes.length}</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {pinnedNotes.map((note, i) => (
               <NoteCard key={note._id} note={note} index={i} onEdit={() => { setEditingNote(note); setShowModal(true); }} onDelete={() => handleDelete(note._id)} onTogglePin={() => handleTogglePin(note._id)} onToggleFavorite={() => handleToggleFavorite(note._id)} />
             ))}
@@ -268,17 +248,15 @@ const Dashboard = () => {
       )}
 
       {!showSkeleton && !isTrashTab && regularNotes.length > 0 && (
-        <div className="animate-fade-in">
+        <div>
           {pinnedNotes.length > 0 && (
-            <div className="flex items-center gap-2 mb-4 px-1">
-              <div className="w-1 h-6 rounded-full bg-gradient-to-b from-gray-300 to-gray-400 dark:from-dark-600 dark:to-dark-500" />
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                Todas las notas
-              </h3>
-              <span className="px-2 py-0.5 bg-gray-100 dark:bg-dark-800 text-gray-500 dark:text-dark-400 text-[10px] font-bold rounded-full">{regularNotes.length}</span>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-3.5 h-0.5 rounded bg-surface-800" />
+              <span className="text-xs font-semibold text-surface-500 uppercase tracking-wider">Todas las notas</span>
+              <span className="px-1.5 py-0.5 bg-surface-800 text-surface-400 text-2xs font-medium rounded">{regularNotes.length}</span>
             </div>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {regularNotes.map((note, i) => (
               <NoteCard key={note._id} note={note} index={i} onEdit={() => { setEditingNote(note); setShowModal(true); }} onDelete={() => handleDelete(note._id)} onTogglePin={() => handleTogglePin(note._id)} onToggleFavorite={() => handleToggleFavorite(note._id)} />
             ))}

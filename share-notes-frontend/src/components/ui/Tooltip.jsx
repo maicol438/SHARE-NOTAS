@@ -9,17 +9,11 @@ const Tooltip = ({ children, text, position = "top" }) => {
     if (visible && wrapperRef.current) {
       const rect = wrapperRef.current.getBoundingClientRect();
       const threshold = 150;
-      if (rect.top < threshold && actualPosition === "top") {
-        setActualPosition("bottom");
-      } else if (rect.bottom > window.innerHeight - threshold && actualPosition === "bottom") {
-        setActualPosition("top");
-      } else if (rect.left < threshold && actualPosition === "left") {
-        setActualPosition("right");
-      } else if (rect.right > window.innerWidth - threshold && actualPosition === "right") {
-        setActualPosition("left");
-      } else {
-        setActualPosition(position);
-      }
+      if (rect.top < threshold && actualPosition === "top") setActualPosition("bottom");
+      else if (rect.bottom > window.innerHeight - threshold && actualPosition === "bottom") setActualPosition("top");
+      else if (rect.left < threshold && actualPosition === "left") setActualPosition("right");
+      else if (rect.right > window.innerWidth - threshold && actualPosition === "right") setActualPosition("left");
+      else setActualPosition(position);
     }
   }, [visible, position]);
 
@@ -31,17 +25,13 @@ const Tooltip = ({ children, text, position = "top" }) => {
   };
 
   return (
-    <div
-      ref={wrapperRef}
-      className="relative inline-flex"
+    <div ref={wrapperRef} className="relative inline-flex"
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
     >
       {children}
       {visible && (
-        <div
-          className={`absolute z-50 px-2.5 py-1.5 text-xs font-semibold text-white bg-gradient-to-r from-gray-800 to-gray-700 dark:from-gray-700 dark:to-gray-600 rounded-lg whitespace-nowrap pointer-events-none shadow-lg animate-fade-in ${positions[actualPosition]}`}
-        >
+        <div className={`absolute z-50 px-2.5 py-1.5 text-xs font-medium text-surface-200 bg-surface-800 border border-surface-700 rounded-lg whitespace-nowrap pointer-events-none shadow-tesla-lg animate-fade-in-fast ${positions[actualPosition]}`}>
           {text}
         </div>
       )}

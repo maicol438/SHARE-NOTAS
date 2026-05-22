@@ -31,13 +31,13 @@ export default function ResetPassword() {
 
   if (done) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary-50 via-gray-50 to-gray-50 dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
-        <div className="card p-8 max-w-md w-full text-center animate-scale-in">
-          <div className="w-16 h-16 mx-auto bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
-            <CheckCircle className="w-8 h-8 text-green-500" />
+      <div className="min-h-screen flex items-center justify-center p-4 bg-surface-950">
+        <div className="bg-surface-900 border border-surface-800/60 rounded-xl p-6 max-w-md w-full text-center animate-scale-in">
+          <div className="w-14 h-14 mx-auto bg-green-500/10 rounded-full flex items-center justify-center mb-4">
+            <CheckCircle className="w-7 h-7 text-green-400" />
           </div>
-          <h1 className="text-2xl font-bold gradient-text mb-2">Contraseña actualizada</h1>
-          <p className="text-gray-500 mb-6">Ahora puedes iniciar sesión con tu nueva contraseña</p>
+          <h1 className="text-lg font-bold text-surface-100 mb-2">Contraseña actualizada</h1>
+          <p className="text-surface-500 text-sm mb-6">Ahora puedes iniciar sesión con tu nueva contraseña</p>
           <Button onClick={() => navigate("/login")} className="w-full">Iniciar sesión</Button>
         </div>
       </div>
@@ -45,31 +45,31 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary-50 via-gray-50 to-gray-50 dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
-      <Link to="/login" className="absolute top-6 left-6 z-20 flex items-center gap-2 text-gray-500 hover:text-primary-600 transition-all group">
-        <div className="p-1.5 rounded-lg group-hover:bg-gray-100 dark:group-hover:bg-dark-800 transition-colors">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-surface-950">
+      <Link to="/login" className="absolute top-6 left-6 z-20 flex items-center gap-2 text-surface-400 hover:text-surface-200 transition-all group">
+        <div className="p-1.5 rounded-lg group-hover:bg-surface-800 transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </div>
         <span className="font-medium">Volver</span>
       </Link>
-      <div className="card p-8 max-w-md w-full animate-slide-up">
-        <div className="flex flex-col items-center gap-3 mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/30">
-            <BookOpen className="w-8 h-8 text-white" />
+      <div className="bg-surface-900 border border-surface-800/60 rounded-xl p-6 max-w-md w-full animate-slide-up">
+        <div className="flex flex-col items-center gap-3 mb-6">
+          <div className="w-14 h-14 bg-primary-500 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/20">
+            <BookOpen className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-2xl font-bold gradient-text">Nueva contraseña</h1>
-          <p className="text-gray-500">Ingresa tu nueva contraseña</p>
+          <h1 className="text-xl font-bold text-surface-100">Nueva contraseña</h1>
+          <p className="text-surface-500 text-sm">Ingresa tu nueva contraseña</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Nueva contraseña" className="input-field-floating pl-10" minLength={6} required />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500 z-10" />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Nueva contraseña" className="input-field pl-9" minLength={6} required />
           </div>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
-            <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Confirmar contraseña" className="input-field-floating pl-10" minLength={6} required />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500 z-10" />
+            <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Confirmar contraseña" className="input-field pl-9" minLength={6} required />
           </div>
-          <Button type="submit" isLoading={loading} className="w-full py-3">Restablecer contraseña</Button>
+          <Button type="submit" isLoading={loading} className="w-full">Restablecer contraseña</Button>
         </form>
       </div>
     </div>

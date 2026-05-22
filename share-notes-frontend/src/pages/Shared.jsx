@@ -50,18 +50,18 @@ export default function Shared() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto animate-fade-in">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold gradient-text mb-1">👥 Compartido conmigo</h1>
-        <p className="text-gray-500">{notes.length} notas compartidas</p>
+        <h1 className="text-2xl font-bold text-surface-100 mb-1">Compartido conmigo</h1>
+        <p className="text-surface-500">{notes.length} notas compartidas</p>
       </div>
 
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-white dark:bg-gray-900 border rounded-2xl p-6 animate-pulse">
-              <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-3" />
-              <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-1/2" />
+            <div key={i} className="bg-surface-900 border border-surface-800/60 rounded-xl p-6">
+              <div className="h-5 bg-surface-800 animate-pulse rounded w-3/4 mb-3" />
+              <div className="h-4 bg-surface-800/50 animate-pulse rounded w-1/2" />
             </div>
           ))}
         </div>
@@ -74,24 +74,24 @@ export default function Shared() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {notes.map((note) => (
-            <div key={note._id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5">
+            <div key={note._id} className="bg-surface-900 border border-surface-800/60 rounded-xl p-5 hover:border-surface-700/60 transition-all">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h3 className="font-semibold">{note.title}</h3>
-                  <p className="text-xs text-gray-500">Por {note.user?.name}</p>
+                  <h3 className="font-semibold text-surface-100">{note.title}</h3>
+                  <p className="text-xs text-surface-500">Por {note.user?.name}</p>
                 </div>
                 <button
                   onClick={() => { setSelectedNote(note); setShowShareModal(true); }}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl"
+                  className="p-2 hover:bg-surface-800 rounded-xl"
                 >
-                  <Share2 className="w-4 h-4 text-gray-400" />
+                  <Share2 className="w-4 h-4 text-surface-400" />
                 </button>
               </div>
               {note.description && (
-                <p className="text-sm text-gray-500 line-clamp-2">{note.description}</p>
+                <p className="text-sm text-surface-400 line-clamp-2">{note.description}</p>
               )}
               <div className="mt-3 flex items-center gap-2">
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-surface-500">
                   {new Date(note.updatedAt).toLocaleDateString()}
                 </span>
               </div>
@@ -103,7 +103,7 @@ export default function Shared() {
       <Modal isOpen={showShareModal} onClose={() => setShowShareModal(false)} title="Compartir nota">
         <form onSubmit={handleShare} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Email del usuario</label>
+            <label className="block text-sm font-medium text-surface-100 mb-1">Email del usuario</label>
             <input
               type="email"
               value={shareEmail}
@@ -114,7 +114,7 @@ export default function Shared() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Permiso</label>
+            <label className="block text-sm font-medium text-surface-100 mb-1">Permiso</label>
             <select
               value={sharePermission}
               onChange={(e) => setSharePermission(e.target.value)}

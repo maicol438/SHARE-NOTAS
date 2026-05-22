@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { BookOpen, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import useAuthStore from "../stores/useAuthStore.js";
 
 const ProtectedRoute = ({ children }) => {
@@ -7,24 +7,16 @@ const ProtectedRoute = ({ children }) => {
 
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-primary-500/30 animate-pulse-glow">
-            <BookOpen className="w-8 h-8 text-white" />
-          </div>
-          <div className="flex items-center justify-center gap-2 text-gray-500">
-            <Loader2 className="w-5 h-5 animate-spin" />
-            <span className="font-medium">Verificando sesión...</span>
-          </div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-surface-950">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-surface-700 border-t-primary-500 rounded-full animate-spin" />
+          <span className="text-sm text-surface-500 animate-pulse-subtle">Verificando sesión...</span>
         </div>
       </div>
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
   return children;
 };
 

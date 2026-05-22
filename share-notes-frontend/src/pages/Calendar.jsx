@@ -29,47 +29,47 @@ export default function CalendarPage() {
   const monthName = currentDate.toLocaleDateString("es", { month: "long", year: "numeric" });
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold gradient-text mb-1">📅 Calendario</h1>
-          <p className="text-gray-500">Vista mensual</p>
+          <h1 className="text-2xl font-bold text-surface-100 mb-1">Calendario</h1>
+          <p className="text-surface-500">Vista mensual</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setCurrentDate(new Date(year, month - 1, 1))} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl">
+          <button onClick={() => setCurrentDate(new Date(year, month - 1, 1))} className="p-2 hover:bg-surface-800 rounded-xl text-surface-100">
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <span className="font-semibold capitalize">{monthName}</span>
-          <button onClick={() => setCurrentDate(new Date(year, month + 1, 1))} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl">
+          <span className="font-semibold capitalize text-surface-100">{monthName}</span>
+          <button onClick={() => setCurrentDate(new Date(year, month + 1, 1))} className="p-2 hover:bg-surface-800 rounded-xl text-surface-100">
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden">
-        <div className="grid grid-cols-7 bg-gray-50 dark:bg-gray-800">
+      <div className="bg-surface-900 border border-surface-800/60 rounded-xl overflow-hidden">
+        <div className="grid grid-cols-7 bg-surface-800/50">
           {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((d) => (
-            <div key={d} className="p-3 text-center text-sm font-semibold text-gray-500">{d}</div>
+            <div key={d} className="p-3 text-center text-sm font-semibold text-surface-400">{d}</div>
           ))}
         </div>
         <div className="grid grid-cols-7">
           {days.map((day, i) => {
             const dayTasks = getTasksForDay(day);
             return (
-              <div key={i} className={`min-h-[100px] p-2 border-t border-r border-gray-100 dark:border-gray-800 ${!day ? "bg-gray-50 dark:bg-gray-800/50" : ""}`}>
+              <div key={i} className={`min-h-[100px] p-2 border-t border-r border-surface-800/60 ${!day ? "bg-surface-800/30" : "bg-surface-900"}`}>
                 {day && (
                   <>
-                    <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-sm ${dayTasks.length > 0 ? "bg-primary-500 text-white" : ""}`}>
+                    <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-sm text-surface-100 ${dayTasks.length > 0 ? "bg-primary-500 text-white" : "hover:bg-surface-800"}`}>
                       {day}
                     </span>
                     <div className="mt-1 space-y-1">
                       {dayTasks.slice(0, 2).map((task) => (
-                        <div key={task._id} className="text-xs p-1 bg-primary-50 dark:bg-primary-900/30 rounded truncate">
+                        <div key={task._id} className="text-xs p-1 bg-primary-500/10 text-primary-400 rounded truncate">
                           {task.title}
                         </div>
                       ))}
                       {dayTasks.length > 2 && (
-                        <div className="text-xs text-gray-500">+{dayTasks.length - 2} más</div>
+                        <div className="text-xs text-surface-500">+{dayTasks.length - 2} más</div>
                       )}
                     </div>
                   </>

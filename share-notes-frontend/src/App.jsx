@@ -25,13 +25,10 @@ import DashboardLayout from "./components/layout/DashboardLayout.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 
 const LoadingScreen = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+  <div className="min-h-screen flex items-center justify-center bg-surface-950">
     <div className="flex flex-col items-center gap-4">
-      <div className="relative w-16 h-16">
-        <div className="absolute inset-0 border-4 border-primary-500/30 rounded-full"></div>
-        <div className="absolute inset-0 border-4 border-transparent border-t-primary-500 rounded-full animate-spin"></div>
-      </div>
-      <p className="text-gray-500 animate-pulse font-medium">Cargando...</p>
+      <div className="w-8 h-8 border-2 border-surface-700 border-t-primary-500 rounded-full animate-spin" />
+      <p className="text-surface-500 text-sm animate-pulse-subtle">Cargando...</p>
     </div>
   </div>
 );
@@ -60,31 +57,14 @@ const App = () => {
       <Toaster
         position="top-right"
         reverseOrder={false}
-        gutter={8}
-        containerStyle={{ top: 16, right: 16 }}
+        gutter={10}
+        containerClassName="!top-4 !right-4"
         toastOptions={{
-          duration: 2000,
+          duration: 3000,
           style: {
-            borderRadius: "10px",
-            padding: "10px 14px",
-            fontSize: "13px",
-            fontWeight: 600,
-            fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-          },
-          success: {
-            iconTheme: { primary: "#6366f1", secondary: "#fff" },
-            style: {
-              background: "linear-gradient(135deg, #4f46e5, #6366f1)",
-              color: "#fff",
-            },
-          },
-          error: {
-            iconTheme: { primary: "#f87171", secondary: "#fff" },
-            style: {
-              background: "linear-gradient(135deg, #b91c1c, #dc2626)",
-              color: "#fff",
-            },
+            background: "transparent",
+            boxShadow: "none",
+            padding: 0,
           },
         }}
       />

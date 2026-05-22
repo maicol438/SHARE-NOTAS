@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Maximize2, Copy, X, Pin, Trash2, Pencil, Star, Download, FileText, Check, Sparkles, Clock, Share2, Mail, Loader2 } from "lucide-react";
+import { Maximize2, Copy, X, Pin, Trash2, Pencil, Star, Download, FileText, Check, Sparkles, Clock, Share2, Mail, Loader2, ExternalLink } from "lucide-react";
 import Badge from "../ui/Badge.jsx";
 import Tooltip from "../ui/Tooltip.jsx";
 import { exportToPDF } from "../../utils/exportPDF.js";
@@ -137,86 +137,83 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
 
   if (expanded) {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col animate-fade-in" onClick={() => setExpanded(false)}>
-        <div className="absolute inset-0 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm" />
-        <div className="relative flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl" onClick={e => e.stopPropagation()}>
+      <div className="fixed inset-0 z-50 flex flex-col bg-surface-950/95 backdrop-blur-sm" onClick={() => setExpanded(false)}>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-surface-800/60 bg-surface-900/80 backdrop-blur-xl" onClick={e => e.stopPropagation()}>
           <div className="flex items-center gap-3 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white truncate">{note.title}</h2>
-            {note.isPinned && <Pin className="w-5 h-5 text-primary-500 fill-primary-500 flex-shrink-0" />}
-            {note.isFavorite && <Star className="w-5 h-5 text-yellow-500 fill-yellow-500 flex-shrink-0" />}
+            <h2 className="text-base font-semibold text-surface-100 truncate">{note.title}</h2>
+            {note.isPinned && <Pin className="w-4 h-4 text-primary-400 fill-primary-400 flex-shrink-0" />}
+            {note.isFavorite && <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 flex-shrink-0" />}
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
-            <button onClick={handleCopy} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl flex items-center gap-2 transition-all hover:scale-105 text-sm font-medium text-gray-700 dark:text-gray-300">
-              {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+            <button onClick={handleCopy} className="px-3 py-1.5 bg-surface-800 hover:bg-surface-700 rounded-lg flex items-center gap-1.5 transition-all text-xs font-medium text-surface-300">
+              {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
               {copied ? "Copiado!" : "Copiar"}
             </button>
             {!external && (
               <>
-                <button onClick={handleExportDocx} disabled={exportingDocx} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl flex items-center gap-2 transition-all hover:scale-105 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
-                  {exportingDocx ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                  {exportingDocx ? "Exportando..." : "Word"}
+                <button onClick={handleExportDocx} disabled={exportingDocx} className="px-3 py-1.5 bg-surface-800 hover:bg-surface-700 rounded-lg flex items-center gap-1.5 transition-all text-xs font-medium text-surface-300 disabled:opacity-40">
+                  {exportingDocx ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                  Word
                 </button>
-                <button onClick={handleExportGoogleDoc} disabled={exportingGdoc} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl flex items-center gap-2 transition-all hover:scale-105 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
-                  {exportingGdoc ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
-                  {exportingGdoc ? "Exportando..." : "Google Doc"}
+                <button onClick={handleExportGoogleDoc} disabled={exportingGdoc} className="px-3 py-1.5 bg-surface-800 hover:bg-surface-700 rounded-lg flex items-center gap-1.5 transition-all text-xs font-medium text-surface-300 disabled:opacity-40">
+                  {exportingGdoc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
+                  Google Doc
                 </button>
-                <button onClick={() => setShowShareModal(true)} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-xl flex items-center gap-2 transition-all hover:scale-105 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-500">
-                  <Share2 className="w-4 h-4" /> Compartir
+                <button onClick={() => setShowShareModal(true)} className="px-3 py-1.5 bg-surface-800 hover:bg-surface-700 rounded-lg flex items-center gap-1.5 transition-all text-xs font-medium text-surface-300">
+                  <Share2 className="w-3.5 h-3.5" /> Compartir
                 </button>
               </>
             )}
-            <button onClick={() => exportToPDF(note)} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl flex items-center gap-2 transition-all hover:scale-105 text-sm font-medium text-gray-700 dark:text-gray-300">
-              <FileText className="w-4 h-4" /> PDF
+            <button onClick={() => exportToPDF(note)} className="px-3 py-1.5 bg-surface-800 hover:bg-surface-700 rounded-lg flex items-center gap-1.5 transition-all text-xs font-medium text-surface-300">
+              <FileText className="w-3.5 h-3.5" /> PDF
             </button>
-            <button onClick={() => setExpanded(false)} className="px-4 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl flex items-center gap-2 transition-all hover:scale-105 text-sm font-medium text-gray-500 hover:text-red-500">
-              <X className="w-5 h-5" />
-              Cerrar
+            <button onClick={() => setExpanded(false)} className="px-3 py-1.5 bg-surface-800 hover:bg-red-500/10 rounded-lg flex items-center gap-1.5 transition-all text-xs font-medium text-surface-400 hover:text-red-400">
+              <X className="w-3.5 h-3.5" /> Cerrar
             </button>
           </div>
         </div>
-        <div className="relative flex-1 overflow-y-auto p-8 bg-gradient-to-br from-gray-50/50 to-purple-50/30 dark:from-gray-950/50 dark:to-purple-950/10" onClick={e => e.stopPropagation()}>
-          <div className="max-w-3xl mx-auto">
+        <div className="relative flex-1 overflow-y-auto" onClick={e => e.stopPropagation()}>
+          <div className="max-w-3xl mx-auto p-6 md:p-10">
             {note.category && (
-              <Badge label={note.category.name} color={note.category.color} className="mb-6 animate-slide-up" />
+              <Badge label={note.category.name} color={note.category.color} />
             )}
-            <div className="prose dark:prose-invert max-w-none whitespace-pre-wrap text-lg leading-relaxed animate-fade-in text-gray-700 dark:text-gray-300">
+            <div className="mt-6 whitespace-pre-wrap text-sm leading-relaxed text-surface-200 font-light">
               {note.content}
             </div>
             {note.description && (
-              <div className="mt-8 p-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 animate-slide-up delay-100">
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkles className="w-4 h-4 text-indigo-500" />
-                  <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Resumen</span>
+              <div className="mt-8 p-5 bg-surface-900 rounded-xl border border-surface-800">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className="w-4 h-4 text-primary-400" />
+                  <span className="text-xs font-semibold text-surface-500">Resumen</span>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400">{note.description}</p>
+                <p className="text-sm text-surface-400">{note.description}</p>
               </div>
             )}
           </div>
         </div>
 
         {showShareModal && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 animate-fade-in" onClick={() => setShowShareModal(false)}>
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-            <div className="relative bg-white dark:bg-dark-900 rounded-2xl p-6 max-w-md w-full shadow-2xl animate-scale-in border border-gray-100 dark:border-dark-800" onClick={e => e.stopPropagation()}>
-              <h3 className="text-lg font-bold mb-1">Compartir nota</h3>
-              <p className="text-sm text-gray-500 mb-5">Comparte "{note.title}" con otro usuario</p>
-              <form onSubmit={handleShare} className="space-y-4">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowShareModal(false)}>
+            <div className="bg-surface-900 border border-surface-700 rounded-xl p-5 max-w-md w-full shadow-tesla-lg animate-scale-in" onClick={e => e.stopPropagation()}>
+              <h3 className="font-semibold text-surface-100 mb-1">Compartir nota</h3>
+              <p className="text-xs text-surface-500 mb-4">Comparte &quot;{note.title}&quot; con otro usuario</p>
+              <form onSubmit={handleShare} className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email del usuario</label>
+                  <label className="block text-xs font-medium text-surface-400 mb-1">Email del usuario</label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input type="email" value={shareEmail} onChange={(e) => setShareEmail(e.target.value)} placeholder="email@ejemplo.com" className="input-field pl-10" required />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
+                    <input type="email" value={shareEmail} onChange={(e) => setShareEmail(e.target.value)} placeholder="email@ejemplo.com" className="input-field pl-9" required />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Permiso</label>
+                  <label className="block text-xs font-medium text-surface-400 mb-1">Permiso</label>
                   <select value={sharePermission} onChange={(e) => setSharePermission(e.target.value)} className="input-field">
                     <option value="read">Solo lectura</option>
                     <option value="edit">Puede editar</option>
                   </select>
                 </div>
-                <div className="flex gap-3 pt-2">
-                  <button type="button" onClick={() => setShowShareModal(false)} className="flex-1 btn-secondary">Cancelar</button>
+                <div className="flex gap-3 pt-1">
+                  <button type="button" onClick={() => setShowShareModal(false)} className="btn-secondary flex-1">Cancelar</button>
                   <Button type="submit" isLoading={sharing} className="flex-1">Compartir</Button>
                 </div>
               </form>
@@ -228,58 +225,58 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
   }
 
   return (
-    <div 
-      className={`group bg-white dark:bg-dark-900 border border-gray-100 dark:border-dark-800 rounded-2xl flex flex-col gap-4 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-primary-500/10 dark:hover:shadow-primary-500/5 ${note.isPinned ? "ring-2 ring-primary-500/30" : ""} ${note.isFavorite ? "ring-2 ring-yellow-400/30" : ""} animate-scale-in`}
-      style={{ animationDelay: `${index * 50}ms` }}
+    <div
+      className={`group bg-surface-900 border border-surface-800/60 rounded-xl flex flex-col gap-3 transition-all duration-300 hover:border-surface-700/80 hover:bg-surface-850 hover:shadow-tesla-card-hover ${note.isPinned ? "ring-1 ring-primary-500/30 border-primary-500/20" : ""} ${note.isFavorite ? "ring-1 ring-yellow-500/20" : ""} animate-fade-in-fast`}
+      style={{ animationDelay: `${index * 30}ms` }}
     >
-      <div className="px-6 pt-6 pb-6 flex flex-col gap-4">
+      <div className="px-4 pt-4 pb-4 flex flex-col gap-3">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          {note.isPinned && <Pin className="w-4 h-4 text-primary-500 fill-primary-500 flex-shrink-0" />}
-          {note.isFavorite && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 flex-shrink-0" />}
-          <h3 className="font-bold text-lg leading-snug text-gray-900 dark:text-white line-clamp-2 flex-1">{note.title}</h3>
+          {note.isPinned && <Pin className="w-3.5 h-3.5 text-primary-400 fill-primary-400 flex-shrink-0" />}
+          {note.isFavorite && <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 flex-shrink-0" />}
+          <h3 className="font-semibold text-sm leading-snug text-surface-100 line-clamp-2 flex-1">{note.title}</h3>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
           <Tooltip text="Expandir">
-            <button onClick={() => setExpanded(true)} className="p-2 rounded-xl text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all hover:scale-110">
-              <Maximize2 className="w-4 h-4" />
+            <button onClick={() => setExpanded(true)} className="p-1.5 rounded-md text-surface-500 hover:text-surface-200 hover:bg-surface-800 transition-all">
+              <ExternalLink className="w-3.5 h-3.5" />
             </button>
           </Tooltip>
           {!external && (
             <>
-              <Tooltip text={exportingDocx ? "Exportando..." : "Descargar Word"}>
-                <button onClick={(e) => { e.stopPropagation(); handleExportDocx(); }} disabled={exportingDocx} className="p-2 rounded-xl text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all hover:scale-110 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100">
-                  {exportingDocx ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              <Tooltip text={exportingDocx ? "Exportando..." : "Word"}>
+                <button onClick={(e) => { e.stopPropagation(); handleExportDocx(); }} disabled={exportingDocx} className="p-1.5 rounded-md text-surface-500 hover:text-surface-200 hover:bg-surface-800 transition-all disabled:opacity-30">
+                  {exportingDocx ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
                 </button>
               </Tooltip>
               <Tooltip text={exportingGdoc ? "Exportando..." : "Google Doc"}>
-                <button onClick={(e) => { e.stopPropagation(); handleExportGoogleDoc(); }} disabled={exportingGdoc} className="p-2 rounded-xl text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all hover:scale-110 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100">
-                  {exportingGdoc ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+                <button onClick={(e) => { e.stopPropagation(); handleExportGoogleDoc(); }} disabled={exportingGdoc} className="p-1.5 rounded-md text-surface-500 hover:text-surface-200 hover:bg-surface-800 transition-all disabled:opacity-30">
+                  {exportingGdoc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
                 </button>
               </Tooltip>
               <Tooltip text="Compartir">
-                <button onClick={(e) => { e.stopPropagation(); setShowShareModal(true); }} className="p-2 rounded-xl text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all hover:scale-110">
-                  <Share2 className="w-4 h-4" />
+                <button onClick={(e) => { e.stopPropagation(); setShowShareModal(true); }} className="p-1.5 rounded-md text-surface-500 hover:text-surface-200 hover:bg-surface-800 transition-all">
+                  <Share2 className="w-3.5 h-3.5" />
                 </button>
               </Tooltip>
               <Tooltip text={note.isPinned ? "Desfijar" : "Fijar"}>
-                <button onClick={() => onTogglePin(note._id)} className={`p-2 rounded-xl transition-all hover:scale-110 ${note.isPinned ? "text-primary-500 bg-primary-50 dark:bg-primary-900/30" : "text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20"}`}>
-                  <Pin className="w-4 h-4" fill={note.isPinned ? "currentColor" : "none"} />
+                <button onClick={() => onTogglePin(note._id)} className={`p-1.5 rounded-md transition-all ${note.isPinned ? "text-primary-400" : "text-surface-500 hover:text-surface-200 hover:bg-surface-800"}`}>
+                  <Pin className="w-3.5 h-3.5" fill={note.isPinned ? "currentColor" : "none"} />
                 </button>
               </Tooltip>
               <Tooltip text={note.isFavorite ? "Quitar favorito" : "Favorito"}>
-                <button onClick={() => onToggleFavorite && onToggleFavorite(note._id)} className={`p-2 rounded-xl transition-all hover:scale-110 ${note.isFavorite ? "text-yellow-500 bg-yellow-50 dark:bg-yellow-500/20" : "text-gray-400 hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20"}`}>
-                  <Star className="w-4 h-4" fill={note.isFavorite ? "currentColor" : "none"} />
+                <button onClick={() => onToggleFavorite && onToggleFavorite(note._id)} className={`p-1.5 rounded-md transition-all ${note.isFavorite ? "text-yellow-400" : "text-surface-500 hover:text-surface-200 hover:bg-surface-800"}`}>
+                  <Star className="w-3.5 h-3.5" fill={note.isFavorite ? "currentColor" : "none"} />
                 </button>
               </Tooltip>
               <Tooltip text="Editar">
-                <button onClick={() => onEdit(note)} className="p-2 rounded-xl text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all hover:scale-110">
-                  <Pencil className="w-4 h-4" />
+                <button onClick={() => onEdit(note)} className="p-1.5 rounded-md text-surface-500 hover:text-surface-200 hover:bg-surface-800 transition-all">
+                  <Pencil className="w-3.5 h-3.5" />
                 </button>
               </Tooltip>
               <Tooltip text="Eliminar">
-                <button onClick={() => onDelete(note._id)} className="p-2 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all hover:scale-110">
-                  <Trash2 className="w-4 h-4" />
+                <button onClick={() => onDelete(note._id)} className="p-1.5 rounded-md text-surface-500 hover:text-red-400 hover:bg-red-500/10 transition-all">
+                  <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </Tooltip>
             </>
@@ -287,18 +284,18 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
           {external && (
             <>
               <Tooltip text="Favorito">
-                <button onClick={() => onToggleFavorite && onToggleFavorite(note._id)} className={`p-2 rounded-xl transition-all hover:scale-110 ${note.isFavorite ? "text-yellow-500 bg-yellow-50" : "text-gray-400 hover:text-yellow-500 hover:bg-yellow-50"}`}>
-                  <Star className="w-4 h-4" fill={note.isFavorite ? "currentColor" : "none"} />
+                <button onClick={() => onToggleFavorite && onToggleFavorite(note._id)} className={`p-1.5 rounded-md transition-all ${note.isFavorite ? "text-yellow-400" : "text-surface-500 hover:text-surface-200 hover:bg-surface-800"}`}>
+                  <Star className="w-3.5 h-3.5" fill={note.isFavorite ? "currentColor" : "none"} />
                 </button>
               </Tooltip>
               <Tooltip text="Descargar">
-                <button onClick={() => onDownload && onDownload(note._id)} className="p-2 rounded-xl text-gray-400 hover:text-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all hover:scale-110">
-                  <Download className="w-4 h-4" />
+                <button onClick={() => onDownload && onDownload(note._id)} className="p-1.5 rounded-md text-surface-500 hover:text-surface-200 hover:bg-surface-800 transition-all">
+                  <Download className="w-3.5 h-3.5" />
                 </button>
               </Tooltip>
               <Tooltip text="PDF">
-                <button onClick={() => exportToPDF(note)} className="p-2 rounded-xl text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all hover:scale-110">
-                  <FileText className="w-4 h-4" />
+                <button onClick={() => exportToPDF(note)} className="p-1.5 rounded-md text-surface-500 hover:text-surface-200 hover:bg-surface-800 transition-all">
+                  <FileText className="w-3.5 h-3.5" />
                 </button>
               </Tooltip>
             </>
@@ -307,20 +304,20 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
       </div>
 
       {note.description && (
-        <p className="text-sm text-gray-500 dark:text-dark-400 line-clamp-2 italic">{note.description}</p>
+        <p className="text-xs text-surface-500 line-clamp-2 leading-relaxed">{note.description}</p>
       )}
 
-      <p className="text-sm text-gray-500 dark:text-dark-400 line-clamp-3 leading-relaxed flex-1">{note.content}</p>
+      <p className="text-xs text-surface-400 line-clamp-3 leading-relaxed flex-1">{note.content}</p>
 
-      <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100 dark:border-dark-800">
+      <div className="flex items-center justify-between mt-auto pt-3 border-t border-surface-800/60">
         <div className="flex items-center gap-2">
           {note.category && note.category.name && <Badge label={note.category.name} color={note.category.color} />}
         </div>
-        <div className="flex items-center gap-3 text-sm text-gray-400">
+        <div className="flex items-center gap-2 text-xs text-surface-500">
           {external && (
             <>
               <div className="flex items-center gap-1">{renderStars()}</div>
-              <div className="flex items-center gap-1"><Download className="w-3 h-3" />{note.downloads}</div>
+              <span className="flex items-center gap-1"><Download className="w-3 h-3" />{note.downloads}</span>
             </>
           )}
           <span className="flex items-center gap-1" title={`Actualizado: ${date}`}>
@@ -331,41 +328,40 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
       </div>
 
       {external && showAuthor && note.user && (
-        <div className="flex items-center gap-2 pt-4 border-t border-gray-100 dark:border-dark-800">
+        <div className="flex items-center gap-2 pt-3 border-t border-surface-800/60">
           {note.user.avatar ? (
-            <img src={note.user.avatar} alt={note.user.name} referrerPolicy="no-referrer" className="w-6 h-6 rounded-full" />
+            <img src={note.user.avatar} alt={note.user.name} referrerPolicy="no-referrer" className="w-5 h-5 rounded-full" />
           ) : (
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-xs font-medium text-white">
+            <div className="w-5 h-5 rounded-full bg-surface-800 flex items-center justify-center text-2xs font-medium text-surface-400">
               {note.user.name?.charAt(0)}
             </div>
           )}
-          <span className="text-xs text-gray-500 dark:text-dark-400">Por {note.user.name}</span>
+          <span className="text-xs text-surface-500">Por {note.user.name}</span>
         </div>
       )}
 
       {showShareModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 animate-fade-in" onClick={() => setShowShareModal(false)}>
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-          <div className="relative bg-white dark:bg-dark-900 rounded-2xl p-6 max-w-md w-full shadow-2xl animate-scale-in border border-gray-100 dark:border-dark-800" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold mb-1">Compartir nota</h3>
-            <p className="text-sm text-gray-500 mb-5">Comparte "{note.title}" con otro usuario</p>
-            <form onSubmit={handleShare} className="space-y-4">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowShareModal(false)}>
+          <div className="bg-surface-900 border border-surface-700 rounded-xl p-5 max-w-md w-full shadow-tesla-lg animate-scale-in" onClick={e => e.stopPropagation()}>
+            <h3 className="font-semibold text-surface-100 mb-1">Compartir nota</h3>
+            <p className="text-xs text-surface-500 mb-4">Comparte &quot;{note.title}&quot; con otro usuario</p>
+            <form onSubmit={handleShare} className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email del usuario</label>
+                <label className="block text-xs font-medium text-surface-400 mb-1">Email del usuario</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input type="email" value={shareEmail} onChange={(e) => setShareEmail(e.target.value)} placeholder="email@ejemplo.com" className="input-field pl-10" required />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
+                  <input type="email" value={shareEmail} onChange={(e) => setShareEmail(e.target.value)} placeholder="email@ejemplo.com" className="input-field pl-9" required />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Permiso</label>
+                <label className="block text-xs font-medium text-surface-400 mb-1">Permiso</label>
                 <select value={sharePermission} onChange={(e) => setSharePermission(e.target.value)} className="input-field">
                   <option value="read">Solo lectura</option>
                   <option value="edit">Puede editar</option>
                 </select>
               </div>
-              <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowShareModal(false)} className="flex-1 btn-secondary">Cancelar</button>
+              <div className="flex gap-3 pt-1">
+                <button type="button" onClick={() => setShowShareModal(false)} className="btn-secondary flex-1">Cancelar</button>
                 <Button type="submit" isLoading={sharing} className="flex-1">Compartir</Button>
               </div>
             </form>

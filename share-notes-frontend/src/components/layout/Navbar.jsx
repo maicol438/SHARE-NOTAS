@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { Moon, Sun, LogOut, BookOpen, Menu, User, ChevronDown, Settings, AlertTriangle } from "lucide-react";
+import { Moon, Sun, LogOut, Menu, User, ChevronDown, Settings, StickyNote } from "lucide-react";
 import { useDarkMode } from "../../hooks/useDarkMode.js";
 import useAuthStore from "../../stores/useAuthStore.js";
-import Tooltip from "../ui/Tooltip.jsx";
 import { showToast } from "../../utils/toast.jsx";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -16,9 +15,7 @@ const Navbar = ({ onMenuToggle }) => {
 
   useEffect(() => {
     const handleClick = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setShowUserMenu(false);
-      }
+      if (menuRef.current && !menuRef.current.contains(e.target)) setShowUserMenu(false);
     };
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
@@ -28,91 +25,89 @@ const Navbar = ({ onMenuToggle }) => {
     setShowLogoutConfirm(false);
     setShowUserMenu(false);
     await logout();
-    showToast("Sesión cerrada correctamente", "success");
+    showToast("Sesión cerrada", "success");
     navigate("/login");
   };
 
   return (
-    <header className="h-16 border-b border-gray-100 dark:border-dark-800 bg-white/80 dark:bg-dark-900/80 backdrop-blur-xl flex items-center px-4 gap-3 sticky top-0 z-40">
-      <button
-        onClick={onMenuToggle}
-        className="lg:hidden p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-dark-800 transition-all hover:scale-105 active:scale-90"
-      >
-        <Menu className="w-5 h-5" />
-      </button>
+    <>
+      <header className="h-14 border-b border-surface-800/60 bg-surface-950/80 backdrop-blur-xl flex items-center px-3 gap-2 sticky top-0 z-30">
+        <button onClick={onMenuToggle} className="lg:hidden p-2 rounded-lg hover:bg-surface-800 transition-all text-surface-400 hover:text-surface-200">
+          <Menu className="w-[18px] h-[18px]" />
+        </button>
 
-      <Link to="/" className="flex items-center gap-2.5 mr-auto group">
-        <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/25 group-hover:shadow-primary-500/50 group-hover:scale-105 transition-all duration-300">
-          <BookOpen className="w-5 h-5 text-white" />
-        </div>
-        <span className="font-bold text-sm hidden sm:block gradient-text">ShareNotes</span>
-      </Link>
+        <Link to="/" className="flex items-center gap-2 mr-auto group">
+          <div className="w-7 h-7 bg-primary-500 rounded-lg flex items-center justify-center">
+            <StickyNote className="w-3.5 h-3.5 text-white" />
+          </div>
+          <span className="font-bold text-sm text-surface-200 hidden sm:block group-hover:text-white transition-colors">ShareNotes</span>
+        </Link>
 
-      <div className="flex items-center gap-2">
-        <Tooltip text={isDark ? "Modo claro" : "Modo oscuro"} position="bottom">
-          <button
-            onClick={toggle}
-            className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-dark-800 transition-all hover:scale-105 active:scale-90"
+        <div className="flex items-center gap-1">
+          <button onClick={toggle}
+            className="p-2 rounded-lg hover:bg-surface-800 text-surface-400 hover:text-surface-200 transition-all"
           >
-            {isDark ? <Sun className="w-5 h-5 text-yellow-500" /> : <Moon className="w-5 h-5 text-gray-500" />}
+            {isDark ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
           </button>
-        </Tooltip>
 
-        <div className="relative" ref={menuRef}>
-          <button
-            onClick={() => setShowUserMenu(!showUserMenu)}
-            className="flex items-center gap-2 p-1.5 pr-3 rounded-xl hover:bg-gray-100 dark:hover:bg-dark-800 transition-all hover:scale-105 active:scale-90 group"
-          >
-            {user?.avatar ? (
-              <img src={user.avatar} alt={user.name} referrerPolicy="no-referrer" className="w-8 h-8 rounded-full ring-2 ring-primary-500/30 group-hover:ring-primary-500/50 transition-all" />
-            ) : (
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md ring-2 ring-primary-500/30 group-hover:ring-primary-500/50 transition-all">
-                {user?.name?.charAt(0) || <User className="w-4 h-4" />}
+          <div className="relative" ref={menuRef}>
+            <button onClick={() => setShowUserMenu(!showUserMenu)}
+              className="flex items-center gap-2 p-1 rounded-lg hover:bg-surface-800 transition-all group"
+            >
+              {user?.avatar ? (
+                <img src={user.avatar} alt="" referrerPolicy="no-referrer" className="w-7 h-7 rounded-full ring-1 ring-surface-700" />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-surface-800 flex items-center justify-center ring-1 ring-surface-700">
+                  <User className="w-3.5 h-3.5 text-surface-400" />
+                </div>
+              )}
+              <span className="text-sm font-medium text-surface-300 hidden md:block group-hover:text-surface-100 transition-colors">
+                {user?.name?.split(" ")[0]}
+              </span>
+              <ChevronDown className={`w-3.5 h-3.5 text-surface-500 hidden md:block transition-transform duration-200 ${showUserMenu ? "rotate-180" : ""}`} />
+            </button>
+
+            {showUserMenu && (
+              <div className="absolute right-0 top-full mt-2 w-56 bg-surface-900 rounded-xl border border-surface-700 shadow-tesla-lg p-1.5 animate-scale-in z-50">
+                <div className="px-3 py-2 border-b border-surface-800 mb-1">
+                  <p className="font-medium text-sm text-surface-200 truncate">{user?.name}</p>
+                  <p className="text-xs text-surface-500 truncate">{user?.email}</p>
+                </div>
+                <button onClick={() => { setShowUserMenu(false); navigate("/dashboard/profile"); }}
+                  className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-surface-300 hover:bg-surface-800 rounded-lg transition-all">
+                  <User className="w-4 h-4" />
+                  Perfil
+                </button>
+                <button onClick={() => { setShowUserMenu(false); setShowLogoutConfirm(true); }}
+                  className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg transition-all">
+                  <LogOut className="w-4 h-4" />
+                  Cerrar sesión
+                </button>
               </div>
             )}
-            <span className="text-sm font-semibold text-gray-700 dark:text-dark-300 hidden md:block">
-              {user?.name?.split(" ")[0]}
-            </span>
-            <ChevronDown className={`w-4 h-4 text-gray-400 hidden md:block transition-transform duration-200 ${showUserMenu ? "rotate-180" : ""}`} />
-          </button>
-
-          {showUserMenu && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-dark-900 rounded-2xl shadow-xl border border-gray-100 dark:border-dark-800 p-2 animate-scale-in z-50">
-              <div className="px-3 py-2 border-b border-gray-100 dark:border-dark-800 mb-1">
-                <p className="font-semibold text-sm text-gray-900 dark:text-gray-100 truncate">{user?.name}</p>
-                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-              </div>
-              <button onClick={() => { setShowUserMenu(false); navigate("/dashboard/profile"); }} className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-gray-700 dark:text-dark-300 hover:bg-gray-50 dark:hover:bg-dark-800 rounded-xl transition-all">
-                <Settings className="w-4 h-4" />
-                Configuración
-              </button>
-              <button onClick={() => { setShowUserMenu(false); setShowLogoutConfirm(true); }} className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all">
-                <LogOut className="w-4 h-4" />
-                Cerrar sesión
-              </button>
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+      </header>
 
+      {/* Logout Confirm */}
       {showLogoutConfirm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] animate-fade-in" onClick={() => setShowLogoutConfirm(false)}>
-          <div className="bg-white dark:bg-dark-900 rounded-2xl p-6 max-w-sm w-full mx-4 animate-scale-in shadow-2xl" onClick={e => e.stopPropagation()}>
-            <div className="flex flex-col items-center text-center gap-3 mb-6">
-              <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center animate-bounce-subtle">
-                <LogOut className="w-6 h-6 text-red-500" />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4" onClick={() => setShowLogoutConfirm(false)}>
+          <div className="bg-surface-900 rounded-xl p-6 max-w-sm w-full animate-scale-in border border-surface-700 shadow-tesla-lg" onClick={e => e.stopPropagation()}>
+            <div className="flex flex-col items-center text-center gap-2 mb-6">
+              <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
+                <LogOut className="w-5 h-5 text-red-400" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Cerrar sesión</h3>
-              <p className="text-sm text-gray-500">¿Estás seguro de que quieres cerrar sesión?</p>
+              <h3 className="font-semibold text-surface-100">Cerrar sesión</h3>
+              <p className="text-sm text-surface-500">¿Estás seguro?</p>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 btn-secondary">Cancelar</button>
-              <button onClick={handleLogout} className="flex-1 btn-danger">Cerrar sesión</button>
+              <button onClick={() => setShowLogoutConfirm(false)} className="btn-secondary flex-1">Cancelar</button>
+              <button onClick={handleLogout} className="btn-danger flex-1">Cerrar sesión</button>
             </div>
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 };
 
