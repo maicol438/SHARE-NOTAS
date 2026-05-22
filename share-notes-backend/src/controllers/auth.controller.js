@@ -31,12 +31,24 @@ const clearTokenCookie = (res) => {
   });
 };
 
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export const register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
     const cleanEmail = email ? email.trim().toLowerCase() : "";
 
-    const existingUser = await User.findOne({ email: cleanEmail });
+    let existingUser = await User.findOne({ email: cleanEmail });
+    // Fallback: búsqueda case-insensitive por si hay datos con formato inconsistente
+    if (!existingUser) {
+      existingUser = await User.findOne({
+        email: { $regex: `^${escapeRegex(cleanEmail)}$`, $options: "i" },
+      });
+      if (existingUser && existingUser.email !== cleanEmail) {
+        existingUser.email = cleanEmail;
+        await existingUser.save();
+      }
+    }
     if (existingUser) {
       return res.status(400).json({
         message: "Este correo electrónico ya está registrado. Por favor, inicia sesión.",
@@ -63,7 +75,13 @@ export const login = async (req, res, next) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const user = await User.findOne({ email: cleanEmail }).select("+password");
+
+    let user = await User.findOne({ email: cleanEmail }).select("+password");
+    if (!user) {
+      user = await User.findOne({
+        email: { $regex: `^${escapeRegex(cleanEmail)}$`, $options: "i" },
+      }).select("+password");
+    }
     if (!user) {
       return res.status(401).json({ message: "Credenciales inválidas" });
     }
@@ -108,7 +126,13 @@ export const forgotPassword = async (req, res, next) => {
     if (!email) return res.status(400).json({ message: "Email requerido" });
 
     const cleanEmail = email.trim().toLowerCase();
-    const user = await User.findOne({ email: cleanEmail });
+
+    let user = await User.findOne({ email: cleanEmail });
+    if (!user) {
+      user = await User.findOne({
+        email: { $regex: `^${escapeRegex(cleanEmail)}$`, $options: "i" },
+      });
+    }
     if (!user) return res.json({ message: "Se ha enviado un enlace de restablecimiento a tu correo electrónico. Por favor, revisa tu bandeja de entrada." });
     if (user.authProvider === "google") return res.status(400).json({ message: "Esta cuenta usa Google. Inicia sesión con Google." });
 

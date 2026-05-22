@@ -149,76 +149,76 @@ export const getStats = async (req, res, next) => {
     const now = new Date();
     const eightWeeksAgo = new Date(now.getTime() - 56 * 24 * 60 * 60 * 1000);
 
-    const [totalNotes, byCategory, byNotebook, byWeek, topTags] = await Promise.all([
-      Note.countDocuments({ user: req.userId, deletedAt: null }),
+    const [facetResults, categories, notebooksData] = await Promise.all([
       Note.aggregate([
         { $match: { user: req.userId, deletedAt: null } },
-        { $group: { _id: "$category", count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 10 },
-      ]),
-      Note.aggregate([
-        { $match: { user: req.userId, deletedAt: null, notebook: { $ne: null } } },
-        { $group: { _id: "$notebook", count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-      ]),
-      Note.aggregate([
         {
-          $match: {
-            user: req.userId,
-            deletedAt: null,
-            createdAt: { $gte: eightWeeksAgo },
+          $facet: {
+            totalNotes: [{ $count: "count" }],
+            byCategory: [
+              { $group: { _id: "$category", count: { $sum: 1 } } },
+              { $sort: { count: -1 } },
+              { $limit: 10 },
+            ],
+            byNotebook: [
+              { $match: { notebook: { $ne: null } } },
+              { $group: { _id: "$notebook", count: { $sum: 1 } } },
+              { $sort: { count: -1 } },
+            ],
+            byWeek: [
+              { $match: { createdAt: { $gte: eightWeeksAgo } } },
+              {
+                $group: {
+                  _id: { $dateToString: { format: "%Y-W%V", date: "$createdAt" } },
+                  count: { $sum: 1 },
+                },
+              },
+              { $sort: { _id: 1 } },
+            ],
+            topTags: [
+              { $match: { tags: { $ne: [] } } },
+              { $unwind: "$tags" },
+              { $group: { _id: "$tags", count: { $sum: 1 } } },
+              { $sort: { count: -1 } },
+              { $limit: 10 },
+            ],
+            tasksTotal: [
+              { $match: { type: "task" } },
+              { $count: "count" },
+            ],
+            tasksCompleted: [
+              { $match: { type: "task", isCompleted: true } },
+              { $count: "count" },
+            ],
           },
         },
-        {
-          $group: {
-            _id: {
-              $dateToString: { format: "%Y-W%V", date: "$createdAt" },
-            },
-            count: { $sum: 1 },
-          },
-        },
-        { $sort: { _id: 1 } },
       ]),
-      Note.aggregate([
-        { $match: { user: req.userId, deletedAt: null, tags: { $ne: [] } } },
-        { $unwind: "$tags" },
-        { $group: { _id: "$tags", count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 10 },
-      ]),
+      Category.find({ user: req.userId }),
+      Notebook.find({ user: req.userId }),
     ]);
 
-    const categories = await Category.find({ user: req.userId });
-    const categoryStats = byCategory.map((s) => ({
-      category: categories.find((c) => c._id.toString() === s._id?.toString()),
+    const data = facetResults[0];
+
+    const totalNotes = data.totalNotes[0]?.count ?? 0;
+    const tasksTotal = data.tasksTotal[0]?.count ?? 0;
+    const tasksCompleted = data.tasksCompleted[0]?.count ?? 0;
+
+    const categoryStats = data.byCategory.map((s) => ({
+      category: categories.find((c) => c._id.toString() === s._id?.toString()) || null,
       count: s.count,
     }));
 
-    const notebooksData = await Notebook.find({ user: req.userId });
-    const notebookStats = byNotebook.map((s) => ({
-      notebook: notebooksData.find((n) => n._id.toString() === s._id?.toString()),
+    const notebookStats = data.byNotebook.map((s) => ({
+      notebook: notebooksData.find((n) => n._id.toString() === s._id?.toString()) || null,
       count: s.count,
     }));
-
-    const tasksTotal = await Note.countDocuments({
-      user: req.userId,
-      deletedAt: null,
-      type: "task",
-    });
-    const tasksCompleted = await Note.countDocuments({
-      user: req.userId,
-      deletedAt: null,
-      type: "task",
-      isCompleted: true,
-    });
 
     res.json({
       totalNotes,
       byCategory: categoryStats,
       byNotebook: notebookStats,
-      byWeek,
-      topTags,
+      byWeek: data.byWeek,
+      topTags: data.topTags,
       tasks: { total: tasksTotal, completed: tasksCompleted, pending: tasksTotal - tasksCompleted },
     });
   } catch (error) {

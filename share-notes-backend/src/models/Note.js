@@ -128,5 +128,10 @@ const noteSchema = new mongoose.Schema(
 noteSchema.index({ title: "text", content: "text", contentHTML: "text" });
 noteSchema.index({ tags: 1 });
 noteSchema.index({ "reminder.date": 1 });
+noteSchema.index({ user: 1, deletedAt: 1 });
+noteSchema.index({ user: 1, deletedAt: 1, category: 1 });
+noteSchema.index({ user: 1, type: 1, deletedAt: 1 });
+noteSchema.index({ user: 1, deletedAt: 1, isPinned: -1, updatedAt: -1 });
+noteSchema.index({ isPublic: 1, deletedAt: 1 });
 
 export default mongoose.model("Note", noteSchema);

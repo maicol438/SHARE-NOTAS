@@ -132,6 +132,14 @@ if (googleEnabled) {
       };
       const state = Buffer.from(JSON.stringify(stateObj)).toString("base64");
 
+      res.cookie("oauth_mode", mode || "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 5 * 60 * 1000,
+        path: "/",
+      });
+
       passport.authenticate("google", {
         scope: ["profile", "email"],
         prompt: "select_account",
@@ -182,6 +190,8 @@ if (googleEnabled) {
         }
 
         try {
+          res.clearCookie("oauth_mode", { path: "/" });
+
           const token = generateToken(user);
           setTokenCookie(res, token);
 

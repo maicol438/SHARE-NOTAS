@@ -25,7 +25,7 @@ export const initializeGoogleAuth = () => {
           const email = profile.emails?.[0]?.value?.toLowerCase();
           if (!email) return done(new Error("Email no encontrado en perfil de Google"));
 
-          // Decodificar el 'state' para conocer la intención ('mode')
+          // Intentar obtener mode del state OAuth (puede ser consumido por Passport internamente)
           let mode = null;
           if (req.query.state) {
             try {
@@ -35,6 +35,12 @@ export const initializeGoogleAuth = () => {
               console.error("Error al decodificar state de Google OAuth:", e);
             }
           }
+          // Fallback: leer mode desde cookie (más confiable que el state de OAuth)
+          if (!mode && req.cookies?.oauth_mode) {
+            mode = req.cookies.oauth_mode;
+          }
+
+          console.log(`🔐 Google OAuth - email: ${email}, mode from state: ${mode}, hasCookie: ${!!req.cookies?.oauth_mode}, hasQueryState: ${!!req.query.state}`);
 
           let user = await User.findOne({ email });
 
