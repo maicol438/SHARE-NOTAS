@@ -4,7 +4,7 @@ import Badge from "../ui/Badge.jsx";
 import Tooltip from "../ui/Tooltip.jsx";
 import { exportToPDF } from "../../utils/exportPDF.js";
 import { showToast } from "../../utils/toast.jsx";
-import api from "../../api/axios";
+import api, { API_BASE } from "../../api/axios";
 import Button from "../ui/Button";
 
 const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDownload, external = false, onRate, showAuthor = false, index = 0 }) => {
@@ -23,6 +23,7 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
   }, [expanded]);
 
   const [exportingDocx, setExportingDocx] = useState(false);
+  const [exportingGdoc, setExportingGdoc] = useState(false);
 
   const handleExportDocx = async () => {
     setExportingDocx(true);
@@ -45,6 +46,35 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
       showToast(msg, "error");
     } finally {
       setExportingDocx(false);
+    }
+  };
+
+  const handleExportGoogleDoc = async () => {
+    setExportingGdoc(true);
+    try {
+      const res = await api.post(`/notes/${note._id}/google-doc`);
+      if (res.data?.googleDocUrl) {
+        window.open(res.data.googleDocUrl, "_blank");
+        showToast("Google Doc creado con éxito", "success");
+      } else {
+        showToast(res.data?.message || "Documento creado", "success");
+      }
+    } catch (err) {
+      const status = err.response?.status;
+      const msg = err.response?.data?.message || "";
+      const detail = err.response?.data?.detail || "";
+
+      if (status === 403 || detail.toLowerCase().includes("insufficient") || detail.toLowerCase().includes("scope") || detail.toLowerCase().includes("permis")) {
+        const currentUrl = window.location.href;
+        showToast("Se requieren permisos de Google Drive. Redirigiendo...", "info");
+        window.location.href = `${API_BASE}/auth/google/drive?redirectTo=${encodeURIComponent(currentUrl)}`;
+      } else if (msg.includes("conectar tu cuenta de Google")) {
+        showToast("Conecta tu cuenta de Google desde tu perfil primero", "error");
+      } else {
+        showToast(msg || "Error al exportar a Google Docs", "error");
+      }
+    } finally {
+      setExportingGdoc(false);
     }
   };
 
@@ -125,6 +155,10 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
                 <button onClick={handleExportDocx} disabled={exportingDocx} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl flex items-center gap-2 transition-all hover:scale-105 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
                   {exportingDocx ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                   {exportingDocx ? "Exportando..." : "Word"}
+                </button>
+                <button onClick={handleExportGoogleDoc} disabled={exportingGdoc} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl flex items-center gap-2 transition-all hover:scale-105 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                  {exportingGdoc ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+                  {exportingGdoc ? "Exportando..." : "Google Doc"}
                 </button>
                 <button onClick={() => setShowShareModal(true)} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-xl flex items-center gap-2 transition-all hover:scale-105 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-500">
                   <Share2 className="w-4 h-4" /> Compartir
@@ -216,6 +250,11 @@ const NoteCard = ({ note, onEdit, onDelete, onTogglePin, onToggleFavorite, onDow
               <Tooltip text={exportingDocx ? "Exportando..." : "Descargar Word"}>
                 <button onClick={(e) => { e.stopPropagation(); handleExportDocx(); }} disabled={exportingDocx} className="p-2 rounded-xl text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all hover:scale-110 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100">
                   {exportingDocx ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                </button>
+              </Tooltip>
+              <Tooltip text={exportingGdoc ? "Exportando..." : "Google Doc"}>
+                <button onClick={(e) => { e.stopPropagation(); handleExportGoogleDoc(); }} disabled={exportingGdoc} className="p-2 rounded-xl text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all hover:scale-110 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100">
+                  {exportingGdoc ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
                 </button>
               </Tooltip>
               <Tooltip text="Compartir">

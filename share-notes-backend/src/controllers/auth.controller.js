@@ -3,13 +3,13 @@ import crypto from "crypto";
 import User from "../models/User.js";
 import { sendResetEmail } from "../config/email.js";
 
-const generateToken = (user) => {
+export const generateToken = (user) => {
   return jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   });
 };
 
-const setTokenCookie = (res, token) => {
+export const setTokenCookie = (res, token) => {
   const isProduction = process.env.NODE_ENV === "production";
   res.cookie("token", token, {
     httpOnly: true,

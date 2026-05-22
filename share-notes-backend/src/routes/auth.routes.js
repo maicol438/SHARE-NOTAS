@@ -1,6 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
-import { register, login, logout, getMe, forgotPassword, resetPassword, googleAuthCallback } from "../controllers/auth.controller.js";
+import { register, login, logout, getMe, forgotPassword, resetPassword, generateToken, setTokenCookie } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middlewares/auth.middleware.js";
 import { authLimiter } from "../middlewares/rateLimiter.middleware.js";
 
@@ -131,13 +131,46 @@ if (googleEnabled) {
     })
   );
 
+  router.get("/google/drive", (req, res, next) => {
+    const { redirectTo } = req.query;
+    const state = redirectTo ? Buffer.from(redirectTo).toString("base64") : "";
+
+    passport.authenticate("google", {
+      scope: [
+        "profile",
+        "email",
+        "https://www.googleapis.com/auth/drive.file",
+        "https://www.googleapis.com/auth/documents",
+      ],
+      accessType: "offline",
+      prompt: "consent",
+      state,
+      session: false,
+    })(req, res, next);
+  });
+
   router.get(
     "/google/callback",
     passport.authenticate("google", {
       failureRedirect: `${process.env.CLIENT_URL || "https://share-notas.vercel.app"}/login`,
       session: false,
     }),
-    googleAuthCallback
+    (req, res) => {
+      try {
+        const token = generateToken(req.user);
+        setTokenCookie(res, token);
+
+        if (req.query.state) {
+          const originalUrl = Buffer.from(req.query.state, "base64").toString("ascii");
+          return res.redirect(originalUrl);
+        }
+
+        res.redirect(`${process.env.CLIENT_URL || "https://share-notas.vercel.app"}/dashboard`);
+      } catch (error) {
+        console.error("Error en callback de Google:", error);
+        res.redirect(`${process.env.CLIENT_URL || "https://share-notas.vercel.app"}/login?error=auth_error`);
+      }
+    }
   );
 }
 
