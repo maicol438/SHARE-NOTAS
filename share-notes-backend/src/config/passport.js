@@ -18,8 +18,6 @@ export const initializeGoogleAuth = () => {
         clientID,
         clientSecret,
         callbackURL,
-        prompt: "select_account",
-        scope: ["profile", "email"],
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
