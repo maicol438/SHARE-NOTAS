@@ -13,29 +13,29 @@ import api from "../api/axios.js";
 
 const StatCard = ({ icon: Icon, label, value, delay = 0 }) => (
   <div
-    className="bg-white/85 dark:bg-dark-900/85 backdrop-blur-xl border border-gray-200/50 dark:border-white/[0.04] rounded-2xl p-4.5 flex items-center gap-3.5 animate-slide-up hover:border-primary-500/25 dark:hover:border-primary-500/20 hover:bg-white dark:hover:bg-dark-850 hover:shadow-lg hover:shadow-primary-500/[0.02] hover:-translate-y-0.5 transition-all duration-300 cursor-default shadow-sm shadow-gray-200/[0.01]"
+    className="bg-white/85 dark:bg-[#0a0819]/90 backdrop-blur-xl border border-gray-200/50 dark:border-[#7c3aed]/15 rounded-2xl p-4.5 flex items-center gap-3.5 animate-slide-up hover:border-primary-500/25 dark:hover:border-[#7c3aed]/30 hover:bg-white dark:hover:bg-[#0a0819] hover:shadow-lg hover:shadow-primary-500/[0.02] dark:hover:shadow-[#7c3aed]/5 hover:-translate-y-0.5 transition-all duration-300 cursor-default shadow-sm shadow-gray-200/[0.01] dark:shadow-[#7c3aed]/5"
     style={{ animationDelay: `${delay}ms` }}
   >
-    <div className="w-11 h-11 bg-primary-500/10 dark:bg-primary-500/20 rounded-xl flex items-center justify-center flex-shrink-0 ring-1 ring-primary-500/15 dark:ring-primary-500/10">
-      <Icon className="w-5.5 h-5.5 text-primary-600 dark:text-primary-400" />
+    <div className="w-11 h-11 bg-primary-500/10 dark:bg-[#7c3aed]/20 rounded-xl flex items-center justify-center flex-shrink-0 ring-1 ring-primary-500/15 dark:ring-[#7c3aed]/20">
+      <Icon className="w-5.5 h-5.5 text-primary-600 dark:text-[#a78bfa]" />
     </div>
     <div className="min-w-0">
-      <p className="text-xl font-extrabold text-gray-800 dark:text-dark-100 tabular-nums leading-none mb-1 tracking-tight">{value}</p>
-      <p className="text-[11px] text-gray-400 dark:text-dark-500 font-bold uppercase tracking-wider truncate">{label}</p>
+      <p className="text-xl font-extrabold text-gray-800 dark:text-[#e2e8f0] tabular-nums leading-none mb-1 tracking-tight">{value}</p>
+      <p className="text-[11px] text-gray-400 dark:text-[#71717a] font-bold uppercase tracking-wider truncate">{label}</p>
     </div>
   </div>
 );
 
 const SkeletonCard = () => (
-  <div className="bg-white/80 dark:bg-dark-900/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/[0.04] rounded-2xl p-5.5 flex flex-col gap-3.5 animate-fade-in-fast shadow-sm">
-    <div className="h-5 bg-gray-200 dark:bg-dark-800 rounded-lg w-3/4 animate-pulse" />
+  <div className="bg-white/80 dark:bg-[#0a0819]/80 backdrop-blur-xl border border-gray-200/50 dark:border-[#7c3aed]/10 rounded-2xl p-5.5 flex flex-col gap-3.5 animate-fade-in-fast shadow-sm">
+    <div className="h-5 bg-gray-200 dark:bg-[#1a0533]/60 rounded-lg w-3/4 animate-pulse" />
     <div className="space-y-2">
-      <div className="h-3 bg-gray-200 dark:bg-dark-800/60 rounded-md animate-pulse" />
-      <div className="h-3 bg-gray-200 dark:bg-dark-800/60 rounded-md w-5/6 animate-pulse" />
+      <div className="h-3 bg-gray-200 dark:bg-[#1a0533]/40 rounded-md animate-pulse" />
+      <div className="h-3 bg-gray-200 dark:bg-[#1a0533]/40 rounded-md w-5/6 animate-pulse" />
     </div>
-    <div className="flex gap-2 pt-3.5 border-t border-gray-100 dark:border-white/[0.04] mt-auto">
-      <div className="h-5 w-16 bg-gray-200 dark:bg-dark-800 rounded-md animate-pulse" />
-      <div className="h-5 w-12 bg-gray-200 dark:bg-dark-800 rounded-md animate-pulse" />
+    <div className="flex gap-2 pt-3.5 border-t border-gray-100 dark:border-[#7c3aed]/10 mt-auto">
+      <div className="h-5 w-16 bg-gray-200 dark:bg-[#1a0533]/60 rounded-md animate-pulse" />
+      <div className="h-5 w-12 bg-gray-200 dark:bg-[#1a0533]/60 rounded-md animate-pulse" />
     </div>
   </div>
 );
@@ -229,7 +229,7 @@ const Dashboard = () => {
                 localSearchNotes(e.target.value);
               }}
               placeholder={isTrashTab ? "Buscar en papelera..." : "Buscar notas..."}
-              className="w-full pl-10 pr-4 py-2.5 bg-white/70 dark:bg-dark-900/70 border border-gray-300/20 dark:border-white/[0.04] rounded-xl text-sm text-gray-800 dark:text-dark-200 placeholder-gray-400 dark:placeholder-dark-500 focus:outline-none focus:border-primary-500/50 focus:ring-4 focus:ring-primary-500/5 transition-all font-semibold"
+              className="w-full pl-10 pr-4 py-2.5 bg-white/70 dark:bg-[#0a0819]/80 border border-gray-300/20 dark:border-[#7c3aed]/15 rounded-xl text-sm text-gray-800 dark:text-[#e2e8f0] placeholder-gray-400 dark:placeholder-[#52525b] focus:outline-none focus:border-[#7c3aed]/50 focus:ring-4 focus:ring-[#7c3aed]/5 transition-all font-semibold"
             />
           </div>
 
@@ -282,9 +282,9 @@ const Dashboard = () => {
       {!showSkeleton && !isTrashTab && pinnedNotes.length > 0 && (
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-3.5">
-            <Pin className="w-3.5 h-3.5 text-primary-500" />
-            <span className="text-2xs font-extrabold text-gray-400 dark:text-dark-500 uppercase tracking-widest">Fijadas</span>
-            <span className="px-1.5 py-0.5 bg-primary-500/10 dark:bg-primary-500/15 border border-primary-500/15 text-primary-500 text-3xs font-extrabold rounded-md">{pinnedNotes.length}</span>
+            <Pin className="w-3.5 h-3.5 text-[#a78bfa]" />
+            <span className="text-2xs font-extrabold text-gray-400 dark:text-[#52525b] uppercase tracking-widest">Fijadas</span>
+            <span className="px-1.5 py-0.5 bg-[#7c3aed]/10 dark:bg-[#7c3aed]/15 border border-[#7c3aed]/15 text-[#a78bfa] text-3xs font-extrabold rounded-md">{pinnedNotes.length}</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5">
             {pinnedNotes.map((note, i) => (
@@ -307,9 +307,9 @@ const Dashboard = () => {
         <div>
           {pinnedNotes.length > 0 && (
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-4 h-px rounded bg-gray-200 dark:bg-dark-800" />
-              <span className="text-2xs font-extrabold text-gray-400 dark:text-dark-500 uppercase tracking-widest">Todas las notas</span>
-              <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-dark-800 border border-gray-200/50 dark:border-white/[0.04] text-gray-500 dark:text-dark-400 text-3xs font-extrabold rounded-md">{regularNotes.length}</span>
+              <div className="w-4 h-px rounded bg-gray-200 dark:bg-[#7c3aed]/20" />
+              <span className="text-2xs font-extrabold text-gray-400 dark:text-[#52525b] uppercase tracking-widest">Todas las notas</span>
+              <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-[#0a0819] border border-gray-200/50 dark:border-[#7c3aed]/10 text-gray-500 dark:text-[#52525b] text-3xs font-extrabold rounded-md">{regularNotes.length}</span>
             </div>
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5">

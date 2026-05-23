@@ -21,7 +21,7 @@ export default function DashboardLayout() {
   }, [sidebarOpen, closeSidebar]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300">
+    <div className="flex h-screen overflow-hidden bg-[#f0f0ff] text-[#1e1b4b] dark:bg-[#050510] dark:text-[#e2e8f0] transition-colors duration-300">
       <div className={`${sidebarOpen ? "fixed inset-y-0 left-0 z-30" : "hidden"} lg:relative lg:flex`}>
         <Sidebar onNavClick={closeSidebar} />
       </div>
