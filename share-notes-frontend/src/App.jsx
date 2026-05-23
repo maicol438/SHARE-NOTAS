@@ -25,10 +25,10 @@ import DashboardLayout from "./components/layout/DashboardLayout.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 
 const LoadingScreen = () => (
-  <div className="min-h-screen flex items-center justify-center bg-surface-950">
+  <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
     <div className="flex flex-col items-center gap-4">
-      <div className="w-8 h-8 border-2 border-surface-700 border-t-primary-500 rounded-full animate-spin" />
-      <p className="text-surface-500 text-sm animate-pulse-subtle">Cargando...</p>
+      <div className="w-8 h-8 border-2 border-slate-300 dark:border-slate-700 border-t-primary-500 rounded-full animate-spin" />
+      <p className="text-slate-500 dark:text-slate-400 text-sm animate-pulse-subtle">Cargando...</p>
     </div>
   </div>
 );

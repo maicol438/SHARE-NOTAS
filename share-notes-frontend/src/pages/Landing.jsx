@@ -37,21 +37,21 @@ const Landing = () => {
 
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-950">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-surface-700 border-t-primary-500 rounded-full animate-spin" />
-          <p className="text-surface-500 text-sm animate-pulse-subtle">Cargando...</p>
+          <div className="w-8 h-8 border-2 border-slate-300 dark:border-slate-700 border-t-primary-500 rounded-full animate-spin" />
+          <p className="text-slate-500 dark:text-slate-400 text-sm animate-pulse-subtle">Cargando...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-surface-950 overflow-hidden">
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute w-[600px] h-[600px] bg-primary-400/10 rounded-full -top-48 -left-48 blur-3xl animate-float" />
-        <div className="absolute w-[500px] h-[500px] bg-purple-400/10 rounded-full top-1/2 -right-48 blur-3xl animate-float" style={{ animationDelay: "2s" }} />
-        <div className="absolute w-[400px] h-[400px] bg-blue-400/10 rounded-full -bottom-32 left-1/3 blur-3xl animate-float" style={{ animationDelay: "4s" }} />
+    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute w-[600px] h-[600px] bg-primary-400/10 rounded-full -top-48 -left-48 blur-3xl animate-float opacity-5" />
+        <div className="absolute w-[500px] h-[500px] bg-purple-400/10 rounded-full top-1/2 -right-48 blur-3xl animate-float opacity-5" style={{ animationDelay: "2s" }} />
+        <div className="absolute w-[400px] h-[400px] bg-blue-400/10 rounded-full -bottom-32 left-1/3 blur-3xl animate-float opacity-5" style={{ animationDelay: "4s" }} />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(108,99,255,0.03),transparent_50%)]" />
       </div>
 

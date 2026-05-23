@@ -7,10 +7,10 @@ import { showToast } from "../utils/toast.jsx";
 import api from "../api/axios.js";
 
 const LoadingScreen = () => (
-  <div className="min-h-screen flex items-center justify-center bg-surface-950">
+  <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
     <div className="flex flex-col items-center gap-4">
-      <div className="w-8 h-8 border-2 border-surface-700 border-t-primary-500 rounded-full animate-spin" />
-      <p className="text-surface-500 text-sm animate-pulse-subtle">Cargando...</p>
+      <div className="w-8 h-8 border-2 border-slate-300 dark:border-slate-700 border-t-primary-500 rounded-full animate-spin" />
+      <p className="text-slate-500 dark:text-slate-400 text-sm animate-pulse-subtle">Cargando...</p>
     </div>
   </div>
 );
@@ -80,14 +80,14 @@ const Register = () => {
 
   if (isAuthenticated && user) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-surface-950">
-        <div className="w-full max-w-sm bg-surface-900 border border-surface-800 rounded-xl p-8 text-center">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50 dark:bg-slate-950">
+        <div className="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center">
           <div className="w-14 h-14 mx-auto bg-primary-500 rounded-2xl flex items-center justify-center mb-5">
             <StickyNote className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-xl font-bold text-surface-100 mb-1">Ya has iniciado sesión</h1>
-          <p className="text-sm text-surface-500 mb-1">Estás conectado como</p>
-          <p className="font-medium text-surface-300 mb-6">{user.email}</p>
+          <h1 className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-1">Ya has iniciado sesión</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">Estás conectado como</p>
+          <p className="font-medium text-slate-700 dark:text-slate-300 mb-6">{user.email}</p>
           <div className="flex gap-3 justify-center">
             <Button onClick={() => navigate("/dashboard")}>Ir al Dashboard</Button>
             <Button variant="secondary" onClick={async () => { await logout(); navigate("/login"); }} icon={LogOut}>Cerrar sesión</Button>
