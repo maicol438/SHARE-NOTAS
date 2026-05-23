@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, Mail, Lock, Camera, Trash2, Save, AlertTriangle } from "lucide-react";
+import { User, Mail, Lock, Camera, Trash2, Save, AlertTriangle, Chrome } from "lucide-react";
 import api from "../api/axios";
 import { showToast } from "../utils/toast.jsx";
 import Button from "../components/ui/Button";
@@ -8,6 +8,7 @@ import useAuthStore from "../stores/useAuthStore";
 export default function Profile() {
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
+  const logout = useAuthStore((s) => s.logout);
   const isGoogleUser = user?.authProvider === "google";
 
   const [form, setForm] = useState({
@@ -23,6 +24,7 @@ export default function Profile() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [unlinkingGoogle, setUnlinkingGoogle] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -87,7 +89,7 @@ export default function Profile() {
 
       const userData = res.data.user || res.data;
       console.log("Actualizando usuario con:", userData);
-      
+
       setUser(userData);
       showToast("Perfil actualizado", "success");
 
@@ -106,7 +108,7 @@ export default function Profile() {
         status: err.response?.status,
         stack: err.stack
       });
-      
+
       const errorMsg = err.response?.data?.message || err.message || "Error al actualizar";
       showToast(errorMsg, "error");
     } finally {
@@ -132,12 +134,11 @@ export default function Profile() {
 
       const avatarUrl = res.data.user?.avatar || res.data.avatar;
       console.log("URL del avatar:", avatarUrl);
-      
+
       if (avatarUrl) {
         setUser({ ...user, avatar: avatarUrl });
         showToast("Avatar actualizado", "success");
-        
-        // Limpiar el input para permitir subir el mismo archivo otra vez
+
         e.target.value = "";
       } else {
         throw new Error("No se recibió URL del avatar");
@@ -148,9 +149,31 @@ export default function Profile() {
         response: err.response?.data,
         status: err.response?.status
       });
-      
+
       const errorMsg = err.response?.data?.message || err.message || "Error al subir imagen";
       showToast(errorMsg, "error");
+    }
+  };
+
+  const handleUnlinkGoogle = async () => {
+    if (!form.newPassword || form.newPassword.length < 6) {
+      showToast("Establece una contraseña primero (mínimo 6 caracteres)", "error");
+      return;
+    }
+    setUnlinkingGoogle(true);
+    try {
+      const res = await api.post("/users/me/unlink-google", {
+        password: form.newPassword,
+      });
+      if (res.data) {
+        setUser(res.data.user || res.data);
+        showToast("Cuenta de Google desvinculada exitosamente", "success");
+        setForm((f) => ({ ...f, newPassword: "", confirmPassword: "" }));
+      }
+    } catch (err) {
+      showToast(err.response?.data?.message || "Error al desvincular Google", "error");
+    } finally {
+      setUnlinkingGoogle(false);
     }
   };
 
@@ -175,14 +198,12 @@ export default function Profile() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold gradient-text mb-2">Mi Perfil</h1>
-        <p className="text-slate-500 dark:text-surface-500">Administra tu información</p>
+        <p className="text-gray-500 dark:text-surface-500">Administra tu información</p>
       </div>
 
-      {/* Avatar */}
-      <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-4 sm:p-6 mb-6">
+      <div className="bg-white dark:bg-surface-900 border border-gray-200 dark:border-surface-800/60 rounded-xl p-4 sm:p-6 mb-6">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
           <div className="relative flex-shrink-0">
             {user?.avatar ? (
@@ -210,33 +231,36 @@ export default function Profile() {
             </label>
           </div>
           <div className="min-w-0">
-            <h3 className="font-semibold text-slate-800 dark:text-surface-100 text-lg truncate">{user?.name}</h3>
-            <p className="text-slate-500 dark:text-surface-500 text-sm truncate">{user?.email}</p>
-            <div className="flex justify-center sm:justify-start gap-4 mt-2 text-sm">
-              <span className="text-slate-500 dark:text-surface-500">
-                <strong className="text-slate-800 dark:text-surface-100">{stats.totalNotes}</strong> notas
+            <h3 className="font-semibold text-gray-800 dark:text-surface-100 text-lg truncate">{user?.name}</h3>
+            <p className="text-gray-500 dark:text-surface-500 text-sm truncate">{user?.email}</p>
+            {isGoogleUser && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 mt-1.5 bg-primary-500/10 text-primary-500 dark:text-primary-400 text-[10px] font-bold rounded-lg uppercase tracking-wider">
+                <Chrome className="w-3 h-3" /> Google
               </span>
-              <span className="text-slate-500 dark:text-surface-500">
-                <strong className="text-slate-800 dark:text-surface-100">{stats.sharedWithMe}</strong> compartidas
+            )}
+            <div className="flex justify-center sm:justify-start gap-4 mt-2 text-sm">
+              <span className="text-gray-500 dark:text-surface-500">
+                <strong className="text-gray-800 dark:text-surface-100">{stats.totalNotes}</strong> notas
+              </span>
+              <span className="text-gray-500 dark:text-surface-500">
+                <strong className="text-gray-800 dark:text-surface-100">{stats.sharedWithMe}</strong> compartidas
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-        <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-4 sm:p-6">
-          <h3 className="font-semibold text-slate-800 dark:text-surface-100 text-lg mb-4 sm:mb-6">Información personal</h3>
+        <div className="bg-white dark:bg-surface-900 border border-gray-200 dark:border-surface-800/60 rounded-xl p-4 sm:p-6">
+          <h3 className="font-semibold text-gray-800 dark:text-surface-100 text-lg mb-4 sm:mb-6">Información personal</h3>
 
           <div className="space-y-4">
-            {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-slate-600 dark:text-surface-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-600 dark:text-surface-300 mb-1.5">
                 Nombre
               </label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-surface-500" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-surface-500" />
                 <input
                   type="text"
                   name="name"
@@ -248,13 +272,12 @@ export default function Profile() {
               {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
             </div>
 
-            {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-slate-600 dark:text-surface-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-600 dark:text-surface-300 mb-1.5">
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-surface-500" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-surface-500" />
                 <input
                   type="email"
                   name="email"
@@ -268,25 +291,24 @@ export default function Profile() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-4 sm:p-6">
-          <h3 className="font-semibold text-slate-800 dark:text-surface-100 text-lg mb-4 sm:mb-6">
+        <div className="bg-white dark:bg-surface-900 border border-gray-200 dark:border-surface-800/60 rounded-xl p-4 sm:p-6">
+          <h3 className="font-semibold text-gray-800 dark:text-surface-100 text-lg mb-4 sm:mb-6">
             {isGoogleUser ? "Establecer contraseña" : "Cambiar contraseña"}
           </h3>
-          <p className="text-sm text-slate-500 dark:text-surface-500 mb-4">
+          <p className="text-sm text-gray-500 dark:text-surface-500 mb-4">
             {isGoogleUser
-              ? "Si dejas los campos vacíos y guardas, se eliminará la contraseña y solo podrás iniciar con Google"
+              ? "Establece una contraseña para desvincular tu cuenta de Google y usar email/contraseña."
               : "Deja vacío si no quieres cambiar la contraseña"}
           </p>
 
           <div className="space-y-4">
-            {/* Current Password (solo para usuarios locales) */}
             {!isGoogleUser && (
               <div>
-                <label className="block text-sm font-medium text-slate-600 dark:text-surface-300 mb-1.5">
+                <label className="block text-sm font-medium text-gray-600 dark:text-surface-300 mb-1.5">
                   Contraseña actual
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-surface-500" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-surface-500" />
                   <input
                     type="password"
                     name="currentPassword"
@@ -302,13 +324,12 @@ export default function Profile() {
               </div>
             )}
 
-            {/* New Password */}
             <div>
-              <label className="block text-sm font-medium text-slate-600 dark:text-surface-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-600 dark:text-surface-300 mb-1.5">
                 {isGoogleUser ? "Contraseña" : "Nueva contraseña"}
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-surface-500" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-surface-500" />
                 <input
                   type="password"
                   name="newPassword"
@@ -323,13 +344,12 @@ export default function Profile() {
               )}
             </div>
 
-            {/* Confirm Password */}
             <div>
-              <label className="block text-sm font-medium text-slate-600 dark:text-surface-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-600 dark:text-surface-300 mb-1.5">
                 Confirmar contraseña
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-surface-500" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-surface-500" />
                 <input
                   type="password"
                   name="confirmPassword"
@@ -344,6 +364,24 @@ export default function Profile() {
               )}
             </div>
           </div>
+
+          {isGoogleUser && (
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/[0.06]">
+              <button
+                type="button"
+                onClick={handleUnlinkGoogle}
+                disabled={unlinkingGoogle}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 font-bold text-sm transition-all border border-red-500/20 disabled:opacity-50"
+              >
+                <Chrome className="w-4 h-4" />
+                {unlinkingGoogle ? "Desvinculando..." : "Desvincular cuenta de Google"}
+              </button>
+              <p className="text-xs text-gray-400 dark:text-slate-500 mt-2">
+                Establece una contraseña arriba y luego haz clic en este botón para desvincular tu cuenta de Google.
+                Podrás iniciar sesión con email y la contraseña que establezcas.
+              </p>
+            </div>
+          )}
         </div>
 
         <Button
@@ -356,13 +394,12 @@ export default function Profile() {
         </Button>
       </form>
 
-      {/* Danger Zone */}
       <div className="bg-red-950/20 border border-red-900/30 rounded-xl p-4 sm:p-6 mt-6 sm:mt-8">
         <h3 className="font-semibold text-red-400 mb-2 flex items-center gap-2">
           <AlertTriangle className="w-5 h-5" />
           Zona de peligro
         </h3>
-        <p className="text-sm text-slate-500 dark:text-surface-400 mb-4">
+        <p className="text-sm text-gray-500 dark:text-surface-400 mb-4">
           Eliminar tu cuenta es permanente y no se puede deshacer.
         </p>
         <Button
@@ -374,17 +411,16 @@ export default function Profile() {
         </Button>
       </div>
 
-      {/* Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
-          <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl max-w-md w-full animate-scale-in">
-            <h3 className="text-lg font-bold text-slate-800 dark:text-surface-100 mb-4">¿Eliminar cuenta?</h3>
-            <p className="text-slate-500 dark:text-surface-500 mb-4">
+          <div className="bg-white dark:bg-surface-900 border border-gray-200 dark:border-surface-800/60 rounded-xl max-w-md w-full animate-scale-in p-6">
+            <h3 className="text-lg font-bold text-gray-800 dark:text-surface-100 mb-4">¿Eliminar cuenta?</h3>
+            <p className="text-gray-500 dark:text-surface-500 mb-4">
               Esta acción es irreversible y eliminará todas tus notas.
             </p>
             {isGoogleUser ? (
               <div className="mb-4">
-                <p className="text-sm text-slate-500 dark:text-surface-500 mb-2">
+                <p className="text-sm text-gray-500 dark:text-surface-500 mb-2">
                   Escribe <strong>ELIMINAR</strong> para confirmar:
                 </p>
                 <input

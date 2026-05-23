@@ -3,12 +3,12 @@ import { TrendingUp, FileText, CheckSquare, Tag, Calendar } from "lucide-react";
 import api from "../api/axios";
 
 const StatCard = ({ title, value, icon: Icon, color, subtitle }) => (
-  <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6">
+  <div className="bg-white dark:bg-[#0d0b1f] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-5 hover:border-primary-500/20 dark:hover:border-primary-500/20 transition-all shadow-sm dark:shadow-none">
     <div className="flex items-start justify-between">
       <div>
-        <p className="text-sm text-slate-500 dark:text-surface-500 mb-1">{title}</p>
-        <p className="text-3xl font-bold">{value}</p>
-        {subtitle && <p className="text-xs text-slate-500 dark:text-surface-400 mt-1">{subtitle}</p>}
+        <p className="text-sm text-gray-500 dark:text-slate-400 mb-1 font-semibold">{title}</p>
+        <p className="text-3xl font-extrabold text-gray-900 dark:text-white">{value}</p>
+        {subtitle && <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">{subtitle}</p>}
       </div>
       <div className={`p-3 rounded-xl ${color}`}>
         <Icon className="w-6 h-6" />
@@ -26,10 +26,10 @@ const BarChart = ({ data }) => {
     <div className="space-y-3">
       {data.map((item, i) => (
         <div key={i} className="flex items-center gap-4">
-          <div className="w-24 text-sm text-slate-500 dark:text-surface-400 truncate text-right">
+          <div className="w-24 text-sm text-gray-500 dark:text-slate-400 truncate text-right">
             {item.name}
           </div>
-          <div className="flex-1 h-8 bg-slate-200 dark:bg-surface-800 rounded-lg overflow-hidden">
+          <div className="flex-1 h-8 bg-gray-100 dark:bg-white/[0.06] rounded-lg overflow-hidden">
           <div
               className="h-full bg-gradient-to-r from-primary-500 to-purple-600 rounded-lg transition-all duration-500"
               style={{
@@ -37,7 +37,7 @@ const BarChart = ({ data }) => {
               }}
             />
           </div>
-          <div className="w-12 text-sm font-medium text-right">{item.count}</div>
+          <div className="w-12 text-sm font-bold text-gray-700 dark:text-white text-right">{item.count}</div>
         </div>
       ))}
     </div>
@@ -60,7 +60,7 @@ const DonutChart = ({ total, completed }) => {
             cy="80"
             r={radius}
             fill="none"
-            stroke="#2a2a3a"
+            stroke="#1e1e2e"
             strokeWidth="20"
           />
           <circle
@@ -83,26 +83,26 @@ const DonutChart = ({ total, completed }) => {
           </defs>
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-3xl font-bold">{percent}%</span>
-          <span className="text-xs text-slate-500 dark:text-surface-500">completado</span>
+          <span className="text-3xl font-extrabold text-gray-900 dark:text-white">{percent}%</span>
+          <span className="text-xs text-gray-500 dark:text-slate-500">completado</span>
         </div>
       </div>
       <div className="space-y-3">
         <div className="flex items-center gap-3">
           <div className="w-3 h-3 rounded-full bg-primary-500" />
-          <span className="text-sm">
+          <span className="text-sm text-gray-700 dark:text-slate-300">
             Completadas: <strong>{completed}</strong>
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="w-3 h-3 rounded-full bg-slate-400 dark:bg-surface-600" />
-          <span className="text-sm">
+          <div className="w-3 h-3 rounded-full bg-gray-300 dark:bg-white/[0.15]" />
+          <span className="text-sm text-gray-700 dark:text-slate-300">
             Pendientes: <strong>{pending}</strong>
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="w-3 h-3 rounded-full bg-slate-800 dark:bg-surface-950" />
-          <span className="text-sm">
+          <div className="w-3 h-3 rounded-full bg-gray-400 dark:bg-white/[0.3]" />
+          <span className="text-sm text-gray-700 dark:text-slate-300">
             Totales: <strong>{total}</strong>
           </span>
         </div>
@@ -142,7 +142,7 @@ const LineChart = ({ data }) => {
             y1={`${p}%`}
             x2="100%"
             y2={`${p}%`}
-            stroke="#2a2a3a"
+            stroke="#1e1e2e"
             strokeDasharray="4"
           />
         ))}
@@ -168,13 +168,13 @@ const LineChart = ({ data }) => {
             cy={height - (d.count / max) * height}
             r="5"
             fill="#6c63ff"
-            stroke="white"
+            stroke="#fff"
             strokeWidth="2"
           />
         ))}
       </svg>
 
-      <div className="flex justify-between mt-2 text-xs text-slate-500 dark:text-surface-500">
+      <div className="flex justify-between mt-2 text-xs text-gray-500 dark:text-slate-500">
         {data.map((d, i) => (
           <span key={i} className="truncate">
             {typeof d._id === 'string' ? d._id.split("-W")[0] : `Sem ${i+1}`}
@@ -236,7 +236,7 @@ export default function Stats() {
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold gradient-text mb-2">Estadísticas</h1>
-        <p className="text-slate-500 dark:text-surface-500">Tu actividad en ShareNotes</p>
+        <p className="text-gray-500 dark:text-slate-400">Tu actividad en ShareNotes</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -244,67 +244,67 @@ export default function Stats() {
           title="Total de notas"
           value={stats.totalNotes}
           icon={FileText}
-          color="bg-primary-500/10 text-primary-400"
+          color="bg-primary-500/10 text-primary-500 dark:text-primary-400"
         />
         <StatCard
           title="Tareas completadas"
           value={stats.tasks?.completed || 0}
           icon={CheckSquare}
-          color="bg-green-500/10 text-green-400"
+          color="bg-green-500/10 text-green-500 dark:text-green-400"
           subtitle={`de ${stats.tasks?.total || 0} totales`}
         />
         <StatCard
           title="Etiquetas usadas"
           value={tagData.length}
           icon={Tag}
-          color="bg-purple-500/10 text-purple-400"
+          color="bg-purple-500/10 text-purple-500 dark:text-purple-400"
         />
         <StatCard
           title="Cuadernos"
           value={notebookData.length}
           icon={Calendar}
-          color="bg-amber-500/10 text-amber-400"
+          color="bg-amber-500/10 text-amber-500 dark:text-amber-400"
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6">
-          <h3 className="font-semibold text-lg mb-6">Progreso de tareas</h3>
+        <div className="bg-white dark:bg-[#0d0b1f] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-6">
+          <h3 className="font-bold text-gray-800 dark:text-white text-lg mb-6">Progreso de tareas</h3>
           <DonutChart
             total={stats.tasks?.total || 0}
             completed={stats.tasks?.completed || 0}
           />
         </div>
 
-        <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6">
-          <h3 className="font-semibold text-lg mb-6">Actividad reciente (últimas 8 semanas)</h3>
+        <div className="bg-white dark:bg-[#0d0b1f] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-6">
+          <h3 className="font-bold text-gray-800 dark:text-white text-lg mb-6">Actividad reciente (últimas 8 semanas)</h3>
           <LineChart data={stats.byWeek || []} />
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {categoryData.length > 0 && (
-          <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6">
-            <h3 className="font-semibold text-lg mb-6">Notas por categoría</h3>
+          <div className="bg-white dark:bg-[#0d0b1f] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-6">
+            <h3 className="font-bold text-gray-800 dark:text-white text-lg mb-6">Notas por categoría</h3>
             <BarChart data={categoryData} />
           </div>
         )}
 
         {notebookData.length > 0 && (
-          <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6">
-            <h3 className="font-semibold text-lg mb-6">Notas por cuaderno</h3>
+          <div className="bg-white dark:bg-[#0d0b1f] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-6">
+            <h3 className="font-bold text-gray-800 dark:text-white text-lg mb-6">Notas por cuaderno</h3>
             <BarChart data={notebookData} />
           </div>
         )}
 
         {tagData.length > 0 && (
-          <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6 lg:col-span-2">
-            <h3 className="font-semibold text-lg mb-6">Etiquetas más usadas</h3>
+          <div className="bg-white dark:bg-[#0d0b1f] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-6 lg:col-span-2">
+            <h3 className="font-bold text-gray-800 dark:text-white text-lg mb-6">Etiquetas más usadas</h3>
             <div className="flex flex-wrap gap-2">
               {tagData.map((tag, i) => (
                 <span
                   key={i}
-                  className="px-4 py-2 bg-primary-500/10 text-primary-400 rounded-xl text-sm font-medium"
+                  className="px-4 py-2 bg-primary-500/10 text-primary-500 dark:text-primary-400 rounded-xl text-sm font-bold"
                 >
                   #{tag.name} ({tag.count})
                 </span>
