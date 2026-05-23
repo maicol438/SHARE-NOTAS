@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BookOpen, Shield, ArrowRight, Sparkles, Moon, Sun, GraduationCap, Users, FileText, LogOut, Zap, TrendingUp, Smartphone } from "lucide-react";
 import { useDarkMode } from "../hooks/useDarkMode.js";
