@@ -1,337 +1,161 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  Home,
+  User,
+  BookOpen,
+  Tag,
+  StickyNote,
+  Star,
   CheckSquare,
-  FolderOpen,
-  Calendar,
+  LogOut,
   Search,
   BarChart3,
-  User,
-  ChevronDown,
-  Plus,
-  Star,
-  Trash2,
+  FolderOpen,
   Users,
-  Trash,
   Shield,
-  StickyNote,
-  PanelLeftClose,
-  PanelLeft,
+  Calendar,
 } from "lucide-react";
-import useNoteStore from "../../stores/useNoteStore";
 import useAuthStore from "../../stores/useAuthStore";
+import { showToast } from "../../utils/toast.jsx";
 
 const navItems = [
-  { id: "home", label: "Mis Notas", icon: StickyNote, path: "/dashboard" },
-  { id: "favorites", label: "Favoritos", icon: Star, path: "/dashboard?tab=favorites" },
-  { id: "tasks", label: "Tareas", icon: CheckSquare, path: "/dashboard/tasks" },
-  { id: "calendar", label: "Calendario", icon: Calendar, path: "/dashboard/calendar" },
+  { id: "perfil",       label: "Perfil",        icon: User,       path: "/dashboard/profile" },
+  { id: "docs",         label: "Documentación",  icon: BookOpen,   path: "/dashboard" },
+  { id: "categorias",   label: "Categorías",     icon: Tag,        path: "/dashboard?view=categories" },
+  { id: "notas",        label: "Mis Notas",      icon: StickyNote, path: "/dashboard" },
+  { id: "favoritos",    label: "Favoritos",      icon: Star,       path: "/dashboard?tab=favorites" },
+  { id: "tareas",       label: "Tareas",         icon: CheckSquare,path: "/dashboard/tasks" },
 ];
 
-const moreItems = [
-  { id: "files", label: "Archivos", icon: FolderOpen, path: "/dashboard/files" },
-  { id: "shared", label: "Compartido", icon: Users, path: "/dashboard/shared" },
-  { id: "search", label: "Buscar", icon: Search, path: "/dashboard/search" },
-  { id: "stats", label: "Estadísticas", icon: BarChart3, path: "/dashboard/stats" },
-  { id: "trash", label: "Papelera", icon: Trash2, path: "/dashboard?tab=trash" },
+const extraItems = [
+  { id: "buscar",       label: "Buscar",         icon: Search,     path: "/dashboard/search" },
+  { id: "archivos",     label: "Archivos",       icon: FolderOpen, path: "/dashboard/files" },
+  { id: "compartido",   label: "Compartido",     icon: Users,      path: "/dashboard/shared" },
+  { id: "estadisticas", label: "Estadísticas",   icon: BarChart3,  path: "/dashboard/stats" },
+  { id: "calendario",   label: "Calendario",     icon: Calendar,   path: "/dashboard/calendar" },
 ];
 
 const mobileNavItems = [
-  { id: "home", label: "Notas", icon: StickyNote, path: "/dashboard" },
-  { id: "search", label: "Buscar", icon: Search, path: "/dashboard/search" },
-  { id: "tasks", label: "Tareas", icon: CheckSquare, path: "/dashboard/tasks" },
-  { id: "profile", label: "Perfil", icon: User, path: "/dashboard/profile" },
+  { id: "notas",      label: "Notas",   icon: StickyNote, path: "/dashboard" },
+  { id: "buscar",     label: "Buscar",  icon: Search,     path: "/dashboard/search" },
+  { id: "tareas",     label: "Tareas",  icon: CheckSquare,path: "/dashboard/tasks" },
+  { id: "perfil",     label: "Perfil",  icon: User,       path: "/dashboard/profile" },
 ];
 
 export default function Sidebar({ onNavClick }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { categories = [], notebooks = [], fetchCategories, fetchNotebooks, createNotebook, deleteNotebook } = useNoteStore();
-  const user = useAuthStore((s) => s.user);
+  const { user, logout } = useAuthStore();
   const isAdmin = user?.role === "admin";
-
-  const [notebooksOpen, setNotebooksOpen] = useState(true);
-  const [categoriesOpen, setCategoriesOpen] = useState(true);
-  const [collapsed, setCollapsed] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newNotebookName, setNewNotebookName] = useState("");
+  const [showLogout, setShowLogout] = useState(false);
 
   const isActive = (path) => {
-    if (path.startsWith("/dashboard?")) return location.search.includes(path.split("?")[1]);
+    if (path.includes("?")) {
+      const [base, query] = path.split("?");
+      return location.pathname === base && location.search.includes(query);
+    }
     if (path === "/dashboard") return location.pathname === "/dashboard" && !location.search;
     return location.pathname === path || location.pathname.startsWith(path + "/");
   };
 
   const handleClick = () => onNavClick?.();
 
-  useEffect(() => {
-    fetchCategories();
-    fetchNotebooks();
-  }, []);
+  const handleLogout = async () => {
+    setShowLogout(false);
+    await logout();
+    showToast("Sesión cerrada", "success");
+    navigate("/login");
+  };
 
-  const NavLink = ({ item, compact }) => {
+  const NavItem = ({ item }) => {
     const Icon = item.icon;
     const active = isActive(item.path);
     return (
       <Link
         to={item.path}
         onClick={handleClick}
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 group relative overflow-hidden
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative text-sm font-semibold
           ${active
-            ? "bg-primary-500/10 dark:bg-primary-500/15 text-primary-600 dark:text-primary-400 font-bold border border-primary-500/20 dark:border-primary-500/10 shadow-sm"
-            : "text-gray-500 dark:text-dark-400 hover:text-gray-900 dark:hover:text-dark-100 hover:bg-gray-200/40 dark:hover:bg-dark-800/40 border border-transparent"
+            ? "bg-primary-500/15 text-primary-400 border border-primary-500/20 shadow-sm shadow-primary-500/10"
+            : "text-slate-400 hover:text-white hover:bg-white/[0.05] border border-transparent"
           }`}
       >
-        {/* Active accent bar */}
-        {active && !compact && (
-          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-gradient-to-b from-primary-500 to-purple-500 shadow-lg shadow-primary-500/50" />
+        {active && (
+          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-gradient-to-b from-primary-400 to-purple-500 shadow-lg shadow-primary-500/50" />
         )}
-        <Icon className={`w-[18px] h-[18px] flex-shrink-0 transition-transform duration-300 group-hover:scale-110 ${active ? "text-primary-500 dark:text-primary-400" : "text-gray-400 dark:text-dark-500 group-hover:text-primary-500"}`} />
-        {!compact && <span className="text-sm tracking-wide">{item.label}</span>}
-        {active && !compact && (
-          <span className="absolute right-3 w-1.5 h-1.5 rounded-full bg-primary-500 dark:bg-primary-400 shadow-lg shadow-primary-500 animate-pulse-subtle" />
+        <Icon className={`w-[18px] h-[18px] flex-shrink-0 transition-colors ${active ? "text-primary-400" : "text-slate-500 group-hover:text-primary-400"}`} />
+        <span>{item.label}</span>
+        {active && (
+          <span className="absolute right-3 w-1.5 h-1.5 rounded-full bg-primary-400 shadow-sm shadow-primary-400 animate-pulse" />
         )}
       </Link>
     );
   };
 
-  const SectionToggle = ({ label, open, onToggle, onAdd }) => (
-    <div className="flex items-center justify-between px-3 mb-2 mt-4 first:mt-0">
-      <span className="text-[10px] font-bold text-gray-400 dark:text-dark-500 uppercase tracking-[0.15em]">{label}</span>
-      <div className="flex items-center gap-0.5">
-        {onAdd && (
-          <button
-            onClick={onAdd}
-            className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-800/60 text-gray-400 dark:text-dark-500 hover:text-primary-500 dark:hover:text-primary-400 transition-all"
-            title="Añadir"
-          >
-            <Plus className="w-3.5 h-3.5" />
-          </button>
-        )}
-        <button
-          onClick={onToggle}
-          className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-800/60 text-gray-400 dark:text-dark-500 hover:text-gray-600 dark:hover:text-dark-300 transition-all"
-        >
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${open ? "" : "-rotate-90"}`} />
-        </button>
-      </div>
-    </div>
-  );
-
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside
-        className={`hidden lg:flex flex-col h-full bg-white/85 dark:bg-[#070714]/90 backdrop-blur-2xl border-r border-gray-200/50 dark:border-white/[0.06] transition-all duration-300 ease-tesla relative z-20 shadow-xl shadow-gray-200/[0.06] dark:shadow-black/[0.12] ${
-          collapsed ? "w-[76px]" : "w-[240px]"
-        }`}
-      >
-        {/* Header/Logo */}
-        <div className={`flex items-center border-b border-gray-200/40 dark:border-white/[0.04] ${collapsed ? "justify-center p-4" : "justify-between px-5 py-4.5"}`}>
-          {!collapsed && (
-            <button onClick={() => navigate("/")} className="flex items-center gap-3 group">
-              <div className="hex-logo" style={{ width: 36, height: 36 }}>
-                <div className="hex-logo-inner" style={{ width: 32, height: 32 }}>
-                  <span className="font-extrabold text-xs bg-gradient-to-br from-primary-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">SN</span>
-                </div>
+      <aside className="hidden lg:flex flex-col h-full w-[220px] bg-[#070714]/90 backdrop-blur-2xl border-r border-white/[0.06] relative z-20 shadow-2xl shadow-black/30">
+        {/* Logo */}
+        <div className="flex items-center gap-3 px-5 py-5 border-b border-white/[0.06]">
+          <button onClick={() => navigate("/")} className="flex items-center gap-3 group w-full">
+            <div className="hex-logo" style={{ width: 38, height: 38 }}>
+              <div className="hex-logo-inner" style={{ width: 34, height: 34 }}>
+                <span className="font-extrabold text-sm bg-gradient-to-br from-primary-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">SN</span>
               </div>
-              <span className="font-bold text-sm tracking-wide text-gray-800 dark:text-dark-100 group-hover:text-primary-500 transition-colors">
-                ShareNotes
-              </span>
-            </button>
-          )}
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-xl hover:bg-gray-200/50 dark:hover:bg-dark-800 text-gray-400 dark:text-dark-500 hover:text-gray-800 dark:hover:text-dark-100 transition-all border border-transparent dark:hover:border-white/[0.04]"
-          >
-            {collapsed ? <PanelLeft className="w-[18px] h-[18px]" /> : <PanelLeftClose className="w-[18px] h-[18px]" />}
+            </div>
+            <span className="font-bold text-base tracking-wide text-white group-hover:text-primary-300 transition-colors">ShareNotes</span>
           </button>
         </div>
 
-        {/* Navigation Content */}
-        <div className="flex-1 overflow-y-auto py-5 px-3 scrollbar-thin space-y-6">
-          {/* Quick note button */}
-          {!collapsed && (
-            <button
-              onClick={() => {
-                handleClick();
-                navigate("/dashboard");
-              }}
-              className="flex items-center justify-center gap-2.5 w-full px-4 py-3 bg-gradient-to-r from-primary-600 via-primary-500 to-purple-600 hover:from-primary-500 hover:via-purple-500 hover:to-primary-400 text-white rounded-xl text-sm font-bold shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30 hover:shadow-purple-500/20 hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98] relative overflow-hidden group/newbtn"
-            >
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/newbtn:translate-x-full transition-transform duration-700" />
-              <Plus className="w-4 h-4 relative z-10" />
-              <span className="relative z-10">Nueva nota</span>
-            </button>
-          )}
+        {/* Nav items */}
+        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 scrollbar-thin">
+          {navItems.map((item) => <NavItem key={item.id} item={item} />)}
 
-          {/* Main nav */}
-          <nav className="space-y-1">
-            {!collapsed && <SectionToggle label="General" open={true} />}
-            {navItems.map((item) => (
-              <NavLink key={item.id} item={item} compact={collapsed} />
-            ))}
-          </nav>
-
-          {/* Notebooks */}
-          <div>
-            {!collapsed && (
-              <SectionToggle
-                label="Cuadernos"
-                open={notebooksOpen}
-                onToggle={() => setNotebooksOpen(!notebooksOpen)}
-                onAdd={() => {
-                  setNewNotebookName("");
-                  setShowCreateModal(true);
-                }}
-              />
-            )}
-            {notebooksOpen && (
-              <div className="space-y-1">
-                {(notebooks || []).map((nb) => {
-                  const active = isActive(`/dashboard?notebook=${nb._id}`);
-                  return (
-                    <div
-                      key={nb._id}
-                      className={`group flex items-center justify-between px-3 py-2 rounded-xl transition-all border relative overflow-hidden
-                        ${active
-                          ? "bg-primary-500/10 dark:bg-primary-500/15 border-primary-500/20 dark:border-primary-500/10 text-primary-600 dark:text-primary-400 font-bold"
-                          : "hover:bg-gray-200/40 dark:hover:bg-dark-800/40 text-gray-500 dark:text-dark-400 hover:text-gray-900 dark:hover:text-dark-100 border-transparent"
-                        }`}
-                    >
-                      {active && (
-                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-gradient-to-b from-primary-500 to-purple-500 shadow-lg shadow-primary-500/50" />
-                      )}
-                      <Link to={`/dashboard?notebook=${nb._id}`} onClick={handleClick} className="flex items-center gap-2.5 flex-1 min-w-0">
-                        <div
-                          className="w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm transition-transform group-hover:scale-110"
-                          style={{ backgroundColor: nb.color || "#6c63ff" }}
-                        />
-                        {!collapsed && <span className="text-sm truncate leading-none">{nb.title || nb.name}</span>}
-                      </Link>
-                      {!collapsed && (
-                        <button
-                          onClick={async (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            await deleteNotebook(nb._id);
-                          }}
-                          className="opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-500 transition-all border border-transparent hover:border-red-500/10"
-                        >
-                          <Trash className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* Categories */}
-          <div>
-            {!collapsed && (
-              <SectionToggle label="Categorías" open={categoriesOpen} onToggle={() => setCategoriesOpen(!categoriesOpen)} />
-            )}
-            {categoriesOpen && (
-              <div className="space-y-1">
-                {(categories || []).map((cat) => (
-                  <NavLink
-                    key={cat._id}
-                    compact={collapsed}
-                    item={{
-                      id: cat._id,
-                      label: cat.name,
-                      icon: () => (
-                        <div
-                          className="w-2.5 h-2.5 rounded-full transition-transform group-hover:scale-110"
-                          style={{ backgroundColor: cat.color || "#6c63ff" }}
-                        />
-                      ),
-                      path: `/dashboard?category=${cat._id}`,
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* More */}
-          <nav className="space-y-1">
-            {!collapsed && <SectionToggle label="Más" open={true} />}
-            {moreItems.map((item) => (
-              <NavLink key={item.id} item={item} compact={collapsed} />
-            ))}
+          {/* Divider + extra items */}
+          <div className="pt-3 mt-3 border-t border-white/[0.04] space-y-1">
+            <span className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em] px-3 mb-2 block">Más opciones</span>
+            {extraItems.map((item) => <NavItem key={item.id} item={item} />)}
             {isAdmin && (
-              <NavLink
-                item={{ id: "admin", label: "Admin Panel", icon: Shield, path: "/dashboard/admin" }}
-                compact={collapsed}
-              />
+              <NavItem item={{ id: "admin", label: "Admin Panel", icon: Shield, path: "/dashboard/admin" }} />
             )}
-          </nav>
-        </div>
+          </div>
+        </nav>
 
-        {/* User Card at bottom */}
-        {user && !collapsed && (
-          <div className="p-3 border-t border-gray-200/40 dark:border-white/[0.04]">
+        {/* User card + logout */}
+        <div className="p-3 border-t border-white/[0.06] space-y-1">
+          {user && (
             <Link
               to="/dashboard/profile"
               onClick={handleClick}
-              className="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-gray-100 dark:hover:bg-dark-850/60 transition-all group border border-transparent hover:border-gray-200 dark:hover:border-white/[0.04]"
+              className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/[0.05] transition-all group border border-transparent hover:border-white/[0.06]"
             >
               {user.avatar ? (
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  referrerPolicy="no-referrer"
-                  className="w-8.5 h-8.5 rounded-full object-cover ring-2 ring-primary-500/20 group-hover:ring-primary-500/40 transition-all duration-300"
-                />
+                <img src={user.avatar} alt={user.name} referrerPolicy="no-referrer"
+                  className="w-9 h-9 rounded-full object-cover ring-2 ring-primary-500/20 group-hover:ring-primary-500/40 transition-all" />
               ) : (
-                <div className="w-8.5 h-8.5 rounded-full bg-primary-500/10 dark:bg-primary-500/20 flex items-center justify-center ring-2 ring-primary-500/10 group-hover:ring-primary-500/30 transition-all duration-300">
-                  <span className="text-primary-600 dark:text-primary-400 font-bold text-sm uppercase">
-                    {user.name?.charAt(0)}
-                  </span>
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-600 to-purple-600 flex items-center justify-center ring-2 ring-primary-500/20 group-hover:ring-primary-500/40 transition-all">
+                  <span className="text-white font-bold text-sm uppercase">{user.name?.charAt(0)}</span>
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-gray-800 dark:text-dark-200 truncate group-hover:text-primary-500 transition-colors leading-snug">
-                  {user.name}
-                </p>
-                <p className="text-2xs text-gray-400 dark:text-dark-500 truncate leading-none mt-0.5">{user.email}</p>
+                <p className="text-sm font-bold text-white truncate group-hover:text-primary-300 transition-colors leading-snug">{user.name}</p>
+                <p className="text-[10px] text-slate-500 truncate">{user.email}</p>
               </div>
             </Link>
-          </div>
-        )}
-
-        {user && collapsed && (
-          <div className="p-3 border-t border-gray-200/40 dark:border-white/[0.04] flex justify-center">
-            <Link
-              to="/dashboard/profile"
-              onClick={handleClick}
-              className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-dark-850/60 transition-all duration-300"
-            >
-              {user.avatar ? (
-                <img
-                  src={user.avatar}
-                  alt=""
-                  referrerPolicy="no-referrer"
-                  className="w-8.5 h-8.5 rounded-full object-cover ring-2 ring-primary-500/10 hover:ring-primary-500/40 transition-all"
-                />
-              ) : (
-                <div className="w-8.5 h-8.5 rounded-full bg-primary-500/10 dark:bg-primary-500/20 flex items-center justify-center ring-2 ring-primary-500/10 hover:ring-primary-500/30 transition-all">
-                  <span className="text-primary-600 dark:text-primary-400 font-bold text-sm uppercase">
-                    {user.name?.charAt(0)}
-                  </span>
-                </div>
-              )}
-            </Link>
-          </div>
-        )}
+          )}
+          <button
+            onClick={() => setShowLogout(true)}
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-red-400 hover:bg-red-500/10 transition-all font-semibold text-sm border border-transparent hover:border-red-500/10"
+          >
+            <LogOut className="w-[18px] h-[18px]" />
+            Cerrar Sesión
+          </button>
+        </div>
       </aside>
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-dark-900/90 backdrop-blur-2xl border-t border-gray-200/50 dark:border-white/[0.06] safe-area-bottom shadow-2xl">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#070714]/95 backdrop-blur-2xl border-t border-white/[0.06] safe-area-bottom">
         <div className="flex items-center justify-around px-2 py-2">
           {mobileNavItems.map((item) => {
             const Icon = item.icon;
@@ -341,60 +165,42 @@ export default function Sidebar({ onNavClick }) {
                 key={item.id}
                 to={item.path}
                 onClick={handleClick}
-                className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all min-w-0
-                  ${
-                    active
-                      ? "text-primary-500 dark:text-primary-400 bg-primary-500/5 font-bold"
-                      : "text-gray-400 dark:text-dark-500 hover:text-gray-800 dark:hover:text-dark-200"
-                  }`}
+                className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all
+                  ${active ? "text-primary-400 bg-primary-500/10 font-bold" : "text-slate-500 hover:text-slate-200"}`}
               >
-                <Icon className="w-5 h-5 transition-transform active:scale-90" />
-                <span className="text-[9px] tracking-wide font-semibold leading-none">{item.label}</span>
+                <Icon className="w-5 h-5" />
+                <span className="text-[9px] tracking-wide font-semibold">{item.label}</span>
               </Link>
             );
           })}
         </div>
       </nav>
 
-      {/* Create Notebook Modal */}
-      {showCreateModal && (
+      {/* Logout confirm modal */}
+      {showLogout && (
         <div
-          className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in"
-          onClick={() => setShowCreateModal(false)}
+          className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-[60] p-4 animate-fade-in"
+          onClick={() => setShowLogout(false)}
         >
           <div
-            className="bg-white dark:bg-dark-900 border border-gray-300/20 dark:border-white/[0.06] rounded-3xl p-6.5 w-full max-w-sm animate-scale-in shadow-2xl"
+            className="bg-[#0d0b1f] border border-white/[0.08] rounded-3xl p-7 w-full max-w-sm text-center shadow-2xl animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="font-extrabold text-lg text-gray-800 dark:text-dark-100 mb-4 tracking-wide">Nuevo cuaderno</h3>
-            <input
-              type="text"
-              value={newNotebookName}
-              onChange={(e) => setNewNotebookName(e.target.value)}
-              placeholder="Nombre del cuaderno"
-              className="input-field w-full mb-5 font-medium"
-              autoFocus
-              onKeyDown={async (e) => {
-                if (e.key === "Enter" && newNotebookName.trim()) {
-                  await createNotebook({ name: newNotebookName.trim(), color: "#6c63ff" });
-                  setShowCreateModal(false);
-                }
-              }}
-            />
+            <div className="flex flex-col items-center gap-3 mb-6">
+              <div className="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center">
+                <LogOut className="w-6 h-6 text-red-400" />
+              </div>
+              <h3 className="font-extrabold text-lg text-white">Cerrar sesión</h3>
+              <p className="text-sm text-slate-400">¿Estás seguro de que deseas cerrar sesión?</p>
+            </div>
             <div className="flex gap-3">
-              <button onClick={() => setShowCreateModal(false)} className="btn-secondary flex-1 font-bold">
+              <button onClick={() => setShowLogout(false)}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-white/[0.06] text-slate-300 font-bold hover:bg-white/[0.1] transition-all border border-white/[0.06]">
                 Cancelar
               </button>
-              <button
-                onClick={async () => {
-                  if (!newNotebookName.trim()) return;
-                  await createNotebook({ name: newNotebookName.trim(), color: "#6c63ff" });
-                  setShowCreateModal(false);
-                }}
-                disabled={!newNotebookName.trim()}
-                className="btn-primary flex-1 font-bold"
-              >
-                Crear
+              <button onClick={handleLogout}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-red-500/20 text-red-400 font-bold hover:bg-red-500/30 transition-all border border-red-500/20">
+                Cerrar sesión
               </button>
             </div>
           </div>
