@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Mail, Lock, User, Eye, EyeOff, ArrowLeft, LogOut, StickyNote, Sparkles } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, ArrowLeft, LogOut } from "lucide-react";
 import useAuthStore from "../stores/useAuthStore.js";
 import Button from "../components/ui/Button.jsx";
+import NeuralBackground from "../components/ui/NeuralBackground.jsx";
 import { showToast } from "../utils/toast.jsx";
 import api from "../api/axios.js";
 
@@ -80,44 +81,21 @@ const Register = () => {
 
   if (isAuthenticated && user) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50 dark:bg-slate-950">
-        <div className="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center">
-          <div className="w-14 h-14 mx-auto bg-primary-500 rounded-2xl flex items-center justify-center mb-5">
-            <StickyNote className="w-7 h-7 text-white" />
-          </div>
-          <h1 className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-1">Ya has iniciado sesión</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">Estás conectado como</p>
-          <p className="font-medium text-slate-700 dark:text-slate-300 mb-6">{user.email}</p>
-          <div className="flex gap-3 justify-center">
-            <Button onClick={() => navigate("/dashboard")}>Ir al Dashboard</Button>
-            <Button variant="secondary" onClick={async () => { await logout(); navigate("/login"); }} icon={LogOut}>Cerrar sesión</Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const particles = [
-    { left: "10%", top: "8%", size: 160, opacity: 0.2, delay: "0.2s", color: "bg-primary-400/40 dark:bg-primary-500/20" },
-    { left: "80%", top: "15%", size: 150, opacity: 0.18, delay: "0.8s", color: "bg-purple-400/40 dark:bg-purple-500/20" },
-    { left: "5%", top: "70%", size: 200, opacity: 0.15, delay: "0.4s", color: "bg-pink-400/30 dark:bg-pink-500/15" },
-    { left: "85%", top: "75%", size: 170, opacity: 0.16, delay: "1.2s", color: "bg-indigo-400/30 dark:bg-indigo-500/15" },
-  ];
-
-  if (isAuthenticated && user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary-5 via-gray-50 to-gray-50 dark:from-dark-950 dark:via-dark-900 dark:to-dark-950 relative overflow-hidden animate-fade-in">
-        <div className="w-full max-w-md animate-slide-up">
-          <div className="card p-8 text-center bg-white/80 dark:bg-dark-900/80 backdrop-blur-2xl border border-white/60 dark:border-white/[0.06] rounded-3xl shadow-2xl">
-            <div className="w-16 h-16 mx-auto bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/30 mb-4 animate-float">
-              <StickyNote className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold gradient-text mb-2">Ya has iniciado sesión</h1>
-            <p className="text-gray-500 dark:text-dark-400 mb-1">Estás conectado como</p>
-            <p className="font-semibold text-gray-900 dark:text-white mb-6">{user.email}</p>
-            <div className="flex gap-3 justify-center">
-              <Button onClick={() => navigate("/dashboard")} className="px-6">Ir al Dashboard</Button>
-              <Button variant="secondary" onClick={async () => { await logout(); navigate("/login"); }} icon={LogOut}>Cerrar sesión</Button>
+      <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden animate-fade-in">
+        <NeuralBackground />
+        <div className="w-full max-w-md animate-slide-up z-10">
+          <div className="card-neon">
+            <div className="card-neon-inner p-8 text-center">
+              <div className="w-16 h-16 mx-auto bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/30 mb-4 animate-float">
+                <span className="font-extrabold text-2xl text-white">SN</span>
+              </div>
+              <h1 className="text-2xl font-bold gradient-text mb-2">Ya has iniciado sesión</h1>
+              <p className="text-gray-500 dark:text-dark-400 mb-1">Estás conectado como</p>
+              <p className="font-semibold text-gray-900 dark:text-white mb-6">{user.email}</p>
+              <div className="flex gap-3 justify-center">
+                <Button onClick={() => navigate("/dashboard")} className="px-6">Ir al Dashboard</Button>
+                <Button variant="secondary" onClick={async () => { await logout(); navigate("/login"); }} icon={LogOut}>Cerrar sesión</Button>
+              </div>
             </div>
           </div>
         </div>
@@ -126,31 +104,12 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary-50 via-purple-50/40 to-pink-50/30 dark:from-dark-950 dark:via-primary-950/20 dark:to-purple-950/20 relative overflow-hidden">
-      {/* Floating Particles */}
-      {particles.map((p, i) => (
-        <div
-          key={i}
-          className={`absolute rounded-full blur-3xl animate-float-particle pointer-events-none ${p.color}`}
-          style={{
-            width: p.size,
-            height: p.size,
-            top: p.top,
-            left: p.left,
-            opacity: p.opacity,
-            animationDelay: p.delay,
-          }}
-        />
-      ))}
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Neural Network Background */}
+      <NeuralBackground />
 
-      {/* Subtle grid overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.025] dark:opacity-[0.04] pointer-events-none"
-        style={{
-          backgroundImage: `linear-gradient(rgba(99,102,241,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.5) 1px, transparent 1px)`,
-          backgroundSize: '64px 64px',
-        }}
-      />
+      {/* Subtle gradient overlay */}
+      <div className="fixed inset-0 bg-gradient-to-br from-transparent via-purple-500/5 to-pink-500/5 dark:via-primary-950/10 dark:to-purple-950/10 pointer-events-none z-[1]" />
 
       {/* Back link */}
       <Link
@@ -165,22 +124,18 @@ const Register = () => {
 
       {/* Card Container */}
       <div className="w-full max-w-[420px] relative z-10 animate-slide-up">
-        <div className="relative">
-          {/* Glow behind card */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary-500/30 via-purple-500/20 to-pink-500/30 dark:from-primary-500/15 dark:via-purple-500/10 dark:to-pink-500/15 rounded-3xl blur-2xl opacity-60" />
-
-          <div className="relative bg-white/80 dark:bg-dark-900/80 backdrop-blur-2xl border border-white/60 dark:border-white/[0.06] rounded-3xl shadow-2xl p-8 md:p-9">
+        <div className="card-neon">
+          <div className="card-neon-inner p-8 md:p-9">
             {/* Card shine */}
             <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
               <div className="absolute -top-[120%] -left-[120%] w-[300%] h-[300%] bg-gradient-to-br from-white/[0.07] via-transparent to-transparent rotate-12 animate-[shimmer_4s_ease-in-out_infinite]" />
             </div>
 
-            {/* Logo */}
+            {/* Logo - Hexagonal SN */}
             <div className="flex flex-col items-center gap-4 mb-8 animate-slide-up delay-100">
-              <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-br from-primary-500 via-purple-600 to-pink-500 rounded-2xl opacity-40 blur-xl group-hover:opacity-60 transition-opacity duration-500 animate-pulse-glow" />
-                <div className="relative w-16 h-16 bg-gradient-to-br from-primary-500 via-purple-600 to-pink-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-primary-500/40 animate-float">
-                  <StickyNote className="w-8 h-8 text-white drop-shadow-lg" />
+              <div className="hex-logo animate-float">
+                <div className="hex-logo-inner">
+                  <span className="font-extrabold text-2xl bg-gradient-to-br from-primary-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">SN</span>
                 </div>
               </div>
             </div>
@@ -352,6 +307,7 @@ const Register = () => {
                 <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-purple-500 group-hover/inline:w-full transition-all duration-300 rounded-full" />
               </Link>
             </p>
+            </div>
           </div>
         </div>
       </div>

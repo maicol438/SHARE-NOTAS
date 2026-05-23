@@ -77,16 +77,20 @@ export default function Sidebar({ onNavClick }) {
       <Link
         to={item.path}
         onClick={handleClick}
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 group relative
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 group relative overflow-hidden
           ${active
             ? "bg-primary-500/10 dark:bg-primary-500/15 text-primary-600 dark:text-primary-400 font-bold border border-primary-500/20 dark:border-primary-500/10 shadow-sm"
             : "text-gray-500 dark:text-dark-400 hover:text-gray-900 dark:hover:text-dark-100 hover:bg-gray-200/40 dark:hover:bg-dark-800/40 border border-transparent"
           }`}
       >
+        {/* Active accent bar */}
+        {active && !compact && (
+          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-gradient-to-b from-primary-500 to-purple-500 shadow-lg shadow-primary-500/50" />
+        )}
         <Icon className={`w-[18px] h-[18px] flex-shrink-0 transition-transform duration-300 group-hover:scale-110 ${active ? "text-primary-500 dark:text-primary-400" : "text-gray-400 dark:text-dark-500 group-hover:text-primary-500"}`} />
         {!compact && <span className="text-sm tracking-wide">{item.label}</span>}
         {active && !compact && (
-          <span className="absolute right-3 w-1.5 h-1.5 rounded-full bg-primary-500 dark:bg-primary-400 shadow-lg shadow-primary-500" />
+          <span className="absolute right-3 w-1.5 h-1.5 rounded-full bg-primary-500 dark:bg-primary-400 shadow-lg shadow-primary-500 animate-pulse-subtle" />
         )}
       </Link>
     );
@@ -119,7 +123,7 @@ export default function Sidebar({ onNavClick }) {
     <>
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden lg:flex flex-col h-full bg-white/80 dark:bg-dark-900/80 backdrop-blur-2xl border-r border-gray-200/50 dark:border-white/[0.06] transition-all duration-300 ease-tesla relative z-20 shadow-xl shadow-gray-200/[0.04] dark:shadow-black/[0.08] ${
+        className={`hidden lg:flex flex-col h-full bg-white/85 dark:bg-[#070714]/90 backdrop-blur-2xl border-r border-gray-200/50 dark:border-white/[0.06] transition-all duration-300 ease-tesla relative z-20 shadow-xl shadow-gray-200/[0.06] dark:shadow-black/[0.12] ${
           collapsed ? "w-[76px]" : "w-[240px]"
         }`}
       >
@@ -127,10 +131,9 @@ export default function Sidebar({ onNavClick }) {
         <div className={`flex items-center border-b border-gray-200/40 dark:border-white/[0.04] ${collapsed ? "justify-center p-4" : "justify-between px-5 py-4.5"}`}>
           {!collapsed && (
             <button onClick={() => navigate("/")} className="flex items-center gap-3 group">
-              <div className="relative group">
-                <div className="absolute -inset-0.5 bg-gradient-to-br from-primary-500 to-purple-500 rounded-lg opacity-40 blur-sm group-hover:opacity-75 transition-all duration-300" />
-                <div className="relative w-8 h-8 bg-gradient-to-br from-primary-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md shadow-primary-500/20">
-                  <StickyNote className="w-4 h-4 text-white" />
+              <div className="hex-logo" style={{ width: 36, height: 36 }}>
+                <div className="hex-logo-inner" style={{ width: 32, height: 32 }}>
+                  <span className="font-extrabold text-xs bg-gradient-to-br from-primary-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">SN</span>
                 </div>
               </div>
               <span className="font-bold text-sm tracking-wide text-gray-800 dark:text-dark-100 group-hover:text-primary-500 transition-colors">
@@ -155,10 +158,11 @@ export default function Sidebar({ onNavClick }) {
                 handleClick();
                 navigate("/dashboard");
               }}
-              className="flex items-center justify-center gap-2.5 w-full px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white rounded-xl text-sm font-bold shadow-md shadow-primary-500/10 hover:shadow-lg hover:shadow-primary-500/20 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98]"
+              className="flex items-center justify-center gap-2.5 w-full px-4 py-3 bg-gradient-to-r from-primary-600 via-primary-500 to-purple-600 hover:from-primary-500 hover:via-purple-500 hover:to-primary-400 text-white rounded-xl text-sm font-bold shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30 hover:shadow-purple-500/20 hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98] relative overflow-hidden group/newbtn"
             >
-              <Plus className="w-4 h-4" />
-              <span>Nueva nota</span>
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/newbtn:translate-x-full transition-transform duration-700" />
+              <Plus className="w-4 h-4 relative z-10" />
+              <span className="relative z-10">Nueva nota</span>
             </button>
           )}
 
@@ -190,12 +194,15 @@ export default function Sidebar({ onNavClick }) {
                   return (
                     <div
                       key={nb._id}
-                      className={`group flex items-center justify-between px-3 py-2 rounded-xl transition-all border
+                      className={`group flex items-center justify-between px-3 py-2 rounded-xl transition-all border relative overflow-hidden
                         ${active
                           ? "bg-primary-500/10 dark:bg-primary-500/15 border-primary-500/20 dark:border-primary-500/10 text-primary-600 dark:text-primary-400 font-bold"
                           : "hover:bg-gray-200/40 dark:hover:bg-dark-800/40 text-gray-500 dark:text-dark-400 hover:text-gray-900 dark:hover:text-dark-100 border-transparent"
                         }`}
                     >
+                      {active && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-gradient-to-b from-primary-500 to-purple-500 shadow-lg shadow-primary-500/50" />
+                      )}
                       <Link to={`/dashboard?notebook=${nb._id}`} onClick={handleClick} className="flex items-center gap-2.5 flex-1 min-w-0">
                         <div
                           className="w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm transition-transform group-hover:scale-110"

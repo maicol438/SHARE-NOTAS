@@ -59,10 +59,11 @@ const Navbar = ({ onMenuToggle }) => {
           {/* Theme Toggle */}
           <button
             onClick={toggle}
-            className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-dark-800 text-gray-500 dark:text-dark-400 hover:text-gray-900 dark:hover:text-dark-100 transition-all border border-transparent dark:hover:border-white/[0.04] active:scale-95"
+            className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-dark-800 text-gray-500 dark:text-dark-400 hover:text-gray-900 dark:hover:text-dark-100 transition-all border border-transparent dark:hover:border-white/[0.04] active:scale-95 relative group/theme"
             aria-label="Cambiar tema"
           >
             {isDark ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
+            <span className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-primary-500/0 via-primary-500/10 to-purple-500/0 opacity-0 group-hover/theme:opacity-100 transition-opacity duration-300" />
           </button>
 
           {/* User Menu */}
@@ -131,24 +132,25 @@ const Navbar = ({ onMenuToggle }) => {
           className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center z-[60] p-4 animate-fade-in"
           onClick={() => setShowLogoutConfirm(false)}
         >
-          <div
-            className="bg-white dark:bg-dark-900 border border-gray-300/20 dark:border-white/[0.06] rounded-3xl p-6 max-w-sm w-full animate-scale-in shadow-2xl text-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex flex-col items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center shadow-sm">
-                <LogOut className="w-5 h-5 text-red-500" />
+          <div className="max-w-sm w-full animate-scale-in" onClick={(e) => e.stopPropagation()}>
+            <div className="card-neon">
+              <div className="card-neon-inner p-7 text-center">
+                <div className="flex flex-col items-center gap-3 mb-6">
+                  <div className="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center shadow-lg shadow-red-500/10">
+                    <LogOut className="w-6 h-6 text-red-500" />
+                  </div>
+                  <h3 className="font-extrabold text-lg text-gray-800 dark:text-dark-100 tracking-wide">Cerrar sesión</h3>
+                  <p className="text-sm text-gray-500 dark:text-dark-400">¿Estás seguro de que deseas cerrar sesión?</p>
+                </div>
+                <div className="flex gap-3">
+                  <button onClick={() => setShowLogoutConfirm(false)} className="btn-secondary flex-1 font-bold">
+                    Cancelar
+                  </button>
+                  <button onClick={handleLogout} className="btn-danger flex-1 font-bold">
+                    Cerrar sesión
+                  </button>
+                </div>
               </div>
-              <h3 className="font-extrabold text-lg text-gray-800 dark:text-dark-100 tracking-wide">Cerrar sesión</h3>
-              <p className="text-sm text-gray-500 dark:text-dark-400">¿Estás seguro de que deseas cerrar sesión?</p>
-            </div>
-            <div className="flex gap-3">
-              <button onClick={() => setShowLogoutConfirm(false)} className="btn-secondary flex-1 font-bold">
-                Cancelar
-              </button>
-              <button onClick={handleLogout} className="btn-danger flex-1 font-bold">
-                Cerrar sesión
-              </button>
             </div>
           </div>
         </div>

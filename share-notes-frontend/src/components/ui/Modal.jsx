@@ -28,53 +28,69 @@ const Modal = ({ isOpen, onClose, title, children, size = "md" }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
-      {/* High-fidelity Backdrop with deep blur */}
+      {/* Backdrop with deep blur */}
       <div 
-        className="fixed inset-0 bg-black/50 dark:bg-black/75 backdrop-blur-md transition-opacity duration-300 animate-fade-in" 
+        className="fixed inset-0 transition-opacity duration-300 animate-fade-in" 
+        style={{
+          background: "rgba(5, 5, 15, 0.8)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+        }}
         onClick={handleOverlayClick} 
       />
       
-      {/* Sleek Glassmorphic Modal Container */}
-      <div 
-        className={`relative w-full ${sizes[size]} 
-        bg-white/95 dark:bg-dark-900/90 
-        backdrop-blur-2xl
-        border border-gray-200/60 dark:border-white/[0.08] 
-        rounded-2xl sm:rounded-3xl p-6 
-        shadow-2xl shadow-black/10 dark:shadow-black/50
-        mx-auto z-10 
-        transform animate-scale-in transition-all duration-300 ease-tesla`}
-      >
-        {/* Soft internal gradient glows for techy premium look */}
-        <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-primary-500/30 to-transparent pointer-events-none" />
-        
-        {/* Header */}
-        <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-200/60 dark:border-white/[0.04]">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-dark-100 tracking-tight">
-            {title}
-          </h2>
+      {/* Modal Container with neon border */}
+      <div className={`relative w-full ${sizes[size]} mx-auto z-10 animate-scale-in`}>
+        <div className="card-neon">
+          <div className="card-neon-inner rounded-3xl p-6">
+          {/* Top accent line */}
+          <div 
+            className="absolute top-0 left-1/4 right-1/4 h-[1px] pointer-events-none"
+            style={{
+              background: "linear-gradient(90deg, transparent, rgba(124,58,237,0.5), transparent)",
+            }}
+          />
           
-          {/* Close button with circular hover glow */}
-          <button 
-            onClick={onClose} 
-            className="p-2 rounded-full text-gray-400 dark:text-dark-500 
-            hover:text-gray-700 dark:hover:text-dark-200 
-            bg-gray-50/50 dark:bg-dark-800/40 
-            border border-transparent hover:border-gray-200 dark:hover:border-white/[0.08]
-            hover:rotate-90 hover:scale-105 active:scale-95
-            transition-all duration-300 ease-tesla"
-            aria-label="Cerrar modal"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-        
-        {/* Content Body */}
-        <div className="relative text-gray-700 dark:text-dark-300 max-h-[80vh] overflow-y-auto custom-scrollbar">
-          {children}
+          {/* Header */}
+          <div className="flex items-center justify-between pb-4 mb-4" style={{ borderBottom: "1px solid rgba(124,58,237,0.15)" }}>
+            <h2 className="text-lg font-bold gradient-text tracking-tight">
+              {title}
+            </h2>
+            
+            <button 
+              onClick={onClose} 
+              className="p-2 rounded-full transition-all duration-300 active:scale-95"
+              style={{
+                color: "rgba(161,161,170,0.7)",
+                background: "rgba(124,58,237,0.08)",
+                border: "1px solid rgba(124,58,237,0.15)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(124,58,237,0.2)";
+                e.currentTarget.style.borderColor = "rgba(124,58,237,0.4)";
+                e.currentTarget.style.color = "#e2e8f0";
+                e.currentTarget.style.transform = "rotate(90deg) scale(1.05)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(124,58,237,0.08)";
+                e.currentTarget.style.borderColor = "rgba(124,58,237,0.15)";
+                e.currentTarget.style.color = "rgba(161,161,170,0.7)";
+                e.currentTarget.style.transform = "rotate(0deg) scale(1)";
+              }}
+              aria-label="Cerrar modal"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          
+          {/* Content Body */}
+          <div className="relative max-h-[80vh] overflow-y-auto" style={{ color: "#c4b5fd" }}>
+            {children}
+          </div>
         </div>
       </div>
     </div>
+  </div>
   );
 };
 
