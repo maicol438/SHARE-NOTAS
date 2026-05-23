@@ -28,69 +28,37 @@ const Modal = ({ isOpen, onClose, title, children, size = "md" }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
-      {/* Backdrop with deep blur */}
       <div 
-        className="fixed inset-0 transition-opacity duration-300 animate-fade-in" 
-        style={{
-          background: "rgba(5, 5, 15, 0.8)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-        }}
+        className="fixed inset-0 bg-black/60 dark:bg-black/70 backdrop-blur-md animate-fade-in"
         onClick={handleOverlayClick} 
       />
       
-      {/* Modal Container with neon border */}
       <div className={`relative w-full ${sizes[size]} mx-auto z-10 animate-scale-in`}>
-        <div className="card-neon">
-          <div className="card-neon-inner rounded-3xl p-6">
-          {/* Top accent line */}
-          <div 
-            className="absolute top-0 left-1/4 right-1/4 h-[1px] pointer-events-none"
-            style={{
-              background: "linear-gradient(90deg, transparent, rgba(124,58,237,0.5), transparent)",
-            }}
-          />
-          
-          {/* Header */}
-          <div className="flex items-center justify-between pb-4 mb-4" style={{ borderBottom: "1px solid rgba(124,58,237,0.15)" }}>
-            <h2 className="text-lg font-bold gradient-text tracking-tight">
-              {title}
-            </h2>
+        <div className="bg-white dark:bg-[#0d0b1f] border border-gray-200 dark:border-white/[0.08] rounded-3xl shadow-xl dark:shadow-2xl dark:shadow-black/50 overflow-hidden">
+          <div className="relative">
+            <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-primary-500/50 to-transparent pointer-events-none" />
             
-            <button 
-              onClick={onClose} 
-              className="p-2 rounded-full transition-all duration-300 active:scale-95"
-              style={{
-                color: "rgba(161,161,170,0.7)",
-                background: "rgba(124,58,237,0.08)",
-                border: "1px solid rgba(124,58,237,0.15)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(124,58,237,0.2)";
-                e.currentTarget.style.borderColor = "rgba(124,58,237,0.4)";
-                e.currentTarget.style.color = "#e2e8f0";
-                e.currentTarget.style.transform = "rotate(90deg) scale(1.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(124,58,237,0.08)";
-                e.currentTarget.style.borderColor = "rgba(124,58,237,0.15)";
-                e.currentTarget.style.color = "rgba(161,161,170,0.7)";
-                e.currentTarget.style.transform = "rotate(0deg) scale(1)";
-              }}
-              aria-label="Cerrar modal"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          
-          {/* Content Body */}
-          <div className="relative max-h-[80vh] overflow-y-auto" style={{ color: "#c4b5fd" }}>
-            {children}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-white/[0.06]">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
+                {title}
+              </h2>
+              
+              <button 
+                onClick={onClose} 
+                className="p-2 rounded-full text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-200 bg-gray-100 dark:bg-white/[0.06] hover:bg-gray-200 dark:hover:bg-white/[0.1] border border-gray-200 dark:border-white/[0.06] transition-all active:scale-95"
+                aria-label="Cerrar modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <div className="px-6 py-5 max-h-[70vh] overflow-y-auto text-gray-700 dark:text-slate-300">
+              {children}
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
   );
 };
 

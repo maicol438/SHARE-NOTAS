@@ -52,16 +52,16 @@ export default function Shared() {
   return (
     <div className="max-w-6xl mx-auto animate-fade-in">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-800 dark:text-surface-100 mb-1">Compartido conmigo</h1>
-        <p className="text-slate-500 dark:text-surface-500">{notes.length} notas compartidas</p>
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-1">Compartido conmigo</h1>
+        <p className="text-slate-500 dark:text-slate-500">{notes.length} notas compartidas</p>
       </div>
 
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6">
-              <div className="h-5 bg-slate-200 dark:bg-surface-800 animate-pulse rounded w-3/4 mb-3" />
-              <div className="h-4 bg-slate-200/50 dark:bg-surface-800/50 animate-pulse rounded w-1/2" />
+            <div key={i} className="bg-white dark:bg-[#0d0b1f] border border-slate-200 dark:border-white/[0.06] rounded-xl p-6">
+              <div className="h-5 bg-slate-200 dark:bg-white/[0.05] animate-pulse rounded w-3/4 mb-3" />
+              <div className="h-4 bg-slate-200/50 dark:bg-white/[0.03] animate-pulse rounded w-1/2" />
             </div>
           ))}
         </div>
@@ -74,24 +74,24 @@ export default function Shared() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {notes.map((note) => (
-            <div key={note._id} className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-5 hover:border-slate-300 dark:hover:border-surface-700/60 transition-all">
+            <div key={note._id} className="bg-white dark:bg-[#0d0b1f] border border-slate-200 dark:border-white/[0.06] rounded-xl p-5 hover:border-slate-300 dark:hover:border-white/[0.1] transition-all">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h3 className="font-semibold text-slate-800 dark:text-surface-100">{note.title}</h3>
-                  <p className="text-xs text-slate-500 dark:text-surface-500">Por {note.user?.name}</p>
+                  <h3 className="font-semibold text-slate-800 dark:text-white">{note.title}</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-500">Por {note.user?.name}</p>
                 </div>
                 <button
                   onClick={() => { setSelectedNote(note); setShowShareModal(true); }}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-surface-800 rounded-xl"
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-white/[0.05] rounded-xl"
                 >
-                  <Share2 className="w-4 h-4 text-slate-400 dark:text-surface-400" />
+                  <Share2 className="w-4 h-4 text-slate-400 dark:text-slate-400" />
                 </button>
               </div>
               {note.description && (
-                <p className="text-sm text-slate-500 dark:text-surface-400 line-clamp-2">{note.description}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">{note.description}</p>
               )}
               <div className="mt-3 flex items-center gap-2">
-                <span className="text-xs text-slate-500 dark:text-surface-500">
+                <span className="text-xs text-slate-500 dark:text-slate-500">
                   {new Date(note.updatedAt).toLocaleDateString()}
                 </span>
               </div>
@@ -103,7 +103,7 @@ export default function Shared() {
       <Modal isOpen={showShareModal} onClose={() => setShowShareModal(false)} title="Compartir nota">
         <form onSubmit={handleShare} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-800 dark:text-surface-100 mb-1">Email del usuario</label>
+            <label className="block text-sm font-medium text-slate-800 dark:text-white mb-1">Email del usuario</label>
             <input
               type="email"
               value={shareEmail}
@@ -114,7 +114,7 @@ export default function Shared() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-800 dark:text-surface-100 mb-1">Permiso</label>
+            <label className="block text-sm font-medium text-slate-800 dark:text-white mb-1">Permiso</label>
             <select
               value={sharePermission}
               onChange={(e) => setSharePermission(e.target.value)}

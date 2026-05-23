@@ -81,8 +81,8 @@ export default function Files() {
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-surface-100 mb-1">Archivos</h1>
-          <p className="text-slate-500 dark:text-surface-500">{files?.length || 0} archivos</p>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-1">Archivos</h1>
+          <p className="text-slate-500 dark:text-slate-500">{files?.length || 0} archivos</p>
         </div>
         <div className="flex items-center gap-2">
           <label className="cursor-pointer btn-primary flex items-center gap-2">
@@ -113,7 +113,7 @@ export default function Files() {
           {files.map((file) => {
             const Icon = getIcon(file.type);
             return (
-              <div key={file._id || file.filename} className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-4 hover:border-slate-300 dark:hover:border-surface-700/60 transition-all relative group animate-fade-in">
+              <div key={file._id || file.filename} className="bg-white dark:bg-[#0d0b1f] border border-slate-200 dark:border-white/[0.06] rounded-xl p-4 hover:border-slate-300 dark:hover:border-white/[0.1] transition-all relative group animate-fade-in">
                 <button
                   onClick={() => { setSharingFile(file); setShareEmail(""); setShowShareModal(true); }}
                   className="absolute top-2 right-10 p-1.5 bg-primary-500 text-white rounded-full sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:scale-110 active:scale-90"
@@ -130,12 +130,12 @@ export default function Files() {
                 {file.type?.startsWith("image/") ? (
                   <img src={file.url} alt={file.name} className="w-full h-32 object-cover rounded-xl mb-3" />
                 ) : (
-                  <div className="w-full h-32 bg-slate-100 dark:bg-surface-800 rounded-xl mb-3 flex items-center justify-center">
-                    <Icon className="w-10 h-10 text-slate-400 dark:text-surface-400" />
+                  <div className="w-full h-32 bg-slate-100 dark:bg-white/[0.05] rounded-xl mb-3 flex items-center justify-center">
+                    <Icon className="w-10 h-10 text-slate-400 dark:text-slate-400" />
                   </div>
                 )}
-                <p className="font-medium text-sm text-slate-800 dark:text-surface-100 truncate">{file.name}</p>
-                <p className="text-xs text-slate-500 dark:text-surface-500">{(file.size / 1024).toFixed(1)} KB</p>
+                <p className="font-medium text-sm text-slate-800 dark:text-white truncate">{file.name}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-500">{(file.size / 1024).toFixed(1)} KB</p>
               </div>
             );
           })}
@@ -143,11 +143,11 @@ export default function Files() {
       )}
       <Modal isOpen={showShareModal} onClose={() => { setShowShareModal(false); setSharingFile(null); }} title="Compartir archivo">
         <form onSubmit={handleShareFile} className="space-y-4">
-          <p className="text-sm text-slate-500 dark:text-surface-500 mb-2">
+          <p className="text-sm text-slate-500 dark:text-slate-500 mb-2">
             {sharingFile && `Compartir "${sharingFile.name}" con otro usuario`}
           </p>
           <div>
-            <label className="block text-sm font-medium text-slate-800 dark:text-surface-100 mb-1">Email del usuario</label>
+            <label className="block text-sm font-medium text-slate-800 dark:text-white mb-1">Email del usuario</label>
             <input type="email" value={shareEmail} onChange={(e) => setShareEmail(e.target.value)} className="input-field" placeholder="email@ejemplo.com" required />
           </div>
           <div className="flex gap-3 pt-2">

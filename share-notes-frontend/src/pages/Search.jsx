@@ -64,25 +64,25 @@ export default function SearchPage() {
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold gradient-text mb-2">Buscar</h1>
-        <p className="text-slate-500 dark:text-surface-400">Encuentra tus notas rápidamente</p>
+        <p className="text-slate-500 dark:text-slate-400">Encuentra tus notas rápidamente</p>
       </div>
 
       <div className="mb-6">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-surface-500" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar por título, contenido o etiquetas..."
-            className="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl text-base text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all shadow-sm"
+            className="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-[#0d0b1f] border border-slate-200 dark:border-white/[0.06] rounded-xl text-base text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all shadow-sm"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-200 dark:hover:bg-surface-800 rounded-full transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-200 dark:hover:bg-white/[0.05] rounded-full transition-colors"
             >
-              <X className="w-4 h-4 text-slate-400 dark:text-surface-500" />
+              <X className="w-4 h-4 text-slate-400 dark:text-slate-500" />
             </button>
           )}
         </div>
@@ -95,7 +95,7 @@ export default function SearchPage() {
             flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all
             ${showFilters
               ? "bg-primary-500 text-white"
-              : "bg-slate-100 dark:bg-surface-800 text-slate-500 dark:text-surface-400 hover:bg-slate-200 dark:hover:bg-surface-700"
+              : "bg-slate-100 dark:bg-white/[0.05] text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/[0.08]"
             }
           `}
         >
@@ -109,7 +109,7 @@ export default function SearchPage() {
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="text-sm text-slate-500 dark:text-surface-500 hover:text-red-500 transition-colors"
+            className="text-sm text-slate-500 dark:text-slate-500 hover:text-red-500 transition-colors"
           >
             Limpiar filtros
           </button>
@@ -117,10 +117,10 @@ export default function SearchPage() {
       </div>
 
       {showFilters && (
-        <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6 mb-6 animate-fade-in">
+        <div className="bg-white dark:bg-[#0d0b1f] border border-slate-200 dark:border-white/[0.06] rounded-xl p-6 mb-6 animate-fade-in">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-slate-600 dark:text-surface-300 mb-2">
+              <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
                 Categoría
               </label>
               <select
@@ -138,7 +138,7 @@ export default function SearchPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-600 dark:text-surface-300 mb-2">
+              <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
                 Etiquetas
               </label>
               <input
@@ -153,12 +153,12 @@ export default function SearchPage() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-600 dark:text-surface-300 mb-2">
+              <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
                 Rango de fechas
               </label>
               <div className="flex items-center gap-4">
                 <div className="flex-1">
-                  <label className="block text-xs text-slate-500 dark:text-surface-500 mb-1">Desde</label>
+                  <label className="block text-xs text-slate-500 dark:text-slate-500 mb-1">Desde</label>
                   <input
                     type="date"
                     value={filters.dateFrom}
@@ -169,7 +169,7 @@ export default function SearchPage() {
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block text-xs text-slate-500 dark:text-surface-500 mb-1">Hasta</label>
+                  <label className="block text-xs text-slate-500 dark:text-slate-500 mb-1">Hasta</label>
                   <input
                     type="date"
                     value={filters.dateTo}
@@ -183,7 +183,7 @@ export default function SearchPage() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-600 dark:text-surface-300 mb-2">
+              <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
                 Filtros rápidos
               </label>
               <div className="flex flex-wrap gap-3">
@@ -195,7 +195,7 @@ export default function SearchPage() {
                     flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all
                     ${filters.pinned
                       ? "bg-primary-500 text-white"
-                      : "bg-slate-100 dark:bg-surface-800 text-slate-500 dark:text-surface-400"
+                      : "bg-slate-100 dark:bg-white/[0.05] text-slate-500 dark:text-slate-400"
                     }
                   `}
                 >
@@ -210,7 +210,7 @@ export default function SearchPage() {
                     flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all
                     ${filters.hasReminder
                       ? "bg-primary-500 text-white"
-                      : "bg-slate-100 dark:bg-surface-800 text-slate-500 dark:text-surface-400"
+                      : "bg-slate-100 dark:bg-white/[0.05] text-slate-500 dark:text-slate-400"
                     }
                   `}
                 >
@@ -224,7 +224,7 @@ export default function SearchPage() {
       )}
 
       <div className="mb-4">
-        <p className="text-sm text-slate-500 dark:text-surface-500">
+        <p className="text-sm text-slate-500 dark:text-slate-500">
           {isLoading ? "Buscando..." : `${publicNotes.length} resultados`}
         </p>
       </div>
@@ -234,12 +234,12 @@ export default function SearchPage() {
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6 animate-pulse"
+              className="bg-white dark:bg-[#0d0b1f] border border-slate-200 dark:border-white/[0.06] rounded-xl p-6 animate-pulse"
             >
-              <div className="h-4 bg-slate-200 dark:bg-surface-800 rounded w-3/4 mb-3" />
+              <div className="h-4 bg-slate-200 dark:bg-white/[0.05] rounded w-3/4 mb-3" />
               <div className="space-y-2">
-                <div className="h-3 bg-slate-200 dark:bg-surface-800 rounded w-full" />
-                <div className="h-3 bg-slate-200 dark:bg-surface-800 rounded w-5/6" />
+                <div className="h-3 bg-slate-200 dark:bg-white/[0.05] rounded w-full" />
+                <div className="h-3 bg-slate-200 dark:bg-white/[0.05] rounded w-5/6" />
               </div>
             </div>
           ))}

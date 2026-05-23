@@ -31,7 +31,7 @@ const Tooltip = ({ children, text, position = "top" }) => {
     >
       {children}
       {visible && (
-        <div className={`absolute z-50 px-2.5 py-1.5 text-xs font-medium text-gray-100 dark:text-surface-200 bg-gray-800 dark:bg-surface-800 border border-gray-700 dark:border-surface-700 rounded-lg whitespace-nowrap pointer-events-none shadow-tesla-lg animate-fade-in-fast ${positions[actualPosition]}`}>
+        <div className={`absolute z-50 px-2.5 py-1.5 text-xs font-medium text-gray-100 dark:text-slate-200 bg-gray-800 dark:bg-white/[0.05] border border-gray-700 dark:border-white/[0.08] rounded-lg whitespace-nowrap pointer-events-none shadow-tesla-lg animate-fade-in-fast ${positions[actualPosition]}`}>
           {text}
         </div>
       )}
