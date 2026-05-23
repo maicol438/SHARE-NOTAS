@@ -63,12 +63,12 @@ const Landing = () => {
           <span className="font-extrabold text-lg gradient-text hidden sm:block">ShareNotes</span>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={toggle} className="p-2 rounded-lg hover:bg-surface-800 text-surface-400 transition-all">
+          <button onClick={toggle} className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-surface-800 text-slate-500 dark:text-surface-400 transition-all">
             {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
           {isAuthenticated ? (
             <>
-              <span className="text-sm text-surface-400 hidden sm:block">Hola, {user?.name}</span>
+              <span className="text-sm text-slate-500 dark:text-surface-400 hidden sm:block">Hola, {user?.name}</span>
               <button onClick={() => navigate("/dashboard")} className="btn-primary px-4 py-2 text-sm">Ir a mi cuenta</button>
               <button onClick={handleLogout} className="px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg transition-all"><LogOut className="w-4 h-4" /></button>
             </>
@@ -89,7 +89,7 @@ const Landing = () => {
         <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold mb-4 sm:mb-6 leading-tight animate-slide-up">
           Tus notas,{" "}<span className="gradient-text">organizadas</span><br />y siempre contigo
         </h1>
-        <p className="text-base sm:text-lg text-surface-400 max-w-2xl mx-auto mb-8 sm:mb-12 animate-slide-up delay-100">
+        <p className="text-base sm:text-lg text-slate-500 dark:text-surface-400 max-w-2xl mx-auto mb-8 sm:mb-12 animate-slide-up delay-100">
           Crea, organiza y comparte tus apuntes académicos. Con categorías de color, búsqueda inteligente y estadísticas.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center animate-slide-up delay-200">
@@ -113,7 +113,7 @@ const Landing = () => {
           ].map((stat, i) => (
             <div key={i} className="text-center">
               <div className="text-3xl sm:text-4xl font-extrabold gradient-text">{stat.num}</div>
-              <div className="text-xs text-surface-500 mt-1 font-medium">{stat.label}</div>
+              <div className="text-xs text-slate-400 dark:text-surface-500 mt-1 font-medium">{stat.label}</div>
             </div>
           ))}
         </div>
@@ -122,8 +122,8 @@ const Landing = () => {
       <section className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pb-24 sm:pb-32">
         <div className="text-center mb-10 sm:mb-16">
           <span className="inline-block px-3 py-1 bg-primary-500/10 text-primary-400 text-xs font-semibold rounded-full mb-3">Características</span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-surface-100 mb-3">¿Por qué usar <span className="gradient-text">ShareNotes</span>?</h2>
-          <p className="text-surface-400 text-sm sm:text-base max-w-xl mx-auto">Todo lo que necesitas para organizar tus estudios en un solo lugar</p>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-800 dark:text-surface-100 mb-3">¿Por qué usar <span className="gradient-text">ShareNotes</span>?</h2>
+          <p className="text-slate-500 dark:text-surface-400 text-sm sm:text-base max-w-xl mx-auto">Todo lo que necesitas para organizar tus estudios en un solo lugar</p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {features.map(({ icon: Icon, title, desc, color }, i) => (
@@ -131,8 +131,8 @@ const Landing = () => {
               <div className={`w-12 h-12 bg-gradient-to-br ${color} rounded-xl flex items-center justify-center mb-4 shadow-lg`}>
                 <Icon className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-bold text-surface-100 mb-1.5">{title}</h3>
-              <p className="text-sm text-surface-400 leading-relaxed">{desc}</p>
+              <h3 className="font-bold text-slate-800 dark:text-surface-100 mb-1.5">{title}</h3>
+              <p className="text-sm text-slate-500 dark:text-surface-400 leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>
@@ -141,7 +141,7 @@ const Landing = () => {
       <section className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pb-24 sm:pb-32">
         <div className="text-center mb-10 sm:mb-16">
           <span className="inline-block px-3 py-1 bg-purple-500/10 text-purple-400 text-xs font-semibold rounded-full mb-3">Cómo funciona</span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-surface-100 mb-3">Comienza en <span className="gradient-text">3 pasos</span></h2>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-800 dark:text-surface-100 mb-3">Comienza en <span className="gradient-text">3 pasos</span></h2>
         </div>
         <div className="flex flex-col md:flex-row items-center justify-center gap-8">
           {steps.map((step, i) => {
@@ -151,12 +151,12 @@ const Landing = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center shadow-xl shadow-primary-500/25 group-hover:scale-110 transition-all duration-300 mb-4">
                   <Icon className="w-7 h-7 text-white" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-7 h-7 bg-surface-900 rounded-full flex items-center justify-center font-bold text-xs text-primary-400 border border-surface-700">
+                <div className="absolute -top-1 -right-1 w-7 h-7 bg-slate-200 dark:bg-surface-900 rounded-full flex items-center justify-center font-bold text-xs text-primary-400 dark:text-primary-400 border border-slate-300 dark:border-surface-700">
                   {step.num}
                 </div>
-                <h3 className="font-bold text-surface-100 mb-1">{step.title}</h3>
-                <p className="text-sm text-surface-500">{step.desc}</p>
-                {i < steps.length - 1 && <ArrowRight className="hidden md:block absolute -right-6 top-6 w-5 h-5 text-surface-600" />}
+                <h3 className="font-bold text-slate-800 dark:text-surface-100 mb-1">{step.title}</h3>
+                <p className="text-sm text-slate-400 dark:text-surface-500">{step.desc}</p>
+                {i < steps.length - 1 && <ArrowRight className="hidden md:block absolute -right-6 top-6 w-5 h-5 text-slate-400 dark:text-surface-600" />}
               </div>
             );
           })}
@@ -177,8 +177,8 @@ const Landing = () => {
         </div>
       </section>
 
-      <footer className="relative z-10 border-t border-surface-800 py-8">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-3 text-sm text-surface-500">
+      <footer className="relative z-10 border-t border-slate-200 dark:border-surface-800 py-8">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-3 text-sm text-slate-400 dark:text-surface-500">
           <div className="flex items-center gap-2">
             <BookOpen className="w-4 h-4 text-primary-400" /> <span>ShareNotes</span>
           </div>

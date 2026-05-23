@@ -190,11 +190,11 @@ export default function Profile() {
                 src={user.avatar}
                 alt={user.name}
                 referrerPolicy="no-referrer"
-                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover"
               />
             ) : (
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center">
-                <span className="text-white text-2xl sm:text-3xl font-bold">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center">
+                <span className="text-white text-lg sm:text-xl font-bold">
                   {user?.name?.charAt(0)?.toUpperCase()}
                 </span>
               </div>
