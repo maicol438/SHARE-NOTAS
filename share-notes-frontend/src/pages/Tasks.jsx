@@ -105,7 +105,7 @@ export default function Tasks() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold gradient-text mb-1">Tareas</h1>
-          <p className="text-surface-500">{tasks.length} tareas</p>
+          <p className="text-slate-500 dark:text-surface-500">{tasks.length} tareas</p>
         </div>
         <Button icon={Plus} onClick={() => setShowModal(true)} className="btn-primary">
           Nueva tarea
@@ -115,9 +115,9 @@ export default function Tasks() {
       {isLoading ? (
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-surface-900 border border-surface-800/60 rounded-xl p-6 animate-pulse">
-              <div className="h-5 bg-surface-800 rounded w-1/3 mb-3" />
-              <div className="h-4 bg-surface-800 rounded w-2/3" />
+            <div key={i} className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6 animate-pulse">
+              <div className="h-5 bg-slate-200 dark:bg-surface-800 rounded w-1/3 mb-3" />
+              <div className="h-4 bg-slate-200 dark:bg-surface-800 rounded w-2/3" />
             </div>
           ))}
         </div>
@@ -127,39 +127,39 @@ export default function Tasks() {
         <div className="space-y-6">
           {pending.length > 0 && (
             <div>
-              <h2 className="text-xs font-semibold text-surface-500 uppercase mb-3">
+              <h2 className="text-xs font-semibold text-slate-500 dark:text-surface-500 uppercase mb-3">
                 Pendientes ({pending.length})
               </h2>
               <div className="space-y-3">
                   {pending.map((task) => (
-                  <div key={task._id} className="bg-surface-900 border border-surface-800/60 rounded-xl p-5 hover:border-surface-700/60 transition-all group">
+                  <div key={task._id} className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-5 hover:border-slate-300 dark:hover:border-surface-700/60 transition-all group">
                     <div className="flex items-start gap-4">
-                      <button onClick={() => handleComplete(task._id)} className="mt-1 w-6 h-6 rounded-full border-2 border-surface-600 hover:border-primary-500 hover:bg-primary-500 transition-all flex-shrink-0" />
+                      <button onClick={() => handleComplete(task._id)} className="mt-1 w-6 h-6 rounded-full border-2 border-slate-300 dark:border-surface-600 hover:border-primary-500 hover:bg-primary-500 transition-all flex-shrink-0" />
                       <div className="flex-1">
                         <div className="flex items-start justify-between gap-2">
                           <div>
                             <h3 className="font-semibold">{task.title}</h3>
-                            {task.description && <p className="text-surface-500 text-sm mt-1">{task.description}</p>}
+                            {task.description && <p className="text-slate-500 dark:text-surface-500 text-sm mt-1">{task.description}</p>}
                           </div>
                           <div className="flex items-center gap-1 flex-shrink-0">
                             <button
                               onClick={() => handleExportDocx(task)}
                               disabled={exportingDocx === task._id}
-                              className="p-2 rounded-xl text-surface-400 hover:bg-blue-500/10 hover:text-blue-400 transition-all sm:opacity-0 sm:group-hover:opacity-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                              className="p-2 rounded-xl text-slate-400 dark:text-surface-400 hover:bg-blue-500/10 hover:text-blue-400 transition-all sm:opacity-0 sm:group-hover:opacity-100 disabled:opacity-40 disabled:cursor-not-allowed"
                               title={exportingDocx === task._id ? "Exportando..." : "Descargar Word"}
                             >
                               {exportingDocx === task._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                             </button>
                             <button
                               onClick={() => { setSharingTask(task); setShareEmail(""); setShowShareModal(true); }}
-                              className="p-2 rounded-xl text-surface-400 hover:bg-primary-500/10 hover:text-primary-400 transition-all sm:opacity-0 sm:group-hover:opacity-100"
+                              className="p-2 rounded-xl text-slate-400 dark:text-surface-400 hover:bg-primary-500/10 hover:text-primary-400 transition-all sm:opacity-0 sm:group-hover:opacity-100"
                               title="Compartir tarea"
                             >
                               <Share2 className="w-4 h-4" />
                             </button>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4 mt-3 text-xs text-surface-400">
+                        <div className="flex items-center gap-4 mt-3 text-xs text-slate-500 dark:text-surface-400">
                           {task.dueDate && (
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3" />
@@ -184,12 +184,12 @@ export default function Tasks() {
 
           {completed.length > 0 && (
             <div>
-              <h2 className="text-xs font-semibold text-surface-500 uppercase mb-3">
+              <h2 className="text-xs font-semibold text-slate-500 dark:text-surface-500 uppercase mb-3">
                 Completadas ({completed.length})
               </h2>
               <div className="space-y-3">
                 {completed.map((task) => (
-                  <div key={task._id} className="bg-surface-900 border border-surface-800/60 rounded-xl p-5 opacity-50">
+                  <div key={task._id} className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-5 opacity-50">
                     <div className="flex items-start gap-4">
                       <button onClick={() => handleComplete(task._id)} className="mt-1 w-6 h-6 rounded-full bg-green-500 flex flex-shrink-0 flex items-center justify-center">
                         <CheckSquare className="w-4 h-4 text-white" />

@@ -37,12 +37,12 @@ const Explore = () => {
     <div className="max-w-6xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold mb-2">Explorar notas públicas</h1>
-        <p className="text-surface-400">Descubre notas de otros usuarios</p>
+        <p className="text-slate-500 dark:text-surface-400">Descubre notas de otros usuarios</p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-surface-500" />
           <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar por título..." className="input-field pl-9 w-full" />
         </div>
 
@@ -52,13 +52,13 @@ const Explore = () => {
         </select>
 
         <div className="flex gap-2">
-          <button onClick={() => setSort("rating")} className={`p-2 rounded-lg ${sort === "rating" ? "bg-primary-500 text-white" : "hover:bg-surface-800"}`}>
+          <button onClick={() => setSort("rating")} className={`p-2 rounded-lg ${sort === "rating" ? "bg-primary-500 text-white" : "hover:bg-slate-200 dark:hover:bg-surface-800"}`}>
             <Star className="w-5 h-5" />
           </button>
-          <button onClick={() => setSort("downloads")} className={`p-2 rounded-lg ${sort === "downloads" ? "bg-primary-500 text-white" : "hover:bg-surface-800"}`}>
+          <button onClick={() => setSort("downloads")} className={`p-2 rounded-lg ${sort === "downloads" ? "bg-primary-500 text-white" : "hover:bg-slate-200 dark:hover:bg-surface-800"}`}>
             <TrendingUp className="w-5 h-5" />
           </button>
-          <button onClick={() => setSort("newest")} className={`p-2 rounded-lg ${sort === "newest" ? "bg-primary-500 text-white" : "hover:bg-surface-800"}`}>
+          <button onClick={() => setSort("newest")} className={`p-2 rounded-lg ${sort === "newest" ? "bg-primary-500 text-white" : "hover:bg-slate-200 dark:hover:bg-surface-800"}`}>
             <Clock className="w-5 h-5" />
           </button>
         </div>
@@ -66,7 +66,7 @@ const Explore = () => {
 
       {isLoading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => <div key={i} className="bg-surface-900 border border-surface-800/60 rounded-xl p-4 animate-pulse"><div className="h-4 bg-surface-800 rounded w-3/4 mb-2" /><div className="h-3 bg-surface-800 rounded" /></div>)}
+          {[...Array(6)].map((_, i) => <div key={i} className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-4 animate-pulse"><div className="h-4 bg-slate-200 dark:bg-surface-800 rounded w-3/4 mb-2" /><div className="h-3 bg-slate-200 dark:bg-surface-800 rounded" /></div>)}
         </div>
       )}
 

@@ -32,34 +32,34 @@ export default function CalendarPage() {
     <div className="max-w-4xl mx-auto animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-surface-100 mb-1">Calendario</h1>
-          <p className="text-surface-500">Vista mensual</p>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-surface-100 mb-1">Calendario</h1>
+          <p className="text-slate-500 dark:text-surface-500">Vista mensual</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setCurrentDate(new Date(year, month - 1, 1))} className="p-2 hover:bg-surface-800 rounded-xl text-surface-100">
+          <button onClick={() => setCurrentDate(new Date(year, month - 1, 1))} className="p-2 hover:bg-slate-100 dark:hover:bg-surface-800 rounded-xl text-slate-700 dark:text-surface-100">
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <span className="font-semibold capitalize text-surface-100">{monthName}</span>
-          <button onClick={() => setCurrentDate(new Date(year, month + 1, 1))} className="p-2 hover:bg-surface-800 rounded-xl text-surface-100">
+          <span className="font-semibold capitalize text-slate-800 dark:text-surface-100">{monthName}</span>
+          <button onClick={() => setCurrentDate(new Date(year, month + 1, 1))} className="p-2 hover:bg-slate-100 dark:hover:bg-surface-800 rounded-xl text-slate-700 dark:text-surface-100">
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      <div className="bg-surface-900 border border-surface-800/60 rounded-xl overflow-hidden">
-        <div className="grid grid-cols-7 bg-surface-800/50">
+      <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl overflow-hidden">
+        <div className="grid grid-cols-7 bg-slate-100 dark:bg-surface-800/50">
           {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((d) => (
-            <div key={d} className="p-3 text-center text-sm font-semibold text-surface-400">{d}</div>
+            <div key={d} className="p-3 text-center text-sm font-semibold text-slate-500 dark:text-surface-400">{d}</div>
           ))}
         </div>
         <div className="grid grid-cols-7">
           {days.map((day, i) => {
             const dayTasks = getTasksForDay(day);
             return (
-              <div key={i} className={`min-h-[100px] p-2 border-t border-r border-surface-800/60 ${!day ? "bg-surface-800/30" : "bg-surface-900"}`}>
+              <div key={i} className={`min-h-[100px] p-2 border-t border-r border-slate-200 dark:border-surface-800/60 ${!day ? "bg-slate-100 dark:bg-surface-800/30" : "bg-white dark:bg-surface-900"}`}>
                 {day && (
                   <>
-                    <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-sm text-surface-100 ${dayTasks.length > 0 ? "bg-primary-500 text-white" : "hover:bg-surface-800"}`}>
+                    <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-sm text-slate-700 dark:text-surface-100 ${dayTasks.length > 0 ? "bg-primary-500 text-white" : "hover:bg-slate-100 dark:hover:bg-surface-800"}`}>
                       {day}
                     </span>
                     <div className="mt-1 space-y-1">
@@ -69,7 +69,7 @@ export default function CalendarPage() {
                         </div>
                       ))}
                       {dayTasks.length > 2 && (
-                        <div className="text-xs text-surface-500">+{dayTasks.length - 2} más</div>
+                        <div className="text-xs text-slate-500 dark:text-surface-500">+{dayTasks.length - 2} más</div>
                       )}
                     </div>
                   </>

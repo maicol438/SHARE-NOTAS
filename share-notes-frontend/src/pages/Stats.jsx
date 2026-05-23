@@ -3,12 +3,12 @@ import { TrendingUp, FileText, CheckSquare, Tag, Calendar } from "lucide-react";
 import api from "../api/axios";
 
 const StatCard = ({ title, value, icon: Icon, color, subtitle }) => (
-  <div className="bg-surface-900 border border-surface-800/60 rounded-xl p-6">
+  <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6">
     <div className="flex items-start justify-between">
       <div>
-        <p className="text-sm text-surface-500 mb-1">{title}</p>
+        <p className="text-sm text-slate-500 dark:text-surface-500 mb-1">{title}</p>
         <p className="text-3xl font-bold">{value}</p>
-        {subtitle && <p className="text-xs text-surface-400 mt-1">{subtitle}</p>}
+        {subtitle && <p className="text-xs text-slate-500 dark:text-surface-400 mt-1">{subtitle}</p>}
       </div>
       <div className={`p-3 rounded-xl ${color}`}>
         <Icon className="w-6 h-6" />
@@ -26,10 +26,10 @@ const BarChart = ({ data }) => {
     <div className="space-y-3">
       {data.map((item, i) => (
         <div key={i} className="flex items-center gap-4">
-          <div className="w-24 text-sm text-surface-400 truncate text-right">
+          <div className="w-24 text-sm text-slate-500 dark:text-surface-400 truncate text-right">
             {item.name}
           </div>
-          <div className="flex-1 h-8 bg-surface-800 rounded-lg overflow-hidden">
+          <div className="flex-1 h-8 bg-slate-200 dark:bg-surface-800 rounded-lg overflow-hidden">
           <div
               className="h-full bg-gradient-to-r from-primary-500 to-purple-600 rounded-lg transition-all duration-500"
               style={{
@@ -84,7 +84,7 @@ const DonutChart = ({ total, completed }) => {
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-3xl font-bold">{percent}%</span>
-          <span className="text-xs text-surface-500">completado</span>
+          <span className="text-xs text-slate-500 dark:text-surface-500">completado</span>
         </div>
       </div>
       <div className="space-y-3">
@@ -95,13 +95,13 @@ const DonutChart = ({ total, completed }) => {
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="w-3 h-3 rounded-full bg-surface-600" />
+          <div className="w-3 h-3 rounded-full bg-slate-400 dark:bg-surface-600" />
           <span className="text-sm">
             Pendientes: <strong>{pending}</strong>
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="w-3 h-3 rounded-full bg-surface-950" />
+          <div className="w-3 h-3 rounded-full bg-slate-800 dark:bg-surface-950" />
           <span className="text-sm">
             Totales: <strong>{total}</strong>
           </span>
@@ -174,7 +174,7 @@ const LineChart = ({ data }) => {
         ))}
       </svg>
 
-      <div className="flex justify-between mt-2 text-xs text-surface-500">
+      <div className="flex justify-between mt-2 text-xs text-slate-500 dark:text-surface-500">
         {data.map((d, i) => (
           <span key={i} className="truncate">
             {typeof d._id === 'string' ? d._id.split("-W")[0] : `Sem ${i+1}`}
@@ -236,7 +236,7 @@ export default function Stats() {
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold gradient-text mb-2">Estadísticas</h1>
-        <p className="text-surface-500">Tu actividad en ShareNotes</p>
+        <p className="text-slate-500 dark:text-surface-500">Tu actividad en ShareNotes</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -268,7 +268,7 @@ export default function Stats() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-surface-900 border border-surface-800/60 rounded-xl p-6">
+        <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6">
           <h3 className="font-semibold text-lg mb-6">Progreso de tareas</h3>
           <DonutChart
             total={stats.tasks?.total || 0}
@@ -276,7 +276,7 @@ export default function Stats() {
           />
         </div>
 
-        <div className="bg-surface-900 border border-surface-800/60 rounded-xl p-6">
+        <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6">
           <h3 className="font-semibold text-lg mb-6">Actividad reciente (últimas 8 semanas)</h3>
           <LineChart data={stats.byWeek || []} />
         </div>
@@ -284,21 +284,21 @@ export default function Stats() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {categoryData.length > 0 && (
-          <div className="bg-surface-900 border border-surface-800/60 rounded-xl p-6">
+          <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6">
             <h3 className="font-semibold text-lg mb-6">Notas por categoría</h3>
             <BarChart data={categoryData} />
           </div>
         )}
 
         {notebookData.length > 0 && (
-          <div className="bg-surface-900 border border-surface-800/60 rounded-xl p-6">
+          <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6">
             <h3 className="font-semibold text-lg mb-6">Notas por cuaderno</h3>
             <BarChart data={notebookData} />
           </div>
         )}
 
         {tagData.length > 0 && (
-          <div className="bg-surface-900 border border-surface-800/60 rounded-xl p-6 lg:col-span-2">
+          <div className="bg-white dark:bg-surface-900 border border-slate-200 dark:border-surface-800/60 rounded-xl p-6 lg:col-span-2">
             <h3 className="font-semibold text-lg mb-6">Etiquetas más usadas</h3>
             <div className="flex flex-wrap gap-2">
               {tagData.map((tag, i) => (
