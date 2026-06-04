@@ -116,6 +116,48 @@ describe("Notes CRUD", () => {
     expect(deleted.deletedAt).not.toBeNull();
   });
 
+  it("GET /api/notes/trash - Debe retornar notas en papelera", async () => {
+    const { cookie, userId } = await loginAndGetCookie();
+    const category = await Category.create({ name: "Trash", color: "#6366f1", user: userId });
+    await Note.create({ title: "En papelera", content: "...", category: category._id, user: userId, deletedAt: new Date() });
+
+    const res = await request(app).get(`${API}/notes/trash`).set("Cookie", cookie);
+    expect(res.status).toBe(200);
+    expect(res.body.notes.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("PATCH /api/notes/:id/restore - Debe restaurar nota de la papelera", async () => {
+    const { cookie, userId } = await loginAndGetCookie();
+    const category = await Category.create({ name: "Restore", color: "#6366f1", user: userId });
+    const note = await Note.create({ title: "Restaurar", content: "...", category: category._id, user: userId, deletedAt: new Date() });
+
+    const res = await request(app).patch(`${API}/notes/${note._id}/restore`).set("Cookie", cookie);
+    expect(res.status).toBe(200);
+    expect(res.body.message).toMatch(/restaurada/i);
+
+    const restored = await Note.findById(note._id);
+    expect(restored.deletedAt).toBeNull();
+  });
+
+  it("DELETE /api/notes/:id/share - Debe eliminar compartición", async () => {
+    const { cookie, userId } = await loginAndGetCookie();
+    const otherUser = await User.create({ name: "Unshare", email: "unshare@test.com", password: "pass123" });
+    const category = await Category.create({ name: "Unshare", color: "#6366f1", user: userId });
+    const note = await Note.create({
+      title: "Unshare test",
+      content: "...",
+      category: category._id,
+      user: userId,
+      sharedWith: [{ user: otherUser._id, permission: "read", sharedAt: new Date() }],
+    });
+
+    const res = await request(app).delete(`${API}/notes/${note._id}/share`).set("Cookie", cookie).send({
+      userId: otherUser._id.toString(),
+    });
+    expect(res.status).toBe(200);
+    expect(res.body.message).toMatch(/compartición eliminada/i);
+  });
+
   it("PATCH /api/notes/:id/pin - Debe alternar el pin", async () => {
     const { cookie, userId } = await loginAndGetCookie();
     const category = await Category.create({ name: "Pin", color: "#6366f1", user: userId });
@@ -175,6 +217,17 @@ describe("Tasks", () => {
     const res = await request(app).patch(`${API}/notes/tasks/${note._id}/complete`).set("Cookie", cookie);
     expect(res.status).toBe(404);
   });
+
+  it("GET /api/notes/tasks - Debe filtrar por completadas", async () => {
+    const { cookie, userId } = await loginAndGetCookie();
+    const cat = await createTaskCategory(userId);
+    await Note.create({ title: "Tarea completa", type: "task", user: userId, category: cat._id, isCompleted: true });
+    await Note.create({ title: "Tarea pendiente", type: "task", user: userId, category: cat._id, isCompleted: false });
+
+    const res = await request(app).get(`${API}/notes/tasks?completed=true`).set("Cookie", cookie);
+    expect(res.status).toBe(200);
+    expect(res.body.tasks.every(t => t.isCompleted)).toBe(true);
+  });
 });
 
 describe("Public Notes", () => {
@@ -196,6 +249,73 @@ describe("Public Notes", () => {
     const res = await request(app).get(`${API}/notes/public/${note._id}`);
     expect(res.status).toBe(200);
     expect(res.body.note.title).toBe("Pública ID");
+  });
+
+  it("GET /api/notes/public/:id - Debe retornar 404 si no existe", async () => {
+    const fakeId = new mongoose.Types.ObjectId();
+    const res = await request(app).get(`${API}/notes/public/${fakeId}`);
+    expect(res.status).toBe(404);
+  });
+
+  it("POST /api/notes/public/:id/rate - Debe calificar nota pública", async () => {
+    const { cookie, userId } = await loginAndGetCookie();
+    const cat = await Category.create({ name: "Rate", color: "#6366f1", user: userId });
+    const note = await Note.create({ title: "Rateable", content: "...", isPublic: true, user: userId, category: cat._id });
+
+    const res = await request(app).post(`${API}/notes/public/${note._id}/rate`).set("Cookie", cookie).send({ rating: 4 });
+    expect(res.status).toBe(200);
+    expect(res.body.rating).toBe(4);
+  });
+});
+
+describe("Reminders", () => {
+  it("GET /api/notes/reminders - Debe retornar recordatorios", async () => {
+    const { cookie, userId } = await loginAndGetCookie();
+    const cat = await Category.create({ name: "Remind", color: "#6366f1", user: userId });
+    const tomorrow = new Date(Date.now() + 12 * 60 * 60 * 1000);
+    await Note.create({
+      title: "Con recordatorio",
+      content: "...",
+      category: cat._id,
+      user: userId,
+      reminder: { date: tomorrow, isActive: true },
+    });
+
+    const res = await request(app).get(`${API}/notes/reminders`).set("Cookie", cookie);
+    expect(res.status).toBe(200);
+  });
+});
+
+describe("Shared Notes", () => {
+  it("GET /api/notes/shared - Debe retornar notas compartidas conmigo", async () => {
+    const ownerRes = await request(app).post(`${API}/auth/register`).send({
+      name: "Owner", email: "owner-shared@test.com", password: "password123",
+    });
+    const ownerLogin = await request(app).post(`${API}/auth/login`).send({
+      email: "owner-shared@test.com", password: "password123",
+    });
+    const ownerCookie = ownerLogin.headers["set-cookie"];
+    const ownerId = ownerRes.body.user._id;
+
+    const targetRes = await request(app).post(`${API}/auth/register`).send({
+      name: "Target", email: "target-shared@test.com", password: "password123",
+    });
+    const targetLogin = await request(app).post(`${API}/auth/login`).send({
+      email: "target-shared@test.com", password: "password123",
+    });
+    const targetCookie = targetLogin.headers["set-cookie"];
+    const targetId = targetRes.body.user._id;
+
+    const cat = await Category.create({ name: "SharedCat", color: "#6366f1", user: ownerId });
+    const note = await Note.create({ title: "Compartida", content: "...", category: cat._id, user: ownerId });
+
+    await request(app).post(`${API}/notes/${note._id}/share`).set("Cookie", ownerCookie).send({
+      email: "target-shared@test.com", permission: "read",
+    });
+
+    const res = await request(app).get(`${API}/notes/shared`).set("Cookie", targetCookie);
+    expect(res.status).toBe(200);
+    expect(res.body.notes.length).toBeGreaterThanOrEqual(1);
   });
 });
 
