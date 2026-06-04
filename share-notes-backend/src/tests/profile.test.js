@@ -63,4 +63,25 @@ describe("Profile", () => {
     });
     expect(res.status).toBe(401);
   });
+
+  it("DELETE /api/users/me - Debe eliminar cuenta con contraseña correcta", async () => {
+    const { cookie } = await loginAndGetCookie();
+    const res = await request(app).delete(`${API}/users/me`).set("Cookie", cookie).send({
+      password: "password123",
+    });
+    expect(res.status).toBe(200);
+    expect(res.body.message).toMatch(/eliminada/i);
+  });
+
+  it("PUT /api/users/me - Debe retornar 400 si el email ya está en uso", async () => {
+    const { cookie } = await loginAndGetCookie();
+    await request(app).post(`${API}/auth/register`).send({
+      name: "Other", email: "existing@test.com", password: "password123",
+    });
+    const res = await request(app).put(`${API}/users/me`).set("Cookie", cookie).send({
+      email: "existing@test.com",
+    });
+    expect(res.status).toBe(400);
+    expect(res.body.message).toMatch(/email ya está en uso/i);
+  });
 });
