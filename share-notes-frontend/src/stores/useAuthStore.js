@@ -40,7 +40,9 @@ const useAuthStore = create((set) => ({
   logout: async () => {
     try {
       await api.post("/auth/logout");
-    } catch {}
+    } catch {
+      // Ignorar error de logout
+    }
     set({ user: null, isAuthenticated: false, isCheckingAuth: false });
   },
 
