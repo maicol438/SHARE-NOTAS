@@ -1,14 +1,24 @@
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: process.env.SMTP_SECURE === "true",
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+let transporter = null;
+
+const getTransporter = () => {
+  if (transporter) return transporter;
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    transporter = { sendMail: async () => {} };
+    return transporter;
+  }
+  transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || "smtp.gmail.com",
+    port: parseInt(process.env.SMTP_PORT || "587"),
+    secure: process.env.SMTP_SECURE === "true",
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+  return transporter;
+};
 
 export const sendShareNotificationEmail = async ({ to, sharedByName, noteTitle, noteUrl, type = "note" }) => {
   const appName = "Share Notes";
@@ -16,7 +26,7 @@ export const sendShareNotificationEmail = async ({ to, sharedByName, noteTitle, 
   const emoji = type === "task" ? "📝" : type === "file" ? "📁" : "📄";
   const typeLabel = type === "task" ? "tarea" : type === "file" ? "archivo" : "nota";
 
-  await transporter.sendMail({
+  await getTransporter().sendMail({
     from,
     to,
     subject: `${sharedByName} ha compartido un${type === "task" || type === "file" ? " " : "a "}${typeLabel} contigo - ${appName}`,
@@ -66,7 +76,7 @@ export const sendResetEmail = async (to, resetUrl) => {
   const appName = "Share Notes";
   const from = process.env.SMTP_FROM || `"${appName}" <${process.env.SMTP_USER || "noreply@sharenote.app"}>`;
 
-  await transporter.sendMail({
+  await getTransporter().sendMail({
     from,
     to,
     subject: `Restablecer tu contraseña - ${appName}`,

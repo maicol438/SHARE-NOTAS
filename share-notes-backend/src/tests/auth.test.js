@@ -4,10 +4,6 @@ import app from "../app.js";
 import User from "../models/User.js";
 import { API, registerUser, loginAndGetCookie } from "./helpers.js";
 
-jest.mock("../config/email.js", () => ({
-  sendResetEmail: jest.fn().mockResolvedValue(),
-}));
-
 beforeAll(async () => {
   const testUri = process.env.MONGO_URI_TEST;
   if (!testUri) {
