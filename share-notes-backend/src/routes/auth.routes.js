@@ -208,7 +208,9 @@ if (googleEnabled) {
                 if (!plain.startsWith("{")) {
                   originalUrl = plain;
                 }
-              } catch (errDec) {}
+              } catch (errDec) {
+                // Ignorar error al decodificar state
+              }
             }
           }
 

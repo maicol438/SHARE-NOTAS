@@ -10,6 +10,7 @@ const ContentTextarea = memo(({ value, onChange }) => (
     <textarea name="content" value={value} onChange={onChange} rows={5} placeholder="Escribe el contenido de tu nota..." className="input-field resize-none" />
   </div>
 ));
+ContentTextarea.displayName = "ContentTextarea";
 
 const NoteForm = ({ note, onClose }) => {
   const categories = useNoteStore((s) => s.categories);
