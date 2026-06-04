@@ -5,7 +5,6 @@ import useAuthStore from "../stores/useAuthStore.js";
 import Button from "../components/ui/Button.jsx";
 import NeuralBackground from "../components/ui/NeuralBackground.jsx";
 import { showToast } from "../utils/toast.jsx";
-import api from "../api/axios.js";
 
 const LoadingScreen = () => (
   <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
@@ -23,12 +22,9 @@ const Register = () => {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [googleEnabled, setGoogleEnabled] = useState(false);
   const [serverError, setServerError] = useState("");
 
   useEffect(() => {
-    api.get("/health").then((res) => setGoogleEnabled(res.data?.features?.googleAuth || false)).catch(() => {});
-
     // Capturar y mostrar errores de autenticación (ej: de Google OAuth)
     const err = searchParams.get("error");
     if (err) {
@@ -263,9 +259,8 @@ const Register = () => {
               </Button>
 
               {/* Google Button */}
-              {googleEnabled && (
-                <>
-                  <div className="relative my-4 animate-slide-up delay-700">
+              <>
+                <div className="relative my-4 animate-slide-up delay-700">
                     <div className="absolute inset-0 flex items-center">
                       <div className="w-full border-t border-gray-200/80 dark:border-dark-700/80" />
                     </div>
@@ -292,8 +287,7 @@ const Register = () => {
                     </svg>
                     <span className="font-bold text-gray-700 dark:text-gray-200 text-sm">Continuar con Google</span>
                   </button>
-                </>
-              )}
+              </>
             </form>
 
             {/* Login Link */}

@@ -26,7 +26,7 @@ export default function DashboardLayout() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#050510] text-[#e2e8f0] transition-colors duration-300">
+    <div className="flex h-screen overflow-hidden bg-[#f0f0ff] dark:bg-[#050510] text-[#1e1b4b] dark:text-[#e2e8f0] transition-colors duration-300">
       {/* Sidebar overlay for mobile */}
       {sidebarOpen && (
         <div

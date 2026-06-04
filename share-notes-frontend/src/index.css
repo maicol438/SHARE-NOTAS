@@ -17,7 +17,7 @@
 
 /* ─── Base Layer ───────────────────────────────────────────────────────────── */
 @layer base {
-  * { @apply border-surface-800; }
+  * { @apply border-surface-200 dark:border-surface-800; }
 
   html {
     scroll-behavior: smooth;
@@ -52,9 +52,15 @@
   }
 
   /* ── Inputs dark autofill ── */
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus {
+  html:not(.dark) input:-webkit-autofill,
+  html:not(.dark) input:-webkit-autofill:hover,
+  html:not(.dark) input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #1e1b4b;
+    -webkit-box-shadow: 0 0 0px 1000px #f0f0ff inset;
+  }
+  .dark input:-webkit-autofill,
+  .dark input:-webkit-autofill:hover,
+  .dark input:-webkit-autofill:focus {
     -webkit-text-fill-color: #e2e8f0;
     -webkit-box-shadow: 0 0 0px 1000px #0a0819 inset;
     transition: background-color 5000s ease-in-out 0s;
