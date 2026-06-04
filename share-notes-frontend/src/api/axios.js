@@ -1,4 +1,5 @@
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const RAW_URL = import.meta.env.VITE_API_URL;
 const API_BASE = RAW_URL || window.location.origin;
@@ -13,8 +14,14 @@ const api = axios.create({
 export { API_BASE };
 
 let logoutCallback = null;
+let forbiddenCallback = null;
+
 export const onUnauthorized = (cb) => {
   logoutCallback = cb;
+};
+
+export const onForbidden = (cb) => {
+  forbiddenCallback = cb;
 };
 
 api.interceptors.request.use((config) => {
@@ -29,6 +36,13 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       if (logoutCallback) logoutCallback();
+      toast.error("Sesión expirada. Inicia sesión nuevamente.");
+      return Promise.reject(error);
+    }
+    if (error.response?.status === 403) {
+      const message = error.response.data?.message || "No tienes permiso para realizar esta acción";
+      toast.error(message);
+      if (forbiddenCallback) forbiddenCallback(error.response.data);
       return Promise.reject(error);
     }
     if (!error.response) {

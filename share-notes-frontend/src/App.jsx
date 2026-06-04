@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
 import useAuthStore from "./stores/useAuthStore";
 import { onUnauthorized } from "./api/axios";
+import { connectSocket, disconnectSocket } from "./services/socket.js";
 
 import Landing from "./pages/Landing.jsx";
 import Login from "./pages/Login.jsx";
@@ -41,6 +42,7 @@ const PublicRoute = ({ children }) => {
 
 const App = () => {
   const checkAuth = useAuthStore((s) => s.checkAuth);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   useEffect(() => {
     onUnauthorized(() => {
@@ -51,6 +53,14 @@ const App = () => {
   useEffect(() => {
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      connectSocket();
+    } else {
+      disconnectSocket();
+    }
+  }, [isAuthenticated]);
 
   return (
     <BrowserRouter>

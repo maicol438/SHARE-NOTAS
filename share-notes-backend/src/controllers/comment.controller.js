@@ -1,5 +1,7 @@
 import Comment from "../models/Comment.js";
 import Note from "../models/Note.js";
+import User from "../models/User.js";
+import { emitToUser } from "../services/socket.js";
 
 export const getComments = async (req, res, next) => {
   try {
@@ -39,6 +41,15 @@ export const createComment = async (req, res, next) => {
     });
 
     const populated = await comment.populate("user", "name avatar");
+
+    const commenter = await User.findById(req.userId);
+    emitToUser(note.user.toString(), "comment:new", {
+      noteId,
+      noteTitle: note.title,
+      comment: populated,
+      by: commenter?.name || "Alguien",
+    });
+
     res.status(201).json({ message: "Comentario creado", comment: populated });
   } catch (error) {
     next(error);

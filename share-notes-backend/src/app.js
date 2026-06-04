@@ -43,6 +43,29 @@ const app = express();
 
 app.set("trust proxy", 1);
 
+// ── Health Check (ANTES de middlewares de seguridad) ────
+app.get("/api/health", (_req, res) => {
+  let googleDocsStatus = "no configurado";
+  try {
+    const creds = loadServiceAccount();
+    if (creds) {
+      googleDocsStatus = creds.private_key?.includes("BEGIN PRIVATE KEY")
+        ? `configurado (${creds.client_email})`
+        : "configurado pero private_key inválida";
+    }
+  } catch {
+    googleDocsStatus = "configurado pero JSON inválido";
+  }
+  res.json({
+    status: "OK",
+    message: "Share Notes API is running 🚀",
+    features: {
+      googleAuth: !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET,
+      googleDocs: googleDocsStatus,
+    },
+  });
+});
+
 // ── Middlewares globales ──────────────────────────────────
 app.use(helmet());
 
@@ -93,29 +116,6 @@ app.use("/api", docxExportRoutes);
 // ── Ruta raíz ────────────────────────────────────────────
 app.get("/", (_req, res) => {
   res.send("Servidor funcionando correctamente");
-});
-
-// ── Health Check ──────────────────────────────────────────
-app.get("/api/health", (_req, res) => {
-  let googleDocsStatus = "no configurado";
-  try {
-    const creds = loadServiceAccount();
-    if (creds) {
-      googleDocsStatus = creds.private_key?.includes("BEGIN PRIVATE KEY")
-        ? `configurado (${creds.client_email})`
-        : "configurado pero private_key inválida";
-    }
-  } catch {
-    googleDocsStatus = "configurado pero JSON inválido";
-  }
-  res.json({
-    status: "OK",
-    message: "Share Notes API is running 🚀",
-    features: {
-      googleAuth: !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET,
-      googleDocs: googleDocsStatus,
-    },
-  });
 });
 
 app.get("/api/debug/google-test", async (_req, res) => {

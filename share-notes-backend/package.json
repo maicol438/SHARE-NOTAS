@@ -7,8 +7,11 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
-    "test:watch": "npm test -- --watch"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --runInBand --detectOpenHandles --forceExit",
+    "test:watch": "npm test -- --watch",
+    "test:coverage": "npm test -- --coverage",
+    "lint": "eslint \"src/**/*.js\"",
+    "lint:fix": "eslint \"src/**/*.js\" --fix"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -23,6 +26,8 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.1",
+    "socket.io": "^4.7.5",
+    "socket.io": "^4.7.5",
     "morgan": "^1.10.0",
     "multer": "^2.1.1",
     "multer-storage-cloudinary": "^4.0.0",
@@ -34,6 +39,7 @@
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
+    "eslint": "^8.57.0",
     "jest": "^29.7.0",
     "nodemon": "^3.1.4",
     "supertest": "^7.0.0"
@@ -46,6 +52,27 @@
     "setupFiles": [
       "dotenv/config"
     ],
-    "transform": {}
+    "transform": {},
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/server.js",
+      "!src/config/**",
+      "!src/tests/**",
+      "!src/service-account.json",
+      "!src/routes/**",
+      "!src/controllers/googleDocs.controller.js",
+      "!src/controllers/docxExport.controller.js",
+      "!src/controllers/file.controller.js",
+      "!src/services/googleDocs.service.js",
+      "!src/services/socket.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 50,
+        "functions": 65,
+        "lines": 68,
+        "statements": 65
+      }
+    }
   }
 }

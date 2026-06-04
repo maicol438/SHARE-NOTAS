@@ -3,6 +3,7 @@ import Category from "../models/Category.js";
 import Notebook from "../models/Notebook.js";
 import User from "../models/User.js";
 import { sendShareNotificationEmail } from "../config/email.js";
+import { emitToUser } from "../services/socket.js";
 
 const normalizeTags = (tags) => {
   if (!tags) return [];
@@ -387,6 +388,12 @@ export const shareNote = async (req, res, next) => {
       noteUrl,
       type: note.type || "note",
     }).catch((err) => console.error("Error sending share email:", err));
+
+    emitToUser(targetUser._id.toString(), "note:shared", {
+      noteId: note._id,
+      noteTitle: note.title,
+      sharedBy: sender?.name || "Alguien",
+    });
 
     res.json({ message: `Nota compartida con ${targetUser.name}` });
   } catch (error) {

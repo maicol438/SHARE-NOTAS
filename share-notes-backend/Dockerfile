@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
@@ -6,13 +6,14 @@ WORKDIR /app
 COPY package*.json ./
 
 # Instalar dependencias de producción
-RUN npm ci --only=production
+RUN npm ci --only=production && chown -R node:node /app
 
-# Copiar todo el código al contenedor
-COPY . .
+# Copiar todo el código al contenedor (como usuario node)
+COPY --chown=node:node . .
 
-# Usar la variable PORT dinámica que inyecta Render
-EXPOSE 10000
+# Transferir control al usuario seguro no-root
+USER node
 
-# CONFIGURACIÓN CORRECTA: Tu archivo está dentro de la carpeta src
+EXPOSE 4000
+
 CMD ["node", "src/server.js"]
