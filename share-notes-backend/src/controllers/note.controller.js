@@ -218,6 +218,14 @@ export const updateNote = async (req, res, next) => {
     if (category) updateData.category = category;
     if (notebook !== undefined) updateData.notebook = notebook;
 
+    const existingNote = await Note.findOne({ _id: req.params.id, deletedAt: null });
+    if (!existingNote) {
+      return res.status(404).json({ message: "Nota no encontrada" });
+    }
+    if (existingNote.user.toString() !== req.userId) {
+      return res.status(403).json({ message: "No tienes permiso para modificar esta nota" });
+    }
+
     const note = await Note.findOneAndUpdate(
       { _id: req.params.id, user: req.userId },
       updateData,
