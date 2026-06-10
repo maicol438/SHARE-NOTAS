@@ -5,38 +5,37 @@ import {
   TextRun,
   HeadingLevel,
   AlignmentType,
-} from "docx";
-import Note from "../models/Note.js";
-import Category from "../models/Category.js";
+} from 'docx';
+import Note from '../models/Note.js';
 
 const DOCX_MIME =
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
 const findNote = async (noteId, userId) => {
   return await Note.findOne({
     _id: noteId,
     $or: [
       { user: userId },
-      { sharedWith: { $elemMatch: { user: userId, permission: "edit" } } },
+      { sharedWith: { $elemMatch: { user: userId, permission: 'edit' } } },
     ],
-  }).populate("category", "name color");
+  }).populate('category', 'name color');
 };
 
 const buildDocx = async (note, type) => {
-  const title = type === "task" ? `[Tarea] ${note.title}` : note.title;
-  const rawContent = type === "task"
+  const title = type === 'task' ? `[Tarea] ${note.title}` : note.title;
+  const rawContent = type === 'task'
     ? (note.description
-        ? `${note.description}\n\n${note.content || ""}`
-        : note.content || "Tarea sin descripción")
+        ? `${note.description}\n\n${note.content || ''}`
+        : note.content || 'Tarea sin descripción')
     : note.content;
 
   const date = note.updatedAt
-    ? new Date(note.updatedAt).toLocaleDateString("es-CO", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
+    ? new Date(note.updatedAt).toLocaleDateString('es-CO', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
       })
-    : "";
+    : '';
 
   const children = [];
 
@@ -53,7 +52,7 @@ const buildDocx = async (note, type) => {
     children.push(
       new Paragraph({
         children: [
-          new TextRun({ text: "Categoría: ", bold: true, size: 22 }),
+          new TextRun({ text: 'Categoría: ', bold: true, size: 22 }),
           new TextRun({ text: note.category.name, size: 22 }),
         ],
         spacing: { after: 100 },
@@ -65,7 +64,7 @@ const buildDocx = async (note, type) => {
     children.push(
       new Paragraph({
         children: [
-          new TextRun({ text: "Última actualización: ", bold: true, size: 22 }),
+          new TextRun({ text: 'Última actualización: ', bold: true, size: 22 }),
           new TextRun({ text: date, size: 22 }),
         ],
         spacing: { after: 300 },
@@ -77,9 +76,9 @@ const buildDocx = async (note, type) => {
     new Paragraph({
       children: [
         new TextRun({
-          text: "─".repeat(50),
+          text: '─'.repeat(50),
           size: 18,
-          color: "999999",
+          color: '999999',
         }),
       ],
       spacing: { after: 200 },
@@ -89,7 +88,7 @@ const buildDocx = async (note, type) => {
   if (rawContent) {
     const blocks = rawContent.split(/\n\n+/);
     for (const block of blocks) {
-      const lines = block.split("\n");
+      const lines = block.split('\n');
       for (let i = 0; i < lines.length; i++) {
         children.push(
           new Paragraph({
@@ -114,10 +113,10 @@ const buildDocx = async (note, type) => {
       new Paragraph({
         children: [
           new TextRun({
-            text: `Estado: ${note.isCompleted ? "Completada" : "Pendiente"}`,
+            text: `Estado: ${note.isCompleted ? 'Completada' : 'Pendiente'}`,
             size: 22,
             italics: true,
-            color: note.isCompleted ? "2E7D32" : "E65100",
+            color: note.isCompleted ? '2E7D32' : 'E65100',
           }),
         ],
         spacing: { before: 300, after: 100 },
@@ -136,10 +135,10 @@ const buildDocx = async (note, type) => {
     }
 
     if (note.dueDate) {
-      const due = new Date(note.dueDate).toLocaleDateString("es-CO", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
+      const due = new Date(note.dueDate).toLocaleDateString('es-CO', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
       });
       children.push(
         new Paragraph({
@@ -156,9 +155,9 @@ const buildDocx = async (note, type) => {
     new Paragraph({
       children: [
         new TextRun({
-          text: "\nGenerado desde Share Notes",
+          text: '\nGenerado desde Share Notes',
           size: 18,
-          color: "999999",
+          color: '999999',
           italics: true,
         }),
       ],
@@ -170,11 +169,11 @@ const buildDocx = async (note, type) => {
   const doc = new Document({
     title,
     description: `Exportación de ${type}`,
-    creator: "Share Notes",
+    creator: 'Share Notes',
     styles: {
       default: {
         document: {
-          run: { font: "Calibri", size: 24 },
+          run: { font: 'Calibri', size: 24 },
         },
       },
     },
@@ -184,61 +183,61 @@ const buildDocx = async (note, type) => {
   return await Packer.toBuffer(doc);
 };
 
-export const exportNoteAsDocx = async (req, res, next) => {
+export const exportNoteAsDocx = async (req, res, _next) => {
   try {
     const note = await findNote(req.params.id, req.userId);
     if (!note) {
       return res
         .status(404)
-        .json({ message: "Nota no encontrada o no tienes permiso de edición" });
+        .json({ message: 'Nota no encontrada o no tienes permiso de edición' });
     }
 
-    const buffer = await buildDocx(note, "note");
+    const buffer = await buildDocx(note, 'note');
     const filename = encodeURIComponent(
-      `${note.title.replace(/[^a-zA-Z0-9áéíóúñ\s-]/g, "").trim() || "nota"}.docx`
+      `${note.title.replace(/[^a-zA-Z0-9áéíóúñ\s-]/g, '').trim() || 'nota'}.docx`
     );
 
     res.set({
-      "Content-Type": DOCX_MIME,
-      "Content-Disposition": `attachment; filename*=UTF-8''${filename}`,
-      "Content-Length": buffer.length,
+      'Content-Type': DOCX_MIME,
+      'Content-Disposition': `attachment; filename*=UTF-8''${filename}`,
+      'Content-Length': buffer.length,
     });
 
     res.send(buffer);
   } catch (error) {
-    console.error("Error exportando DOCX:", error.message);
+    console.error('Error exportando DOCX:', error.message);
     return res.status(500).json({
-      message: "Error al exportar la nota a Word",
+      message: 'Error al exportar la nota a Word',
       detail: error.message,
     });
   }
 };
 
-export const exportTaskAsDocx = async (req, res, next) => {
+export const exportTaskAsDocx = async (req, res, _next) => {
   try {
     const note = await findNote(req.params.id, req.userId);
-    if (!note || note.type !== "task") {
+    if (!note || note.type !== 'task') {
       return res
         .status(404)
-        .json({ message: "Tarea no encontrada o no tienes permiso de edición" });
+        .json({ message: 'Tarea no encontrada o no tienes permiso de edición' });
     }
 
-    const buffer = await buildDocx(note, "task");
+    const buffer = await buildDocx(note, 'task');
     const filename = encodeURIComponent(
-      `${note.title.replace(/[^a-zA-Z0-9áéíóúñ\s-]/g, "").trim() || "tarea"}.docx`
+      `${note.title.replace(/[^a-zA-Z0-9áéíóúñ\s-]/g, '').trim() || 'tarea'}.docx`
     );
 
     res.set({
-      "Content-Type": DOCX_MIME,
-      "Content-Disposition": `attachment; filename*=UTF-8''${filename}`,
-      "Content-Length": buffer.length,
+      'Content-Type': DOCX_MIME,
+      'Content-Disposition': `attachment; filename*=UTF-8''${filename}`,
+      'Content-Length': buffer.length,
     });
 
     res.send(buffer);
   } catch (error) {
-    console.error("Error exportando DOCX tarea:", error.message);
+    console.error('Error exportando DOCX tarea:', error.message);
     return res.status(500).json({
-      message: "Error al exportar la tarea a Word",
+      message: 'Error al exportar la tarea a Word',
       detail: error.message,
     });
   }

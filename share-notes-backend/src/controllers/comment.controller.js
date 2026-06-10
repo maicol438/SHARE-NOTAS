@@ -1,12 +1,12 @@
-import Comment from "../models/Comment.js";
-import Note from "../models/Note.js";
-import User from "../models/User.js";
-import { emitToUser } from "../services/socket.js";
+import Comment from '../models/Comment.js';
+import Note from '../models/Note.js';
+import User from '../models/User.js';
+import { emitToUser } from '../services/socket.js';
 
 export const getComments = async (req, res, next) => {
   try {
     const comments = await Comment.find({ note: req.params.noteId })
-      .populate("user", "name avatar")
+      .populate('user', 'name avatar')
       .sort({ createdAt: -1 });
 
     res.json({ comments });
@@ -22,7 +22,7 @@ export const createComment = async (req, res, next) => {
 
     const note = await Note.findOne({ _id: noteId, deletedAt: null });
     if (!note) {
-      return res.status(404).json({ message: "Nota no encontrada" });
+      return res.status(404).json({ message: 'Nota no encontrada' });
     }
 
     const hasAccess =
@@ -31,7 +31,7 @@ export const createComment = async (req, res, next) => {
       note.isPublic === true;
 
     if (!hasAccess) {
-      return res.status(403).json({ message: "No tienes permiso para comentar en esta nota" });
+      return res.status(403).json({ message: 'No tienes permiso para comentar en esta nota' });
     }
 
     const comment = await Comment.create({
@@ -40,17 +40,17 @@ export const createComment = async (req, res, next) => {
       user: req.userId,
     });
 
-    const populated = await comment.populate("user", "name avatar");
+    const populated = await comment.populate('user', 'name avatar');
 
     const commenter = await User.findById(req.userId);
-    emitToUser(note.user.toString(), "comment:new", {
+    emitToUser(note.user.toString(), 'comment:new', {
       noteId,
       noteTitle: note.title,
       comment: populated,
-      by: commenter?.name || "Alguien",
+      by: commenter?.name || 'Alguien',
     });
 
-    res.status(201).json({ message: "Comentario creado", comment: populated });
+    res.status(201).json({ message: 'Comentario creado', comment: populated });
   } catch (error) {
     next(error);
   }
@@ -64,10 +64,10 @@ export const deleteComment = async (req, res, next) => {
     });
 
     if (!comment) {
-      return res.status(404).json({ message: "Comentario no encontrado" });
+      return res.status(404).json({ message: 'Comentario no encontrado' });
     }
 
-    res.json({ message: "Comentario eliminado" });
+    res.json({ message: 'Comentario eliminado' });
   } catch (error) {
     next(error);
   }

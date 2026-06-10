@@ -1,6 +1,6 @@
-import Note from "../models/Note.js";
-import Category from "../models/Category.js";
-import Notebook from "../models/Notebook.js";
+import Note from '../models/Note.js';
+import Category from '../models/Category.js';
+import Notebook from '../models/Notebook.js';
 
 export const advancedSearch = async (req, res, next) => {
   try {
@@ -25,15 +25,15 @@ export const advancedSearch = async (req, res, next) => {
 
     if (category) filter.category = category;
     if (notebook) filter.notebook = notebook;
-    if (pinned !== undefined) filter.isPinned = pinned === "true";
+    if (pinned !== undefined) filter.isPinned = pinned === 'true';
     if (type) filter.type = type;
 
     if (completed !== undefined) {
-      filter.isCompleted = completed === "true";
+      filter.isCompleted = completed === 'true';
     }
 
     if (tags) {
-      const tagList = tags.split(",").map((t) => t.trim().toLowerCase());
+      const tagList = tags.split(',').map((t) => t.trim().toLowerCase());
       filter.tags = { $all: tagList };
     }
 
@@ -41,24 +41,24 @@ export const advancedSearch = async (req, res, next) => {
       filter.createdAt = {};
       if (dateFrom) {
         const d = new Date(dateFrom);
-        if (isNaN(d.getTime())) return res.status(400).json({ message: "Fecha inválida" });
+        if (isNaN(d.getTime())) return res.status(400).json({ message: 'Fecha inválida' });
         filter.createdAt.$gte = d;
       }
       if (dateTo) {
         const d = new Date(dateTo);
-        if (isNaN(d.getTime())) return res.status(400).json({ message: "Fecha inválida" });
+        if (isNaN(d.getTime())) return res.status(400).json({ message: 'Fecha inválida' });
         filter.createdAt.$lte = d;
       }
     }
 
-    if (hasReminder === "true") {
-      filter["reminder.date"] = { $gte: new Date() };
-      filter["reminder.isActive"] = true;
+    if (hasReminder === 'true') {
+      filter['reminder.date'] = { $gte: new Date() };
+      filter['reminder.isActive'] = true;
     }
 
     const notes = await Note.find(filter)
-      .populate("category", "name color")
-      .populate("notebook", "name color")
+      .populate('category', 'name color')
+      .populate('notebook', 'name color')
       .sort({ isPinned: -1, updatedAt: -1 });
 
     res.json({ notes, total: notes.length });
@@ -79,14 +79,14 @@ export const getNotebooks = async (req, res, next) => {
 export const getNotebookById = async (req, res, next) => {
   try {
     const notebook = await Notebook.findOne({ _id: req.params.id, user: req.userId });
-    if (!notebook) return res.status(404).json({ message: "Cuaderno no encontrado" });
+    if (!notebook) return res.status(404).json({ message: 'Cuaderno no encontrado' });
 
     const notes = await Note.find({
       notebook: notebook._id,
       user: req.userId,
       deletedAt: null,
     })
-      .populate("category", "name color")
+      .populate('category', 'name color')
       .sort({ isPinned: -1, updatedAt: -1 });
 
     res.json({ notebook, notes });
@@ -101,13 +101,13 @@ export const createNotebook = async (req, res, next) => {
 
     const notebook = await Notebook.create({
       name,
-      description: description || "",
-      color: color || "#6366f1",
-      icon: icon || "book",
+      description: description || '',
+      color: color || '#6366f1',
+      icon: icon || 'book',
       user: req.userId,
     });
 
-    res.status(201).json({ message: "Cuaderno creado", notebook });
+    res.status(201).json({ message: 'Cuaderno creado', notebook });
   } catch (error) {
     next(error);
   }
@@ -123,9 +123,9 @@ export const updateNotebook = async (req, res, next) => {
       { new: true, runValidators: true }
     );
 
-    if (!notebook) return res.status(404).json({ message: "Cuaderno no encontrado" });
+    if (!notebook) return res.status(404).json({ message: 'Cuaderno no encontrado' });
 
-    res.json({ message: "Cuaderno actualizado", notebook });
+    res.json({ message: 'Cuaderno actualizado', notebook });
   } catch (error) {
     next(error);
   }
@@ -134,11 +134,11 @@ export const updateNotebook = async (req, res, next) => {
 export const deleteNotebook = async (req, res, next) => {
   try {
     const notebook = await Notebook.findOneAndDelete({ _id: req.params.id, user: req.userId });
-    if (!notebook) return res.status(404).json({ message: "Cuaderno no encontrado" });
+    if (!notebook) return res.status(404).json({ message: 'Cuaderno no encontrado' });
 
     await Note.updateMany({ notebook: notebook._id }, { notebook: null });
 
-    res.json({ message: "Cuaderno eliminado" });
+    res.json({ message: 'Cuaderno eliminado' });
   } catch (error) {
     next(error);
   }
@@ -154,22 +154,22 @@ export const getStats = async (req, res, next) => {
         { $match: { user: req.userId, deletedAt: null } },
         {
           $facet: {
-            totalNotes: [{ $count: "count" }],
+            totalNotes: [{ $count: 'count' }],
             byCategory: [
-              { $group: { _id: "$category", count: { $sum: 1 } } },
+              { $group: { _id: '$category', count: { $sum: 1 } } },
               { $sort: { count: -1 } },
               { $limit: 10 },
             ],
             byNotebook: [
               { $match: { notebook: { $ne: null } } },
-              { $group: { _id: "$notebook", count: { $sum: 1 } } },
+              { $group: { _id: '$notebook', count: { $sum: 1 } } },
               { $sort: { count: -1 } },
             ],
             byWeek: [
               { $match: { createdAt: { $gte: eightWeeksAgo } } },
               {
                 $group: {
-                  _id: { $dateToString: { format: "%Y-W%V", date: "$createdAt" } },
+                  _id: { $dateToString: { format: '%Y-W%V', date: '$createdAt' } },
                   count: { $sum: 1 },
                 },
               },
@@ -177,18 +177,18 @@ export const getStats = async (req, res, next) => {
             ],
             topTags: [
               { $match: { tags: { $ne: [] } } },
-              { $unwind: "$tags" },
-              { $group: { _id: "$tags", count: { $sum: 1 } } },
+              { $unwind: '$tags' },
+              { $group: { _id: '$tags', count: { $sum: 1 } } },
               { $sort: { count: -1 } },
               { $limit: 10 },
             ],
             tasksTotal: [
-              { $match: { type: "task" } },
-              { $count: "count" },
+              { $match: { type: 'task' } },
+              { $count: 'count' },
             ],
             tasksCompleted: [
-              { $match: { type: "task", isCompleted: true } },
-              { $count: "count" },
+              { $match: { type: 'task', isCompleted: true } },
+              { $count: 'count' },
             ],
           },
         },
@@ -230,8 +230,8 @@ export const getAllTags = async (req, res, next) => {
   try {
     const tags = await Note.aggregate([
       { $match: { user: req.userId, deletedAt: null, tags: { $ne: [] } } },
-      { $unwind: "$tags" },
-      { $group: { _id: "$tags", count: { $sum: 1 } } },
+      { $unwind: '$tags' },
+      { $group: { _id: '$tags', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
     ]);
 

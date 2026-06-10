@@ -1,26 +1,26 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const noteSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: [true, "El título es obligatorio"],
+      required: [true, 'El título es obligatorio'],
       trim: true,
-      maxlength: [120, "El título no puede superar 120 caracteres"],
+      maxlength: [120, 'El título no puede superar 120 caracteres'],
     },
     content: {
       type: String,
-      default: "",
+      default: '',
     },
     contentHTML: {
       type: String,
-      default: "",
+      default: '',
     },
     description: {
       type: String,
       trim: true,
       maxlength: 500,
-      default: "",
+      default: '',
     },
     isPinned: {
       type: Boolean,
@@ -54,17 +54,17 @@ const noteSchema = new mongoose.Schema(
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      required: [true, "La categoría es obligatoria"],
+      ref: 'Category',
+      required: [true, 'La categoría es obligatoria'],
     },
     notebook: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Notebook",
+      ref: 'Notebook',
       default: null,
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     tags: [{
@@ -77,17 +77,17 @@ const noteSchema = new mongoose.Schema(
     }],
     reminder: {
       date: Date,
-      note: { type: String, default: "" },
+      note: { type: String, default: '' },
       isActive: { type: Boolean, default: true },
     },
     sharedWith: [{
-      user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      permission: { type: String, enum: ["read", "edit"], default: "read" },
+      user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      permission: { type: String, enum: ['read', 'edit'], default: 'read' },
       sharedAt: { type: Date, default: Date.now },
     }],
     sharedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       default: null,
     },
     isPublic: {
@@ -100,12 +100,12 @@ const noteSchema = new mongoose.Schema(
     },
     priority: {
       type: String,
-      enum: ["low", "medium", "high", "urgent"],
-      default: "medium",
+      enum: ['low', 'medium', 'high', 'urgent'],
+      default: 'medium',
     },
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       default: null,
     },
     isCompleted: {
@@ -114,8 +114,8 @@ const noteSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["note", "task"],
-      default: "note",
+      enum: ['note', 'task'],
+      default: 'note',
     },
     googleDocId: {
       type: String,
@@ -125,13 +125,13 @@ const noteSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-noteSchema.index({ title: "text", content: "text", contentHTML: "text" });
+noteSchema.index({ title: 'text', content: 'text', contentHTML: 'text' });
 noteSchema.index({ tags: 1 });
-noteSchema.index({ "reminder.date": 1 });
+noteSchema.index({ 'reminder.date': 1 });
 noteSchema.index({ user: 1, deletedAt: 1 });
 noteSchema.index({ user: 1, deletedAt: 1, category: 1 });
 noteSchema.index({ user: 1, type: 1, deletedAt: 1 });
 noteSchema.index({ user: 1, deletedAt: 1, isPinned: -1, updatedAt: -1 });
 noteSchema.index({ isPublic: 1, deletedAt: 1 });
 
-export default mongoose.model("Note", noteSchema);
+export default mongoose.model('Note', noteSchema);

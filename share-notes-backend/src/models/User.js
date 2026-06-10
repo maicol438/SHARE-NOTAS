@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 /**
  * @swagger
@@ -25,21 +25,21 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "El nombre es obligatorio"],
+      required: [true, 'El nombre es obligatorio'],
       trim: true,
-      minlength: [2, "El nombre debe tener al menos 2 caracteres"],
+      minlength: [2, 'El nombre debe tener al menos 2 caracteres'],
     },
     email: {
       type: String,
-      required: [true, "El email es obligatorio"],
+      required: [true, 'El email es obligatorio'],
       unique: true,
       lowercase: true,
       trim: true,
-      match: [/\S+@\S+\.\S+/, "Formato de email inválido"],
+      match: [/\S+@\S+\.\S+/, 'Formato de email inválido'],
     },
     password: {
       type: String,
-      minlength: [6, "La contraseña debe tener al menos 6 caracteres"],
+      minlength: [6, 'La contraseña debe tener al menos 6 caracteres'],
       select: false,
     },
     googleId: {
@@ -49,18 +49,18 @@ const userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      default: "",
+      default: '',
     },
     authProvider: {
       type: String,
-      enum: ["local", "google"],
-      default: "local",
+      enum: ['local', 'google'],
+      default: 'local',
     },
 
     role: {
       type: String,
-      enum: ["user", "admin"],
-      default: "user",
+      enum: ['user', 'admin'],
+      default: 'user',
     },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
@@ -71,8 +71,8 @@ const userSchema = new mongoose.Schema(
 );
 
 // ── Hash de contraseña antes de guardar ───────────────────────────
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
   if (!this.password) return next();
   const salt = await bcrypt.genSalt(12);
   this.password = await bcrypt.hash(this.password, salt);
@@ -97,4 +97,4 @@ userSchema.methods.toJSON = function () {
   return user;
 };
 
-export default mongoose.model("User", userSchema);
+export default mongoose.model('User', userSchema);

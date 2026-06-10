@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import nodemailer from 'nodemailer';
 
 let transporter = null;
 
@@ -9,9 +9,9 @@ const getTransporter = () => {
     return transporter;
   }
   transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || "smtp.gmail.com",
-    port: parseInt(process.env.SMTP_PORT || "587"),
-    secure: process.env.SMTP_SECURE === "true",
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: process.env.SMTP_SECURE === 'true',
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
@@ -20,16 +20,16 @@ const getTransporter = () => {
   return transporter;
 };
 
-export const sendShareNotificationEmail = async ({ to, sharedByName, noteTitle, noteUrl, type = "note" }) => {
-  const appName = "Share Notes";
-  const from = process.env.SMTP_FROM || `"${appName}" <${process.env.SMTP_USER || "noreply@sharenote.app"}>`;
-  const emoji = type === "task" ? "📝" : type === "file" ? "📁" : "📄";
-  const typeLabel = type === "task" ? "tarea" : type === "file" ? "archivo" : "nota";
+export const sendShareNotificationEmail = async ({ to, sharedByName, noteTitle, noteUrl, type = 'note' }) => {
+  const appName = 'Share Notes';
+  const from = process.env.SMTP_FROM || `"${appName}" <${process.env.SMTP_USER || 'noreply@sharenote.app'}>`;
+  const emoji = type === 'task' ? '📝' : type === 'file' ? '📁' : '📄';
+  const typeLabel = type === 'task' ? 'tarea' : type === 'file' ? 'archivo' : 'nota';
 
   await getTransporter().sendMail({
     from,
     to,
-    subject: `${sharedByName} ha compartido un${type === "task" || type === "file" ? " " : "a "}${typeLabel} contigo - ${appName}`,
+    subject: `${sharedByName} ha compartido un${type === 'task' || type === 'file' ? ' ' : 'a '}${typeLabel} contigo - ${appName}`,
     html: `
       <div style="background-color: #f3f4f6; padding: 40px 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center;">
         <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; padding: 32px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: left;">
@@ -46,7 +46,7 @@ export const sendShareNotificationEmail = async ({ to, sharedByName, noteTitle, 
 
           <div style="text-align: center; font-size: 48px; margin-bottom: 16px;">${emoji}</div>
           <h3 style="color: #111827; font-size: 20px; margin-top: 0; margin-bottom: 16px; font-weight: 600;">
-            ${sharedByName} ha compartido un${type === "task" || type === "file" ? " " : "a "}${typeLabel} contigo
+            ${sharedByName} ha compartido un${type === 'task' || type === 'file' ? ' ' : 'a '}${typeLabel} contigo
           </h3>
           <p style="color: #4b5563; font-size: 15px; line-height: 1.6; margin-bottom: 24px;">
             <strong style="color: #111827;">${noteTitle}</strong>
@@ -73,8 +73,8 @@ export const sendShareNotificationEmail = async ({ to, sharedByName, noteTitle, 
 };
 
 export const sendResetEmail = async (to, resetUrl) => {
-  const appName = "Share Notes";
-  const from = process.env.SMTP_FROM || `"${appName}" <${process.env.SMTP_USER || "noreply@sharenote.app"}>`;
+  const appName = 'Share Notes';
+  const from = process.env.SMTP_FROM || `"${appName}" <${process.env.SMTP_USER || 'noreply@sharenote.app'}>`;
 
   await getTransporter().sendMail({
     from,

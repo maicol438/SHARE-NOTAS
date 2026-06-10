@@ -1,95 +1,95 @@
-import swaggerJSDoc from "swagger-jsdoc";
-import swaggerUi from "swagger-ui-express";
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
 const options = {
   definition: {
-    openapi: "3.0.0",
+    openapi: '3.0.0',
     info: {
-      title: "Share Notes API",
-      version: "1.0.0",
+      title: 'Share Notes API',
+      version: '1.0.0',
       description:
-        "API REST para la plataforma Share Notes – gestión de notas académicas por categorías.",
-      contact: { name: "Share Notes Team" },
+        'API REST para la plataforma Share Notes – gestión de notas académicas por categorías.',
+      contact: { name: 'Share Notes Team' },
     },
     servers: [
       {
-        url: "http://localhost:4000/api",
-        description: "Servidor de desarrollo",
+        url: 'http://localhost:4000/api',
+        description: 'Servidor de desarrollo',
       },
     ],
     components: {
       securitySchemes: {
         cookieAuth: {
-          type: "apiKey",
-          in: "cookie",
-          name: "token",
+          type: 'apiKey',
+          in: 'cookie',
+          name: 'token',
         },
       },
       schemas: {
         User: {
-          type: "object",
+          type: 'object',
           properties: {
-            _id: { type: "string" },
-            name: { type: "string" },
-            email: { type: "string", format: "email" },
-            createdAt: { type: "string", format: "date-time" },
+            _id: { type: 'string' },
+            name: { type: 'string' },
+            email: { type: 'string', format: 'email' },
+            createdAt: { type: 'string', format: 'date-time' },
           },
         },
         UserRegister: {
-          type: "object",
-          required: ["name", "email", "password"],
+          type: 'object',
+          required: ['name', 'email', 'password'],
           properties: {
             name: {
-              type: "string",
-              example: "Ana García",
+              type: 'string',
+              example: 'Ana García',
             },
             email: {
-              type: "string",
-              format: "email",
-              example: "ana@email.com",
+              type: 'string',
+              format: 'email',
+              example: 'ana@email.com',
             },
             password: {
-              type: "string",
+              type: 'string',
               minLength: 6,
-              example: "secret123",
+              example: 'secret123',
             },
           },
         },
         Category: {
-          type: "object",
+          type: 'object',
           properties: {
-            _id: { type: "string" },
-            name: { type: "string" },
-            color: { type: "string" },
-            user: { type: "string", description: "ObjectId del usuario" },
+            _id: { type: 'string' },
+            name: { type: 'string' },
+            color: { type: 'string' },
+            user: { type: 'string', description: 'ObjectId del usuario' },
           },
         },
         Note: {
-          type: "object",
+          type: 'object',
           properties: {
-            _id: { type: "string" },
-            title: { type: "string" },
-            content: { type: "string" },
-            category: { type: "string", description: "ObjectId de la categoría" },
-            user: { type: "string", description: "ObjectId del usuario" },
-            createdAt: { type: "string", format: "date-time" },
+            _id: { type: 'string' },
+            title: { type: 'string' },
+            content: { type: 'string' },
+            category: { type: 'string', description: 'ObjectId de la categoría' },
+            user: { type: 'string', description: 'ObjectId del usuario' },
+            createdAt: { type: 'string', format: 'date-time' },
           },
         },
         Error: {
-          type: "object",
+          type: 'object',
           properties: {
-            message: { type: "string" },
+            message: { type: 'string' },
           },
         },
       },
     },
   },
-  apis: ["./src/routes/*.js"],
+  apis: ['./src/routes/*.js'],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
 
 export const swaggerDocs = (app) => {
-  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  console.log("📖 Swagger disponible en /api-docs");
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  console.log('📖 Swagger disponible en /api-docs');
 };

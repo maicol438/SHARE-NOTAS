@@ -5,10 +5,13 @@ WORKDIR /app
 # Copiar archivos de dependencias
 COPY package*.json ./
 
-# Instalar dependencias de producción
-RUN npm ci --only=production && chown -R node:node /app
+# Instalar exclusivamente dependencias de producción (como root)
+RUN npm ci --omit=dev && npm cache clean --force
 
-# Copiar todo el código al contenedor (como usuario node)
+# Transferir propiedad al usuario seguro node
+RUN chown -R node:node /app
+
+# Copiar el código fuente (preservando propiedad)
 COPY --chown=node:node . .
 
 # Transferir control al usuario seguro no-root

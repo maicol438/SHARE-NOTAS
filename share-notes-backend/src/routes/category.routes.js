@@ -1,11 +1,11 @@
-import { Router } from "express";
+import { Router } from 'express';
 import {
   getCategories,
   createCategory,
   updateCategory,
   deleteCategory,
-} from "../controllers/category.controller.js";
-import { verifyToken } from "../middlewares/auth.middleware.js";
+} from '../controllers/category.controller.js';
+import { verifyToken } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
@@ -30,7 +30,7 @@ router.use(verifyToken);
  *       200:
  *         description: Lista de categorías
  */
-router.get("/", getCategories);
+router.get('/', getCategories);
 
 /**
  * @swagger
@@ -60,7 +60,7 @@ router.get("/", getCategories);
  *       400:
  *         description: Nombre duplicado o datos inválidos
  */
-router.post("/", createCategory);
+router.post('/', createCategory);
 
 /**
  * @swagger
@@ -89,7 +89,7 @@ router.post("/", createCategory);
  *       404:
  *         description: No encontrada
  */
-router.put("/:id", updateCategory);
+router.put('/:id', updateCategory);
 
 /**
  * @swagger
@@ -112,6 +112,6 @@ router.put("/:id", updateCategory);
  *       404:
  *         description: No encontrada
  */
-router.delete("/:id", deleteCategory);
+router.delete('/:id', deleteCategory);
 
 export default router;

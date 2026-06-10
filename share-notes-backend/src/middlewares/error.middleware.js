@@ -1,15 +1,15 @@
 export const errorHandler = (err, _req, res, _next) => {
-  console.error("💥 Error:", err.message);
+  console.error('💥 Error:', err.message);
 
   // Error de validación de Mongoose
-  if (err.name === "ValidationError") {
+  if (err.name === 'ValidationError') {
     const messages = Object.values(err.errors).map((e) => e.message);
-    return res.status(400).json({ message: messages.join(". ") });
+    return res.status(400).json({ message: messages.join('. ') });
   }
 
   // CastError: ID inválido (no es un ObjectId válido)
-  if (err.name === "CastError") {
-    return res.status(400).json({ message: "ID inválido" });
+  if (err.name === 'CastError') {
+    return res.status(400).json({ message: 'ID inválido' });
   }
 
   // Duplicado (índice único)
@@ -19,6 +19,6 @@ export const errorHandler = (err, _req, res, _next) => {
   }
 
   res.status(err.status || 500).json({
-    message: err.message || "Error interno del servidor",
+    message: err.message || 'Error interno del servidor',
   });
 };

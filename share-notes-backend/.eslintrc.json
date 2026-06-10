@@ -13,11 +13,11 @@
     "fetch": "readonly"
   },
   "rules": {
-    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "no-console": "off",
-    "semi": ["warn", "always"],
-    "quotes": ["warn", "single", { "avoidEscape": true }],
-    "no-duplicate-imports": "warn",
+    "semi": ["error", "always"],
+    "quotes": ["error", "single", { "avoidEscape": true }],
+    "no-duplicate-imports": "error",
     "no-undef": "error"
   }
 }

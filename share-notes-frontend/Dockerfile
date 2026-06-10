@@ -11,15 +11,24 @@ COPY . .
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
-RUN npm run build && chown -R node:node /app
+RUN npm run build
 
-USER node
+RUN npm prune --omit=dev
 
-FROM nginx:alpine
+FROM node:24-alpine
 
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
+    npm install -g serve
 
-EXPOSE 80
+WORKDIR /app
 
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package.json ./package.json
+
+RUN chown -R appuser:appgroup /app
+
+USER appuser
+
+EXPOSE 3000
+
+CMD ["serve", "-s", "dist", "-l", "3000", "--no-request-logging"]

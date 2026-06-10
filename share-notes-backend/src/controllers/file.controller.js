@@ -1,12 +1,12 @@
-import multer from "multer";
-import cloudinary from "../config/cloudinary.js";
-import { uploadFiles as uploadFilesMiddleware } from "../middlewares/uploadMiddleware.js";
-import File from "../models/File.js";
-import User from "../models/User.js";
-import { sendShareNotificationEmail } from "../config/email.js";
+import multer from 'multer';
+import cloudinary from '../config/cloudinary.js';
+import { uploadFiles as uploadFilesMiddleware } from '../middlewares/uploadMiddleware.js';
+import File from '../models/File.js';
+import User from '../models/User.js';
+import { sendShareNotificationEmail } from '../config/email.js';
 
 export const uploadFiles = (req, res, next) => {
-  uploadFilesMiddleware.array("files", 3)(req, res, async (err) => {
+  uploadFilesMiddleware.array('files', 3)(req, res, async (err) => {
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ message: `Error al subir: ${err.message}` });
     } else if (err) {
@@ -14,7 +14,7 @@ export const uploadFiles = (req, res, next) => {
     }
 
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ message: "No se subieron archivos" });
+      return res.status(400).json({ message: 'No se subieron archivos' });
     }
 
     try {
@@ -40,7 +40,7 @@ export const uploadFiles = (req, res, next) => {
         })
       );
 
-      res.status(201).json({ message: "Archivos subidos", files: savedFiles });
+      res.status(201).json({ message: 'Archivos subidos', files: savedFiles });
     } catch (error) {
       next(error);
     }
@@ -50,10 +50,10 @@ export const uploadFiles = (req, res, next) => {
 export const getFile = async (req, res) => {
   try {
     const file = await File.findOne({ filename: req.params.filename });
-    if (!file) return res.status(404).json({ message: "Archivo no encontrado" });
+    if (!file) return res.status(404).json({ message: 'Archivo no encontrado' });
     res.redirect(file.url);
   } catch (error) {
-    res.status(500).json({ message: "Error al obtener archivo" });
+    res.status(500).json({ message: 'Error al obtener archivo' });
   }
 };
 
@@ -81,28 +81,28 @@ export const shareFile = async (req, res, next) => {
 
     const targetUser = await User.findOne({ email });
     if (!targetUser) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
+      return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
     if (targetUser._id.toString() === req.userId) {
-      return res.status(400).json({ message: "No puedes compartir contigo mismo" });
+      return res.status(400).json({ message: 'No puedes compartir contigo mismo' });
     }
 
     const file = await File.findOne({ _id: req.params.id, user: req.userId });
     if (!file) {
-      return res.status(404).json({ message: "Archivo no encontrado" });
+      return res.status(404).json({ message: 'Archivo no encontrado' });
     }
 
     const sender = await User.findById(req.userId);
-    const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
     const fileUrl = `${clientUrl}/dashboard/files`;
 
     await sendShareNotificationEmail({
       to: targetUser.email,
-      sharedByName: sender?.name || "Alguien",
+      sharedByName: sender?.name || 'Alguien',
       noteTitle: file.originalName,
       noteUrl: fileUrl,
-      type: "file",
+      type: 'file',
     });
 
     res.json({ message: `Archivo compartido con ${targetUser.name}` });
@@ -116,10 +116,10 @@ export const deleteFile = async (req, res, next) => {
     const { filename } = req.params;
     const file = await File.findOneAndDelete({ filename, user: req.userId });
     if (!file) {
-      return res.status(404).json({ message: "Archivo no encontrado" });
+      return res.status(404).json({ message: 'Archivo no encontrado' });
     }
     await cloudinary.uploader.destroy(filename);
-    res.json({ message: "Archivo eliminado" });
+    res.json({ message: 'Archivo eliminado' });
   } catch (error) {
     next(error);
   }

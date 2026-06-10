@@ -1,5 +1,5 @@
-import User from "../models/User.js";
-import Note from "../models/Note.js";
+import User from '../models/User.js';
+import Note from '../models/Note.js';
 
 export const getDashboard = async (req, res, next) => {
   try {
@@ -29,7 +29,7 @@ export const getDashboard = async (req, res, next) => {
 
 export const getUsers = async (req, res, next) => {
   try {
-    const users = await User.find({}).select("-password").sort({ createdAt: -1 });
+    const users = await User.find({}).select('-password').sort({ createdAt: -1 });
     res.json({ users });
   } catch (error) {
     next(error);
@@ -39,12 +39,12 @@ export const getUsers = async (req, res, next) => {
 export const updateUserRole = async (req, res, next) => {
   try {
     const { userId, role } = req.body;
-    if (!["user", "admin"].includes(role)) {
-      return res.status(400).json({ message: "Rol inválido" });
+    if (!['user', 'admin'].includes(role)) {
+      return res.status(400).json({ message: 'Rol inválido' });
     }
-    const user = await User.findByIdAndUpdate(userId, { role }, { new: true }).select("-password");
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
-    res.json({ message: "Rol actualizado", user });
+    const user = await User.findByIdAndUpdate(userId, { role }, { new: true }).select('-password');
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+    res.json({ message: 'Rol actualizado', user });
   } catch (error) {
     next(error);
   }
@@ -55,12 +55,12 @@ export const deleteUser = async (req, res, next) => {
     const { userId } = req.params;
 
     if (userId === req.userId) {
-      return res.status(400).json({ message: "No puedes eliminarte a ti mismo" });
+      return res.status(400).json({ message: 'No puedes eliminarte a ti mismo' });
     }
 
     await Note.deleteMany({ user: userId });
     await User.findByIdAndDelete(userId);
-    res.json({ message: "Usuario eliminado" });
+    res.json({ message: 'Usuario eliminado' });
   } catch (error) {
     next(error);
   }
@@ -69,7 +69,7 @@ export const deleteUser = async (req, res, next) => {
 export const getAllNotes = async (req, res, next) => {
   try {
     const notes = await Note.find({})
-      .populate("user", "name email avatar")
+      .populate('user', 'name email avatar')
       .sort({ createdAt: -1 });
     res.json({ notes });
   } catch (error) {

@@ -1,18 +1,17 @@
-import bcrypt from "bcryptjs";
-import User from "../models/User.js";
-import Note from "../models/Note.js";
+import User from '../models/User.js';
+import Note from '../models/Note.js';
 
 export const getProfile = async (req, res, next) => {
   try {
     const user = await User.findById(req.userId);
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
 
     const notesCount = await Note.countDocuments({
       user: req.userId,
       deletedAt: null,
     });
     const sharedCount = await Note.countDocuments({
-      "sharedWith.user": req.userId,
+      'sharedWith.user': req.userId,
       deletedAt: null,
     });
 
@@ -37,22 +36,22 @@ export const updateProfile = async (req, res, next) => {
   try {
     const { name, email, currentPassword, newPassword } = req.body;
 
-    const user = await User.findById(req.userId).select("+password");
+    const user = await User.findById(req.userId).select('+password');
     if (!user) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
+      return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
     if (newPassword !== undefined) {
-      const isGoogleUser = user.authProvider === "google";
+      const isGoogleUser = user.authProvider === 'google';
 
       if (!isGoogleUser) {
         if (!currentPassword) {
-          return res.status(400).json({ message: "Se requiere contraseña actual" });
+          return res.status(400).json({ message: 'Se requiere contraseña actual' });
         }
 
         const isMatch = await user.comparePassword(currentPassword);
         if (!isMatch) {
-          return res.status(401).json({ message: "Contraseña actual incorrecta" });
+          return res.status(401).json({ message: 'Contraseña actual incorrecta' });
         }
 
         user.password = newPassword;
@@ -64,7 +63,7 @@ export const updateProfile = async (req, res, next) => {
     if (email && email !== user.email) {
       const existingEmail = await User.findOne({ email, _id: { $ne: req.userId } });
       if (existingEmail) {
-        return res.status(400).json({ message: "El email ya está en uso" });
+        return res.status(400).json({ message: 'El email ya está en uso' });
       }
       user.email = email;
     }
@@ -74,7 +73,7 @@ export const updateProfile = async (req, res, next) => {
     await user.save();
 
     res.json({
-      message: "Perfil actualizado",
+      message: 'Perfil actualizado',
       user: { name: user.name, email: user.email, avatar: user.avatar },
     });
   } catch (error) {
@@ -85,11 +84,11 @@ export const updateProfile = async (req, res, next) => {
 export const updateAvatar = async (req, res, next) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ message: "Archivo de imagen requerido" });
+      return res.status(400).json({ message: 'Archivo de imagen requerido' });
     }
 
     if (!req.userId) {
-      return res.status(401).json({ message: "Usuario no autenticado" });
+      return res.status(401).json({ message: 'Usuario no autenticado' });
     }
 
     const avatarUrl = req.file.path;
@@ -101,11 +100,11 @@ export const updateAvatar = async (req, res, next) => {
     );
 
     if (!user) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
+      return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
     res.json({ 
-      message: "Avatar actualizado", 
+      message: 'Avatar actualizado', 
       user: { 
         name: user.name, 
         email: user.email, 
@@ -121,15 +120,15 @@ export const deleteAccount = async (req, res, next) => {
   try {
     const { password } = req.body;
 
-    const user = await User.findById(req.userId).select("+password");
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    const user = await User.findById(req.userId).select('+password');
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
 
-    const isGoogleUser = user.authProvider === "google";
+    const isGoogleUser = user.authProvider === 'google';
 
     if (!isGoogleUser) {
       const isMatch = await user.comparePassword(password);
       if (!isMatch) {
-        return res.status(401).json({ message: "Contraseña incorrecta" });
+        return res.status(401).json({ message: 'Contraseña incorrecta' });
       }
     }
 
@@ -137,10 +136,10 @@ export const deleteAccount = async (req, res, next) => {
       try {
         await fetch(
           `https://oauth2.googleapis.com/revoke?token=${user.googleAccessToken}`,
-          { method: "POST" }
+          { method: 'POST' }
         );
       } catch (revokeErr) {
-        console.error("Error al revocar token de Google:", revokeErr.message);
+        console.error('Error al revocar token de Google:', revokeErr.message);
       }
     }
 
@@ -148,8 +147,8 @@ export const deleteAccount = async (req, res, next) => {
 
     await User.findByIdAndDelete(req.userId);
 
-    res.clearCookie("token");
-    res.json({ message: "Cuenta eliminada correctamente" });
+    res.clearCookie('token');
+    res.json({ message: 'Cuenta eliminada correctamente' });
   } catch (error) {
     next(error);
   }

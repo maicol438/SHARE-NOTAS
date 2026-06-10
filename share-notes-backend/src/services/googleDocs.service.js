@@ -1,25 +1,25 @@
-import { google } from "googleapis";
+import { google } from 'googleapis';
 
 const getServiceAccountAuth = async () => {
   const envJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
   if (!envJson) {
     throw new Error(
-      "Google Docs no está configurado en el servidor. Define GOOGLE_SERVICE_ACCOUNT_JSON"
+      'Google Docs no está configurado en el servidor. Define GOOGLE_SERVICE_ACCOUNT_JSON'
     );
   }
 
   const credentials = JSON.parse(envJson);
   const auth = google.auth.fromJSON({
-    type: "service_account",
+    type: 'service_account',
     client_email: credentials.client_email,
     private_key: credentials.private_key,
     private_key_id: credentials.private_key_id,
     project_id: credentials.project_id,
   });
   auth.scopes = [
-    "https://www.googleapis.com/auth/documents",
-    "https://www.googleapis.com/auth/drive",
-    "https://www.googleapis.com/auth/drive.file",
+    'https://www.googleapis.com/auth/documents',
+    'https://www.googleapis.com/auth/drive',
+    'https://www.googleapis.com/auth/drive.file',
   ];
 
   return auth;
@@ -47,7 +47,7 @@ export const createGoogleDoc = async (
   userRefreshToken = null
 ) => {
   if (!title && !content) {
-    throw new Error("La nota está vacía. Escribe algo antes de exportar a Google Docs.");
+    throw new Error('La nota está vacía. Escribe algo antes de exportar a Google Docs.');
   }
 
   let auth;
@@ -58,35 +58,35 @@ export const createGoogleDoc = async (
     auth = await getServiceAccountAuth();
   }
 
-  const drive = google.drive({ version: "v3", auth });
+  const drive = google.drive({ version: 'v3', auth });
 
   let file;
   try {
     file = await drive.files.create({
       requestBody: {
-        name: title || "Nota de Share Notes",
-        mimeType: "application/vnd.google-apps.document",
+        name: title || 'Nota de Share Notes',
+        mimeType: 'application/vnd.google-apps.document',
       },
-      fields: "id, webViewLink",
+      fields: 'id, webViewLink',
     });
   } catch (e) {
     const errorCode = e?.response?.status || e?.status || e?.code;
     const errorMsg = e?.response?.data?.error?.message || e.message;
-    console.error("Error al crear Google Doc:", JSON.stringify(e?.response?.data || e.message));
+    console.error('Error al crear Google Doc:', JSON.stringify(e?.response?.data || e.message));
 
     if (userAccessToken && errorCode === 401) {
       throw new Error(
-        "Tu conexión con Google expiró. Desconecta y vuelve a conectar tu cuenta de Google desde tu perfil."
+        'Tu conexión con Google expiró. Desconecta y vuelve a conectar tu cuenta de Google desde tu perfil.'
       );
     }
 
-    if (userAccessToken && (errorCode === 403 || errorMsg.toLowerCase().includes("insufficient") || errorMsg.toLowerCase().includes("scope") || errorMsg.toLowerCase().includes("permission"))) {
-      const err = new Error("insufficient_scopes: Se requieren permisos de Google Drive para crear documentos.");
+    if (userAccessToken && (errorCode === 403 || errorMsg.toLowerCase().includes('insufficient') || errorMsg.toLowerCase().includes('scope') || errorMsg.toLowerCase().includes('permission'))) {
+      const err = new Error('insufficient_scopes: Se requieren permisos de Google Drive para crear documentos.');
       err.status = 403;
       throw err;
     }
 
-    throw new Error("Error al crear el documento en Google Docs: " + errorMsg);
+    throw new Error('Error al crear el documento en Google Docs: ' + errorMsg);
   }
 
   const docId = file.data.id;
@@ -95,7 +95,7 @@ export const createGoogleDoc = async (
     `https://docs.google.com/document/d/${docId}/edit`;
 
   if (content) {
-    const docs = google.docs({ version: "v1", auth });
+    const docs = google.docs({ version: 'v1', auth });
     try {
       await docs.documents.batchUpdate({
         documentId: docId,
@@ -111,7 +111,7 @@ export const createGoogleDoc = async (
         },
       });
     } catch (e) {
-      console.error("Error al insertar contenido:", e?.response?.data || e.message);
+      console.error('Error al insertar contenido:', e?.response?.data || e.message);
     }
   }
 
@@ -120,8 +120,8 @@ export const createGoogleDoc = async (
       await drive.permissions.create({
         fileId: docId,
         requestBody: {
-          type: "user",
-          role: "writer",
+          type: 'user',
+          role: 'writer',
           emailAddress: email,
         },
       });

@@ -1,5 +1,5 @@
-import Category from "../models/Category.js";
-import Note from "../models/Note.js";
+import Category from '../models/Category.js';
+import Note from '../models/Note.js';
 
 // ── GET /api/categories ───────────────────────────────────────────
 export const getCategories = async (req, res, next) => {
@@ -17,18 +17,18 @@ export const createCategory = async (req, res, next) => {
     const { name, color } = req.body;
 
     if (!name || name.trim().length < 2) {
-      return res.status(400).json({ message: "El nombre debe tener al menos 2 caracteres" });
+      return res.status(400).json({ message: 'El nombre debe tener al menos 2 caracteres' });
     }
     if (name.trim().length > 50) {
-      return res.status(400).json({ message: "El nombre no puede superar 50 caracteres" });
+      return res.status(400).json({ message: 'El nombre no puede superar 50 caracteres' });
     }
 
     const category = await Category.create({ name: name.trim(), color, user: req.userId });
-    res.status(201).json({ message: "Categoría creada correctamente", category });
+    res.status(201).json({ message: 'Categoría creada correctamente', category });
   } catch (error) {
     // Error de índice único (nombre duplicado para el mismo usuario)
     if (error.code === 11000) {
-      return res.status(400).json({ message: "Ya existe una categoría con ese nombre" });
+      return res.status(400).json({ message: 'Ya existe una categoría con ese nombre' });
     }
     next(error);
   }
@@ -41,10 +41,10 @@ export const updateCategory = async (req, res, next) => {
 
     if (name !== undefined) {
       if (name.trim().length < 2) {
-        return res.status(400).json({ message: "El nombre debe tener al menos 2 caracteres" });
+        return res.status(400).json({ message: 'El nombre debe tener al menos 2 caracteres' });
       }
       if (name.trim().length > 50) {
-        return res.status(400).json({ message: "El nombre no puede superar 50 caracteres" });
+        return res.status(400).json({ message: 'El nombre no puede superar 50 caracteres' });
       }
     }
 
@@ -55,13 +55,13 @@ export const updateCategory = async (req, res, next) => {
     );
 
     if (!category) {
-      return res.status(404).json({ message: "Categoría no encontrada" });
+      return res.status(404).json({ message: 'Categoría no encontrada' });
     }
 
-    res.json({ message: "Categoría actualizada correctamente", category });
+    res.json({ message: 'Categoría actualizada correctamente', category });
   } catch (error) {
     if (error.code === 11000) {
-      return res.status(400).json({ message: "Ya existe una categoría con ese nombre" });
+      return res.status(400).json({ message: 'Ya existe una categoría con ese nombre' });
     }
     next(error);
   }
@@ -72,7 +72,7 @@ export const deleteCategory = async (req, res, next) => {
   try {
     const category = await Category.findOne({ _id: req.params.id, user: req.userId });
     if (!category) {
-      return res.status(404).json({ message: "Categoría no encontrada" });
+      return res.status(404).json({ message: 'Categoría no encontrada' });
     }
 
     // Verificar si existen notas asociadas
@@ -84,7 +84,7 @@ export const deleteCategory = async (req, res, next) => {
     }
 
     await category.deleteOne();
-    res.json({ message: "Categoría eliminada correctamente" });
+    res.json({ message: 'Categoría eliminada correctamente' });
   } catch (error) {
     next(error);
   }

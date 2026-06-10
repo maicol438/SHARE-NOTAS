@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const MAX_RETRIES = 5;
 const RETRY_DELAY_MS = 3000;
@@ -16,7 +16,7 @@ export const connectDB = async (retries = MAX_RETRIES) => {
     } catch (error) {
       console.error(`❌ MongoDB connection error (${attempt}/${retries}): ${error.message}`);
       if (attempt === retries) {
-        console.error("⛔ All retries exhausted. Exiting.");
+        console.error('⛔ All retries exhausted. Exiting.');
         process.exit(1);
       }
       console.log(`⏳ Retrying in ${RETRY_DELAY_MS / 1000}s...`);
