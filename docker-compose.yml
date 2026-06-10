@@ -4,12 +4,14 @@ services:
     container_name: share-notes-mongodb
     restart: unless-stopped
     environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-sharenotes123}
       MONGO_INITDB_DATABASE: share_notes
     volumes:
       - mongodb_data:/data/db
     command: ["mongod", "--quiet", "--logpath", "/dev/null"]
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh --quiet 2>/dev/null || exit 1
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD 2>/dev/null || exit 1
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,7 +30,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4000
-      MONGO_URI: mongodb://mongodb:27017/share_notes
+      MONGO_URI: mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-sharenotes123}@mongodb:27017/share_notes?authSource=admin
       CLIENT_URL: http://localhost
     depends_on:
       mongodb:
@@ -46,13 +48,21 @@ services:
     build:
       context: ./share-notes-frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:4000
     container_name: share-notes-frontend
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "3000:3000"
     depends_on:
       api:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
 volumes:
   mongodb_data:
