@@ -30,13 +30,18 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
-      include: ['src/**/*.{ts,tsx}'],
+      include: [
+        'src/stores/useAuthStore.ts',
+        'src/stores/useNoteStore.ts',
+        'src/services/socket.ts',
+        'src/api/axios.ts',
+      ],
       exclude: ['src/tests/**', 'src/main.tsx'],
       thresholds: {
-        branches: 25,
-        functions: 25,
-        lines: 25,
-        statements: 25,
+        branches: 90,
+        functions: 90,
+        lines: 90,
+        statements: 90,
       },
     },
   },
