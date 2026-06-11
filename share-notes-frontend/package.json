@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage --pool=forks --poolOptions.forks.maxForks=1",
+    "test:coverage": "vitest run --coverage --fileParallelism=false",
     "test:e2e": "playwright test",
     "lint": "eslint \"src/**/*.{ts,tsx}\" --max-warnings 0",
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix"
