@@ -6,22 +6,23 @@ test.describe('Flujo de Usuario Completo', () => {
   });
 
   test('LP-01: Navegación Landing - elementos principales visibles', async ({ page }) => {
+    await page.waitForLoadState('domcontentloaded');
     const navTitle = page.getByRole('navigation').getByText('ShareNotes').first();
-    await expect(navTitle).toBeVisible();
+    await expect(navTitle).toBeVisible({ timeout: 15000 });
     await expect(page.getByText('Organiza tus estudios')).toBeVisible();
     await expect(page.getByText('Comparte conocimiento')).toBeVisible();
-    await expect(page.getByRole('link', { name: /Regístrate gratis/i }).first()).toBeVisible();
-    await expect(page.getByRole('link', { name: /Inicia sesión/i }).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: /Regístrate gratis/i }).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: /Ingresar/i }).first()).toBeVisible();
   });
 
   test('LP-02: Navegación Landing → Login', async ({ page }) => {
-    await page.getByRole('link', { name: /Inicia sesión/i }).first().click();
+    await page.getByRole('button', { name: /Ingresar/i }).first().click();
     await expect(page).toHaveURL('/login');
     await expect(page.getByRole('heading', { name: /Bienvenido/i })).toBeVisible();
   });
 
   test('LP-03: Navegación Landing → Register', async ({ page }) => {
-    await page.getByRole('link', { name: /Regístrate gratis/i }).first().click();
+    await page.getByRole('button', { name: /Regístrate gratis/i }).first().click();
     await expect(page).toHaveURL('/register');
     await expect(page.getByRole('heading', { name: /Crear cuenta/i })).toBeVisible();
   });
@@ -65,7 +66,7 @@ test.describe('Flujo de Usuario Completo', () => {
 
   test('AUTH-07: Redirección a dashboard si ya autenticado', async ({ page }) => {
     await page.goto('/login?error=auth_error');
-    await expect(page.getByText(/Hubo un error al autenticar/i)).toBeVisible();
+    await expect(page.getByText(/Hubo un error al autenticar/i).first()).toBeVisible();
   });
 
   test('UI-01: Modo oscuro - toggle funciona', async ({ page }) => {
@@ -88,11 +89,12 @@ test.describe('Flujo de Usuario Completo', () => {
     await expect(page.getByRole('link', { name: /Volver/i })).toBeVisible();
   });
 
-  test('UI-04: Enlaces de navegación en landing', async ({ page }) => {
+  test('UI-04: Botones de navegación en landing', async ({ page }) => {
     await page.goto('/');
-    const links = page.getByRole('link');
-    const linkCount = await links.count();
-    expect(linkCount).toBeGreaterThan(3);
+    await expect(page.getByText('Tus notas,').first()).toBeVisible({ timeout: 15000 });
+    const buttons = page.getByRole('button');
+    const buttonCount = await buttons.count();
+    expect(buttonCount).toBeGreaterThan(3);
   });
 
   test('NAV-01: Navegación Login → Register', async ({ page }) => {

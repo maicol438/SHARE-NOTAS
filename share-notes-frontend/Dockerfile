@@ -13,11 +13,10 @@ ENV VITE_API_URL=$VITE_API_URL
 
 RUN npm run build
 
-RUN npm prune --omit=dev
-
 FROM node:24-alpine
 
-RUN npm install -g serve && \
+RUN apk add --no-cache wget && \
+    npm install -g serve && \
     mkdir -p /app && chown -R node:node /app
 
 WORKDIR /app
