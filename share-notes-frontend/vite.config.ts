@@ -22,6 +22,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/tests/setup.ts',
+    env: {
+      VITE_API_URL: '',
+    },
     css: true,
     coverage: {
       provider: 'v8',

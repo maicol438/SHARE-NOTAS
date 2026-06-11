@@ -154,4 +154,55 @@ describe('POST /api/auth/reset-password/:token', () => {
     });
     expect(res.status).toBe(400);
   });
+
+  it('Debe restablecer la contraseña con token válido', async () => {
+    await registerUser({ email: 'resetfull@test.com' });
+    const dbUser = await User.findOne({ email: 'resetfull@test.com' });
+    dbUser.resetPasswordToken = 'validresettoken123';
+    dbUser.resetPasswordExpires = Date.now() + 3600000;
+    await dbUser.save();
+
+    const res = await request(app).post(`${API}/auth/reset-password/validresettoken123`).send({
+      password: 'newpassword123',
+    });
+    expect(res.status).toBe(200);
+    expect(res.body.message).toMatch(/actualizada/i);
+  });
+
+  it('GET /api/auth/me - Debe retornar 404 si el usuario fue eliminado', async () => {
+    const { cookie, userId } = await loginAndGetCookie();
+    await User.findByIdAndDelete(userId);
+    const res = await request(app).get(`${API}/auth/me`).set('Cookie', cookie);
+    expect(res.status).toBe(404);
+    expect(res.body.message).toMatch(/no encontrado/i);
+  });
+
+  it('GET /api/auth/me - Debe retornar 400 con ID inválido en el token', async () => {
+    const jwt = await import('jsonwebtoken');
+    const invalidToken = jwt.default.sign({ id: 'bad-id' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const res = await request(app).get(`${API}/auth/me`).set('Cookie', [`token=${invalidToken}`]);
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('Auth Edge Cases', () => {
+  it('POST /api/auth/register - Debe detectar email duplicado con mayúsculas/minúsculas', async () => {
+    await User.create({ name: 'Original', email: 'Original@TEST.com', password: 'password123' });
+    const res = await request(app).post(`${API}/auth/register`).send({
+      name: 'Duplicado',
+      email: 'original@test.com',
+      password: 'password123',
+    });
+    expect(res.status).toBe(400);
+    expect(res.body.message).toMatch(/registrado/i);
+  });
+
+  it('POST /api/auth/forgot-password - Debe detectar email con mayúsculas/minúsculas', async () => {
+    await User.create({ name: 'Fallback', email: 'Fallback@TEST.com', password: 'password123' });
+    const res = await request(app).post(`${API}/auth/forgot-password`).send({
+      email: 'fallback@test.com',
+    });
+    expect(res.status).toBe(200);
+    expect(res.body.message).toMatch(/enlace/i);
+  });
 });

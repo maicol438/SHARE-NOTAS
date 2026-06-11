@@ -51,6 +51,40 @@ describe('Search', () => {
     expect(res.status).toBe(200);
     expect(res.body.notes).toEqual([]);
   });
+
+  it('GET /api/search - Debe filtrar por tipo', async () => {
+    const { cookie, userId } = await loginAndGetCookie();
+    await createNoteWithCategory(userId, { title: 'Tarea', type: 'task' });
+    const res = await request(app).get(`${API}/search?type=task`).set('Cookie', cookie);
+    expect(res.status).toBe(200);
+  });
+
+  it('GET /api/search - Debe filtrar por rango de fechas inválido', async () => {
+    const { cookie } = await loginAndGetCookie();
+    const res = await request(app).get(`${API}/search?dateFrom=fecha-invalida`).set('Cookie', cookie);
+    expect(res.status).toBe(400);
+    expect(res.body.message).toMatch(/fecha inválida/i);
+  });
+
+  it('GET /api/search - Debe filtrar por dateTo inválido', async () => {
+    const { cookie } = await loginAndGetCookie();
+    const res = await request(app).get(`${API}/search?dateTo=tambien-invalido`).set('Cookie', cookie);
+    expect(res.status).toBe(400);
+  });
+
+  it('GET /api/search - Debe filtrar por tags', async () => {
+    const { cookie, userId } = await loginAndGetCookie();
+    await createNoteWithCategory(userId, { title: 'Tagueada', tags: ['urgente', 'importante'] });
+    const res = await request(app).get(`${API}/search?tags=urgente`).set('Cookie', cookie);
+    expect(res.status).toBe(200);
+  });
+
+  it('GET /api/search - Debe filtrar por completadas', async () => {
+    const { cookie, userId } = await loginAndGetCookie();
+    await createNoteWithCategory(userId, { title: 'Completada', type: 'task', isCompleted: true });
+    const res = await request(app).get(`${API}/search?completed=true`).set('Cookie', cookie);
+    expect(res.status).toBe(200);
+  });
 });
 
 describe('Notebooks', () => {

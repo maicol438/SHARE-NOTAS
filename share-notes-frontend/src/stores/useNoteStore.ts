@@ -303,7 +303,7 @@ const useNoteStore = create<NoteState>((set, get) => ({
 
   deleteFile: async (id: string) => {
     try {
-      await api.delete(`/files/${id}`);
+      await api.delete(`/files/uploads/${id}`);
       set((state: NoteState) => ({
         files: state.files.filter((f) => f._id !== id && f.filename !== id),
       }));

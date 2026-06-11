@@ -68,6 +68,15 @@ describe('Comments', () => {
     expect(res.body.message).toMatch(/permiso/i);
   });
 
+  it('POST /api/notes/:noteId/comments - Debe retornar 404 si la nota no existe', async () => {
+    const { cookie } = await loginAndGetCookie();
+    const fakeId = new mongoose.Types.ObjectId();
+    const res = await request(app).post(`${API}/notes/${fakeId}/comments`).set('Cookie', cookie).send({
+      content: 'Nota inexistente',
+    });
+    expect(res.status).toBe(404);
+  });
+
   it('POST /api/notes/:noteId/comments - Debe permitir comentar en nota pública', async () => {
     const { userId: ownerId } = await loginAndGetCookie({ email: 'publicowner@test.com' });
     const note = await createNoteWithCategory(ownerId, { isPublic: true });
@@ -75,6 +84,20 @@ describe('Comments', () => {
     const { cookie } = await loginAndGetCookie({ email: 'commenter@test.com' });
     const res = await request(app).post(`${API}/notes/${note._id}/comments`).set('Cookie', cookie).send({
       content: 'Comentario en nota pública',
+    });
+    expect(res.status).toBe(201);
+  });
+
+  it('POST /api/notes/:noteId/comments - Debe permitir comentar en nota compartida', async () => {
+    const { userId: ownerId } = await loginAndGetCookie({ email: 'sharedowner2@test.com' });
+    const note = await createNoteWithCategory(ownerId, { isPublic: false });
+
+    const { userId: sharedUserId, cookie: sharedCookie } = await loginAndGetCookie({ email: 'shareduser2@test.com' });
+    note.sharedWith.push({ user: sharedUserId, permission: 'read', sharedAt: new Date() });
+    await note.save();
+
+    const res = await request(app).post(`${API}/notes/${note._id}/comments`).set('Cookie', sharedCookie).send({
+      content: 'Comentario en nota compartida',
     });
     expect(res.status).toBe(201);
   });
@@ -98,5 +121,23 @@ describe('Comments', () => {
     const { cookie: thirdUser } = await loginAndGetCookie({ email: 'third@test.com' });
     const res = await request(app).delete(`${API}/comments/${comment._id}`).set('Cookie', thirdUser);
     expect(res.status).toBe(404);
+  });
+
+  it('GET /api/notes/:noteId/comments - Debe retornar 400 con ID inválido', async () => {
+    const { cookie } = await loginAndGetCookie();
+    const res = await request(app).get(`${API}/notes/bad-id/comments`).set('Cookie', cookie);
+    expect(res.status).toBe(400);
+  });
+
+  it('POST /api/notes/:noteId/comments - Debe retornar 400 con ID inválido', async () => {
+    const { cookie } = await loginAndGetCookie();
+    const res = await request(app).post(`${API}/notes/bad-id/comments`).set('Cookie', cookie).send({ content: 'test' });
+    expect(res.status).toBe(400);
+  });
+
+  it('DELETE /api/comments/:id - Debe retornar 400 con ID inválido', async () => {
+    const { cookie } = await loginAndGetCookie();
+    const res = await request(app).delete(`${API}/comments/bad-id`).set('Cookie', cookie);
+    expect(res.status).toBe(400);
   });
 });

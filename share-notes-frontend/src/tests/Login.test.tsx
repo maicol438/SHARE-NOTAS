@@ -6,7 +6,7 @@ import Login from '../pages/Login';
 import useAuthStore from '../stores/useAuthStore';
 
 const server = setupServer(
-  http.post('*/api/auth/login', () => {
+  http.post(/\/api\/auth\/login/, () => {
     return HttpResponse.json(
       { token: 'fake-jwt-token', user: { id: 1, name: 'Maicol', email: 'maicol@ejemplo.com' } },
       { status: 200 }
@@ -64,7 +64,7 @@ describe('Flujo de Integración: Autenticación (Login)', () => {
 
   it('Debe capturar y mostrar el Error 401 (Unauthorized - Credenciales inválidas)', async () => {
     server.use(
-      http.post('*/api/auth/login', () => {
+      http.post(/\/api\/auth\/login/, () => {
         return HttpResponse.json(
           { message: 'Credenciales inválidas o sesión inexistente' },
           { status: 401 }
@@ -90,7 +90,7 @@ describe('Flujo de Integración: Autenticación (Login)', () => {
 
   it('Debe capturar y procesar el Error 403 (Forbidden - Usuario sin permisos/bloqueado)', async () => {
     server.use(
-      http.post('*/api/auth/login', () => {
+      http.post(/\/api\/auth\/login/, () => {
         return HttpResponse.json(
           { message: 'Usuario autenticado pero sin permisos sobre el recurso' },
           { status: 403 }
@@ -116,7 +116,7 @@ describe('Flujo de Integración: Autenticación (Login)', () => {
 
   it('Debe deshabilitar el botón mientras carga', async () => {
     server.use(
-      http.post('*/api/auth/login', async () => {
+      http.post(/\/api\/auth\/login/, async () => {
         await new Promise((r) => setTimeout(r, 500));
         return HttpResponse.json(
           { token: 'fake-jwt-token', user: { id: 1, name: 'Maicol' } },

@@ -100,4 +100,38 @@ describe('Categories CRUD', () => {
     expect(res.status).toBe(400);
     expect(res.body.message).toMatch(/nota/);
   });
+
+  it('POST /api/categories - Debe retornar 400 si el nombre es muy largo', async () => {
+    const { cookie } = await loginAndGetCookie();
+    const longName = 'A'.repeat(51);
+    const res = await request(app).post(`${API}/categories`).set('Cookie', cookie).send({
+      name: longName,
+      color: '#6366f1',
+    });
+    expect(res.status).toBe(400);
+    expect(res.body.message).toMatch(/50 caracteres/i);
+  });
+
+  it('PUT /api/categories/:id - Debe retornar 400 si el nuevo nombre es muy largo', async () => {
+    const { cookie, userId } = await loginAndGetCookie();
+    const cat = await Category.create({ name: 'Original', color: '#6366f1', user: userId });
+    const longName = 'B'.repeat(51);
+    const res = await request(app).put(`${API}/categories/${cat._id}`).set('Cookie', cookie).send({
+      name: longName,
+    });
+    expect(res.status).toBe(400);
+    expect(res.body.message).toMatch(/50 caracteres/i);
+  });
+
+  it('PUT /api/categories/:id - Debe retornar 400 por nombre duplicado', async () => {
+    const { cookie, userId } = await loginAndGetCookie();
+    await Category.create({ name: 'Duplicada', color: '#6366f1', user: userId });
+    const cat2 = await Category.create({ name: 'Otra', color: '#ff0000', user: userId });
+    const res = await request(app).put(`${API}/categories/${cat2._id}`).set('Cookie', cookie).send({
+      name: 'Duplicada',
+      color: '#ff0000',
+    });
+    expect(res.status).toBe(400);
+    expect(res.body.message).toMatch(/ya existe|duplicado/i);
+  });
 });

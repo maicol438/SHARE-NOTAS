@@ -27,19 +27,16 @@ describe('NoteForm Component', () => {
     render(<NoteForm onSubmit={onSubmit} onClose={onClose} initialData={initialData} categories={[mockCategory]} />);
 
     expect(screen.getByDisplayValue('Nota existente')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('tag1')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('tag2')).toBeInTheDocument();
+    expect(screen.getByText('tag1')).toBeInTheDocument();
+    expect(screen.getByText('tag2')).toBeInTheDocument();
   });
 
   it('Debe tener botón Cancelar que llama a onClose', () => {
     const onSubmit = vi.fn();
     const onClose = vi.fn();
-    const { container } = render(<NoteForm onSubmit={onSubmit} onClose={onClose} />);
+    render(<NoteForm onSubmit={onSubmit} onClose={onClose} />);
 
-    const cancelButton = container.querySelector('button[type="button"]');
-    if (cancelButton) {
-      fireEvent.click(cancelButton);
-      expect(onClose).toHaveBeenCalled();
-    }
+    fireEvent.click(screen.getByText('Cancelar'));
+    expect(onClose).toHaveBeenCalled();
   });
 });

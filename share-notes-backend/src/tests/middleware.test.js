@@ -47,6 +47,15 @@ describe('Auth Middleware', () => {
     const res = await request(app).get(`${API}/auth/me`).set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
   });
+
+  it('Debe retornar 401 con token expirado', async () => {
+    const jwt = await import('jsonwebtoken');
+    const expiredToken = jwt.default.sign({ id: new mongoose.Types.ObjectId().toString() }, process.env.JWT_SECRET, { expiresIn: '0s' });
+    await new Promise(r => setTimeout(r, 100));
+    const res = await request(app).get(`${API}/auth/me`).set('Cookie', [`token=${expiredToken}`]);
+    expect(res.status).toBe(401);
+    expect(res.body.message).toMatch(/expirado|inválido/i);
+  });
 });
 
 describe('Admin Middleware', () => {
@@ -60,6 +69,14 @@ describe('Admin Middleware', () => {
     const { cookie } = await createAdminUser();
     const res = await request(app).get(`${API}/admin/dashboard`).set('Cookie', cookie);
     expect(res.status).toBe(200);
+  });
+
+  it('Debe retornar 500 si User.findById falla por ID inválido', async () => {
+    const jwt = await import('jsonwebtoken');
+    const invalidToken = jwt.default.sign({ id: 'invalid-id-format' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const res = await request(app).get(`${API}/admin/dashboard`).set('Cookie', [`token=${invalidToken}`]);
+    expect(res.status).toBe(500);
+    expect(res.body.message).toMatch(/error al verificar permisos/i);
   });
 });
 

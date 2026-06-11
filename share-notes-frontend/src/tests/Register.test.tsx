@@ -6,7 +6,7 @@ import Register from '../pages/Register';
 import useAuthStore from '../stores/useAuthStore';
 
 const server = setupServer(
-  http.post('*/api/auth/register', () => {
+  http.post(/\/api\/auth\/register/, () => {
     return HttpResponse.json(
       { user: { id: 1, name: 'Maicol', email: 'maicol@ejemplo.com' } },
       { status: 201 }
@@ -69,11 +69,11 @@ describe('Flujo de Integración: Registro de Usuario', () => {
 
   it('Debe mostrar error si el email ya existe (409)', async () => {
     server.use(
-      http.post('*/api/auth/register', () => {
+      http.post(/\/api\/auth\/register/, () => {
         return HttpResponse.json(
-      { message: 'El email ya está registrado' },
-      { status: 409 }
-    );
+          { message: 'El email ya está registrado' },
+          { status: 409 }
+        );
       })
     );
 
@@ -98,7 +98,7 @@ describe('Flujo de Integración: Registro de Usuario', () => {
 
   it('Debe deshabilitar el botón mientras carga', async () => {
     server.use(
-      http.post('*/api/auth/register', async () => {
+      http.post(/\/api\/auth\/register/, async () => {
         await new Promise((r) => setTimeout(r, 500));
         return HttpResponse.json(
           { user: { id: 1, name: 'Maicol', email: 'maicol@ejemplo.com' } },

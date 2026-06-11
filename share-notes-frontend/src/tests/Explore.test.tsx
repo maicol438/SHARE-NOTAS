@@ -4,6 +4,7 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import Explore from '../pages/Explore';
 import useAuthStore from '../stores/useAuthStore';
+import useNoteStore from '../stores/useNoteStore';
 
 interface ExploreNote {
   _id: string;
@@ -61,8 +62,8 @@ const mockCategories = [
 ];
 
 const server = setupServer(
-  http.get('*/api/notes/public', ({ request }) => {
-    const url = new URL(request.url);
+  http.get(/\/api\/notes\/public/, ({ request }) => {
+    const url = new URL(request.url, 'http://localhost');
     const sort = url.searchParams.get('sort') || 'rating';
     const search = url.searchParams.get('q') || '';
     let result = [...mockPublicNotes];
@@ -81,7 +82,7 @@ const server = setupServer(
 
     return HttpResponse.json({ notes: result });
   }),
-  http.get('*/api/categories', () => {
+  http.get(/\/api\/categories/, () => {
     return HttpResponse.json({ categories: mockCategories });
   })
 );
@@ -90,6 +91,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
 afterEach(() => {
   server.resetHandlers();
   useAuthStore.setState({ user: null, isAuthenticated: false, isLoading: false, isCheckingAuth: false });
+  useNoteStore.setState({ notes: [], categories: [], publicNotes: [], files: [], trashNotes: [] });
 });
 afterAll(() => server.close());
 
@@ -120,25 +122,21 @@ describe('Flujo de Integración: Explorar Notas Públicas', () => {
   it('Debe filtrar notas por búsqueda', async () => {
     renderExplore();
 
-    await waitFor(() => {
-      expect(screen.getByText('Machine Learning Fundamentals')).toBeInTheDocument();
-    });
+    expect(await screen.findByText('Machine Learning Fundamentals')).toBeInTheDocument();
+    expect(screen.getByText('Ecuaciones Diferenciales')).toBeInTheDocument();
 
     const searchInput = screen.getByPlaceholderText(/buscar por título/i);
     fireEvent.change(searchInput, { target: { value: 'Machine' } });
 
-    await waitFor(() => {
-      expect(screen.getByText('Machine Learning Fundamentals')).toBeInTheDocument();
-    });
-
+    await screen.findByText('Machine Learning Fundamentals');
     await waitFor(() => {
       expect(screen.queryByText('Ecuaciones Diferenciales')).not.toBeInTheDocument();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
   });
 
   it('Debe mostrar estado vacío cuando no hay resultados', async () => {
     server.use(
-      http.get('*/api/notes/public', () => {
+      http.get(/\/api\/notes\/public/, () => {
         return HttpResponse.json({ notes: [] });
       })
     );

@@ -282,20 +282,6 @@ export const restoreNote = async (req, res, next) => {
   }
 };
 
-export const deleteNote = async (req, res, next) => {
-  try {
-    const note = await Note.findOneAndDelete({ _id: req.params.id, user: req.userId });
-
-    if (!note) {
-      return res.status(404).json({ message: 'Nota no encontrada' });
-    }
-
-    res.json({ message: 'Nota eliminada permanentemente' });
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const permanentDeleteNote = async (req, res, next) => {
   try {
     const note = await Note.findOneAndDelete({

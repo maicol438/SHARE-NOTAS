@@ -52,6 +52,8 @@ Object.defineProperty(window, 'location', {
   writable: true,
 });
 
+delete (globalThis as Record<string, unknown>).XMLHttpRequest;
+
 const origConsoleError: (...args: unknown[]) => void = console.error;
 console.error = (...args: unknown[]) => {
   if (typeof args[0] === 'string' && (args[0] as string).includes('Not implemented: HTMLCanvasElement')) return;

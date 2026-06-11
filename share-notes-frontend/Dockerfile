@@ -17,17 +17,16 @@ RUN npm prune --omit=dev
 
 FROM node:24-alpine
 
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
-    npm install -g serve
+RUN npm install -g serve && \
+    mkdir -p /app && chown -R node:node /app
 
 WORKDIR /app
 
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/package.json ./package.json
 
-RUN chown -R appuser:appgroup /app
+RUN chown -R node:node /app
 
-USER appuser
+USER node
 
 EXPOSE 3000
 

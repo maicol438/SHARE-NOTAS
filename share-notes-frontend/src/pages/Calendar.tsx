@@ -14,7 +14,7 @@ const CalendarPage: React.FC = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const { fetchNotes, notes } = useNoteStore();
 
-  useEffect(() => { fetchNotes({}); }, [fetchNotes]);
+  useEffect(() => { fetchNotes({ type: 'task' }); }, [fetchNotes]);
 
   const tasks: TaskItem[] = (notes || []).filter((n: TaskItem) => n.type === 'task' && n.dueDate);
   const month: number = currentDate.getMonth();

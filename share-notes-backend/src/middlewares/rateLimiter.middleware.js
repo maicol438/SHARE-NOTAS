@@ -4,7 +4,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: isProduction ? 10 : 50,
+  max: isProduction ? 10 : 500,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'Demasiados intentos. Intenta de nuevo más tarde.' },
