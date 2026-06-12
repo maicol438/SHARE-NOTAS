@@ -50,7 +50,8 @@
       "**/tests/**/*.test.js"
     ],
     "setupFiles": [
-      "dotenv/config"
+      "dotenv/config",
+      "./src/tests/setup.js"
     ],
     "transform": {},
     "collectCoverageFrom": [

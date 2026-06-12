@@ -246,15 +246,17 @@ export const updateNote = async (req, res, next) => {
 
 export const softDeleteNote = async (req, res, next) => {
   try {
-    const note = await Note.findOneAndUpdate(
+    const existingNote = await Note.findById(req.params.id);
+    if (!existingNote) return res.status(404).json({ message: 'Nota no encontrada' });
+    if (existingNote.user.toString() !== req.userId) {
+      return res.status(403).json({ message: 'No tienes permiso para eliminar esta nota' });
+    }
+
+    await Note.findOneAndUpdate(
       { _id: req.params.id, user: req.userId },
       { deletedAt: new Date() },
       { new: true }
     );
-
-    if (!note) {
-      return res.status(404).json({ message: 'Nota no encontrada' });
-    }
 
     res.json({ message: 'Nota movida a la papelera' });
   } catch (error) {
@@ -264,6 +266,12 @@ export const softDeleteNote = async (req, res, next) => {
 
 export const restoreNote = async (req, res, next) => {
   try {
+    const existingNote = await Note.findById(req.params.id);
+    if (!existingNote) return res.status(404).json({ message: 'Nota no encontrada' });
+    if (existingNote.user.toString() !== req.userId) {
+      return res.status(403).json({ message: 'No tienes permiso para restaurar esta nota' });
+    }
+
     const note = await Note.findOneAndUpdate(
       { _id: req.params.id, user: req.userId },
       { deletedAt: null },
@@ -271,10 +279,6 @@ export const restoreNote = async (req, res, next) => {
     )
       .populate('category', 'name color')
       .populate('notebook', 'name color');
-
-    if (!note) {
-      return res.status(404).json({ message: 'Nota no encontrada' });
-    }
 
     res.json({ message: 'Nota restaurada correctamente', note });
   } catch (error) {
@@ -284,6 +288,12 @@ export const restoreNote = async (req, res, next) => {
 
 export const permanentDeleteNote = async (req, res, next) => {
   try {
+    const existingNote = await Note.findById(req.params.id);
+    if (!existingNote) return res.status(404).json({ message: 'Nota no encontrada' });
+    if (existingNote.user.toString() !== req.userId) {
+      return res.status(403).json({ message: 'No tienes permiso para eliminar esta nota' });
+    }
+
     const note = await Note.findOneAndDelete({
       _id: req.params.id,
       user: req.userId,
@@ -302,6 +312,12 @@ export const permanentDeleteNote = async (req, res, next) => {
 
 export const togglePin = async (req, res, next) => {
   try {
+    const existingNote = await Note.findById(req.params.id);
+    if (!existingNote) return res.status(404).json({ message: 'Nota no encontrada' });
+    if (existingNote.user.toString() !== req.userId) {
+      return res.status(403).json({ message: 'No tienes permiso para modificar esta nota' });
+    }
+
     const note = await Note.findOne({ _id: req.params.id, user: req.userId });
     if (!note) return res.status(404).json({ message: 'Nota no encontrada' });
 
@@ -321,6 +337,12 @@ export const togglePin = async (req, res, next) => {
 
 export const toggleFavorite = async (req, res, next) => {
   try {
+    const existingNote = await Note.findById(req.params.id);
+    if (!existingNote) return res.status(404).json({ message: 'Nota no encontrada' });
+    if (existingNote.user.toString() !== req.userId) {
+      return res.status(403).json({ message: 'No tienes permiso para modificar esta nota' });
+    }
+
     const note = await Note.findOne({ _id: req.params.id, user: req.userId });
     if (!note) return res.status(404).json({ message: 'Nota no encontrada' });
 
@@ -341,6 +363,12 @@ export const toggleFavorite = async (req, res, next) => {
 export const shareNote = async (req, res, next) => {
   try {
     const { email, permission } = req.body;
+
+    const existingNote = await Note.findById(req.params.id);
+    if (!existingNote) return res.status(404).json({ message: 'Nota no encontrada' });
+    if (existingNote.user.toString() !== req.userId) {
+      return res.status(403).json({ message: 'No tienes permiso para compartir esta nota' });
+    }
 
     const targetUser = await User.findOne({ email });
     if (!targetUser) {
@@ -398,6 +426,12 @@ export const shareNote = async (req, res, next) => {
 export const unshareNote = async (req, res, next) => {
   try {
     const { userId } = req.body;
+
+    const existingNote = await Note.findById(req.params.id);
+    if (!existingNote) return res.status(404).json({ message: 'Nota no encontrada' });
+    if (existingNote.user.toString() !== req.userId) {
+      return res.status(403).json({ message: 'No tienes permiso para modificar esta nota' });
+    }
 
     const note = await Note.findOne({ _id: req.params.id, user: req.userId });
     if (!note) return res.status(404).json({ message: 'Nota no encontrada' });
@@ -501,6 +535,12 @@ export const getTasks = async (req, res, next) => {
 
 export const toggleTaskComplete = async (req, res, next) => {
   try {
+    const existingNote = await Note.findById(req.params.id);
+    if (!existingNote) return res.status(404).json({ message: 'Tarea no encontrada' });
+    if (existingNote.user.toString() !== req.userId) {
+      return res.status(403).json({ message: 'No tienes permiso para modificar esta tarea' });
+    }
+
     const note = await Note.findOne({ _id: req.params.id, user: req.userId, type: 'task' });
     if (!note) return res.status(404).json({ message: 'Tarea no encontrada' });
 
