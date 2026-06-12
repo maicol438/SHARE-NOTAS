@@ -541,4 +541,64 @@ describe('Share', () => {
     expect(res.status).toBe(403);
     expect(res.body.message).toMatch(/permiso/i);
   });
+
+  it('DELETE /api/notes/:id - Debe retornar 403 si la nota pertenece a otro usuario', async () => {
+    const { userId: ownerId } = await loginAndGetCookie({ email: 'owner-del@test.com' });
+    const cat = await Category.create({ name: 'XDel', color: '#6366f1', user: ownerId });
+    const note = await Note.create({ title: 'De otro', content: '...', category: cat._id, user: ownerId });
+    const { cookie: otherCookie } = await loginAndGetCookie({ email: 'intruder-del@test.com' });
+    const res = await request(app).delete(`${API}/notes/${note._id}`).set('Cookie', otherCookie);
+    expect(res.status).toBe(403);
+    expect(res.body.message).toMatch(/permiso/i);
+  });
+
+  it('PATCH /api/notes/:id/restore - Debe retornar 403 si la nota pertenece a otro usuario', async () => {
+    const { userId: ownerId } = await loginAndGetCookie({ email: 'owner-restore@test.com' });
+    const cat = await Category.create({ name: 'XRestore', color: '#6366f1', user: ownerId });
+    const note = await Note.create({ title: 'De otro', content: '...', category: cat._id, user: ownerId, deletedAt: new Date() });
+    const { cookie: otherCookie } = await loginAndGetCookie({ email: 'intruder-restore@test.com' });
+    const res = await request(app).patch(`${API}/notes/${note._id}/restore`).set('Cookie', otherCookie);
+    expect(res.status).toBe(403);
+    expect(res.body.message).toMatch(/permiso/i);
+  });
+
+  it('PATCH /api/notes/:id/pin - Debe retornar 403 si la nota pertenece a otro usuario', async () => {
+    const { userId: ownerId } = await loginAndGetCookie({ email: 'owner-pin@test.com' });
+    const cat = await Category.create({ name: 'XPin', color: '#6366f1', user: ownerId });
+    const note = await Note.create({ title: 'De otro', content: '...', category: cat._id, user: ownerId });
+    const { cookie: otherCookie } = await loginAndGetCookie({ email: 'intruder-pin@test.com' });
+    const res = await request(app).patch(`${API}/notes/${note._id}/pin`).set('Cookie', otherCookie);
+    expect(res.status).toBe(403);
+    expect(res.body.message).toMatch(/permiso/i);
+  });
+
+  it('PATCH /api/notes/:id/favorite - Debe retornar 403 si la nota pertenece a otro usuario', async () => {
+    const { userId: ownerId } = await loginAndGetCookie({ email: 'owner-fav@test.com' });
+    const cat = await Category.create({ name: 'XFav', color: '#6366f1', user: ownerId });
+    const note = await Note.create({ title: 'De otro', content: '...', category: cat._id, user: ownerId });
+    const { cookie: otherCookie } = await loginAndGetCookie({ email: 'intruder-fav@test.com' });
+    const res = await request(app).patch(`${API}/notes/${note._id}/favorite`).set('Cookie', otherCookie);
+    expect(res.status).toBe(403);
+    expect(res.body.message).toMatch(/permiso/i);
+  });
+
+  it('POST /api/notes/:id/share - Debe retornar 403 si la nota pertenece a otro usuario', async () => {
+    const { userId: ownerId } = await loginAndGetCookie({ email: 'owner-share-x@test.com' });
+    const cat = await Category.create({ name: 'XShare', color: '#6366f1', user: ownerId });
+    const note = await Note.create({ title: 'De otro', content: '...', category: cat._id, user: ownerId });
+    const { cookie: otherCookie } = await loginAndGetCookie({ email: 'intruder-share-x@test.com' });
+    const res = await request(app).post(`${API}/notes/${note._id}/share`).set('Cookie', otherCookie).send({ email: 'someone@test.com' });
+    expect(res.status).toBe(403);
+    expect(res.body.message).toMatch(/permiso/i);
+  });
+
+  it('DELETE /api/notes/:id/share - Debe retornar 403 si la nota pertenece a otro usuario', async () => {
+    const { userId: ownerId } = await loginAndGetCookie({ email: 'owner-unshare@test.com' });
+    const cat = await Category.create({ name: 'XUnshare', color: '#6366f1', user: ownerId });
+    const note = await Note.create({ title: 'De otro', content: '...', category: cat._id, user: ownerId });
+    const { cookie: otherCookie } = await loginAndGetCookie({ email: 'intruder-unshare@test.com' });
+    const res = await request(app).delete(`${API}/notes/${note._id}/share`).set('Cookie', otherCookie).send({ userId: ownerId });
+    expect(res.status).toBe(403);
+    expect(res.body.message).toMatch(/permiso/i);
+  });
 });
