@@ -1,6 +1,14 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import Tooltip from '../components/ui/Tooltip';
 
+beforeEach(() => {
+  Element.prototype.getBoundingClientRect = vi.fn(() => ({
+    top: 200, bottom: 300, left: 200, right: 300,
+    width: 100, height: 50, x: 200, y: 200,
+    toJSON: () => ({}),
+  }));
+});
+
 describe('Tooltip Component', () => {
   it('Debe renderizar el contenido children', () => {
     render(<Tooltip text="Info"><button>Hover</button></Tooltip>);

@@ -36,6 +36,7 @@ import adminRoutes from './routes/admin.routes.js';
 import googleDocsRoutes from './routes/googleDocs.routes.js';
 import docxExportRoutes from './routes/docxExport.routes.js';
 import { errorHandler } from './middlewares/error.middleware.js';
+import { generalLimiter } from './middlewares/rateLimiter.middleware.js';
 
 initializeGoogleAuth();
 
@@ -65,6 +66,9 @@ app.get('/api/health', (_req, res) => {
     },
   });
 });
+
+// ── Rate Limiter global (después de health, antes de todo lo demás) ──
+app.use(generalLimiter);
 
 // ── Middlewares globales ──────────────────────────────────
 app.use(helmet());
