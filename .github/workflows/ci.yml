@@ -73,6 +73,8 @@ jobs:
 
       - name: Run tests with coverage
         run: npm run test:coverage
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
 
   e2e:
     name: Frontend - Playwright E2E

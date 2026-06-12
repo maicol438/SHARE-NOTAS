@@ -29,7 +29,7 @@ export default defineConfig({
     css: true,
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'lcov'],
+      reporter: ['text'],
       include: [
         'src/stores/useAuthStore.ts',
         'src/stores/useNoteStore.ts',
