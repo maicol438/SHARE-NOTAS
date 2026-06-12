@@ -40,7 +40,6 @@ api.interceptors.response.use(
       api.post('/auth/logout').catch(() => {});
       localStorage.clear();
       sessionStorage.clear();
-      window.location.href = '/login';
       if (logoutCallback) logoutCallback();
       return Promise.reject(error);
     }
